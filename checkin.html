@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>每日記錄・照顧者減壓</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="checkin">
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand"><span class="logo">🌸</span>按壓減壓<small>每日記錄</small></div>
+    <span class="pill">研究版</span>
+  </header>
+
+  <main class="page">
+
+    <div class="card hero">
+      <div class="kicker">每日 1 分鐘</div>
+      <h1>每日記錄</h1>
+      <p>每日做一次：答 4 條壓力問題＋剔返做咗邊幾個穴位。短短 1 分鐘，睇住自己嘅壓力變化同行動記錄。</p>
+    </div>
+
+    <h2 class="sect"><span class="bar"></span>1. 壓力快測（PSS-4）</h2>
+    <div class="card">
+      <p class="sub" style="margin-bottom:12px;">回想<b>過去一星期</b>，以下情況出現嘅頻率？（改編自感知壓力量表 PSS-4，屬臨床認可嘅簡短量表）</p>
+      <div id="pssBox"></div>
+    </div>
+
+    <h2 class="sect"><span class="bar"></span>2. 今日按壓記錄</h2>
+    <div class="card">
+      <p class="sub" style="margin-bottom:8px;">今日做咗邊幾個穴位？</p>
+      <div id="pointBox"></div>
+    </div>
+
+    <h2 class="sect"><span class="bar"></span>3. 今日整體壓力</h2>
+    <div class="card">
+      <label style="font-size:13.5px;font-weight:700;">今日整體壓力（0 = 完全放鬆，10 = 最大壓力）：<b id="sliderVal" style="color:var(--accent-deep)">5</b></label>
+      <input type="range" min="0" max="10" value="5" class="ci-slider" id="stressSlider">
+      <div class="ci-slider-row"><span>0 放鬆</span><span>5</span><span>10 最大壓力</span></div>
+    </div>
+
+    <div style="text-align:center;margin:6px 0 16px;">
+      <button class="btn btn-primary" id="saveBtn" style="border:none;width:100%;cursor:pointer;font-size:15px;">✅ 儲存今日記錄</button>
+    </div>
+    <div id="savedMsg" style="display:none;text-align:center;color:var(--ok);font-weight:800;margin-bottom:12px;">已儲存！👍 聽日再嚟</div>
+
+    <h2 class="sect"><span class="bar"></span>最近 7 日</h2>
+    <div class="card">
+      <div class="streak" id="streakBox"></div>
+      <p class="sub" style="margin-top:10px;" id="streakMsg"></p>
+    </div>
+
+    <div class="card notice">
+      <p>⚠️ 快測只供自我體驗同研究記錄，並非臨床診斷工具。如持續感到困擾，請尋求專業支援。</p>
+    </div>
+
+  </main>
+
+  <nav class="tabbar">
+    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span>首頁</a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span>教學</a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span>記錄</a>
+    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span>研究</a>
+  </nav>
+
+</div>
+<script src="app.js"></script>
+<script>
+// ============================================================
+// PSS-4 感知壓力量表（簡短版）— 4 條問題，0–16 分
+// 第 2、3 條為反向題。本 App 將時間框改為「過去一星期」作每日記錄。
+// ============================================================
+var PSS = [
+  { q:'覺得冇辦法控制生活中重要嘅事情？', rev:false },
+  { q:'對自己處理個人問題有信心？',       rev:true  },
+  { q:'覺得事情順心、一切如意？',         rev:true  },
+  { q:'覺得困難多到應付唔嚟？',           rev:false }
+];
+var OPTS = ['從未','間中','有時','經常','總是'];
+var POINTS = [
+  { id:'baihui',   name:'百會',   en:'GV20' },
+  { id:'fengchi',  name:'風池',   en:'GB20' },
+  { id:'hegu',     name:'合谷',   en:'LI4'  },
+  { id:'shenshu',  name:'腎俞',   en:'UB23' },
+  { id:'zhongwan', name:'中脘',   en:'CV12' },
+  { id:'qihai',    name:'氣海・關元', en:'CV6/CV4' },
+  { id:'zusanli',  name:'足三里', en:'ST36' },
+  { id:'yongquan', name:'涌泉',   en:'KD1'  }
+];
+
+var pss = {}, done = {};
+
+function renderPSS(){
+  var box = document.getElementById('pssBox');
+  var h = '';
+  PSS.forEach(function(item, i){
+    h += '<div class="ci-q"><label>' + (i+1) + '. ' + item.q + '</label><div class="ci-opts">';
+    OPTS.forEach(function(o, v){
+      var sel = (pss[i] === v) ? ' sel' : '';
+      h += '<div class="ci-opt' + sel + '" data-q="' + i + '" data-v="' + v + '">' + o + '</div>';
+    });
+    h += '</div></div>';
+  });
+  box.innerHTML = h;
+  box.querySelectorAll('.ci-opt').forEach(function(el){
+    el.addEventListener('click', function(){
+      var q = el.getAttribute('data-q');
+      pss[q] = parseInt(el.getAttribute('data-v'), 10);
+      box.querySelectorAll('.ci-opt[data-q="' + q + '"]').forEach(function(x){ x.classList.remove('sel'); });
+      el.classList.add('sel');
+    });
+  });
+}
+
+function renderPoints(){
+  var box = document.getElementById('pointBox');
+  var h = '';
+  POINTS.forEach(function(p, i){
+    h += '<label class="point-check"><input type="checkbox" data-p="' + p.id + '"' + (done[p.id]?' checked':'') + '>'
+      + '<span><b>' + (i+1) + '. ' + p.name + ' <span class="en" style="color:var(--muted);font-size:11px;">' + p.en + '</span></b>'
+      + '<span style="font-size:11.5px;color:var(--muted);">已按壓</span></span></label>';
+  });
+  box.innerHTML = h;
+  box.querySelectorAll('input').forEach(function(el){
+    el.addEventListener('change', function(){ done[el.getAttribute('data-p')] = el.checked; });
+  });
+}
+
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function loadToday(){
+  try{
+    var raw = localStorage.getItem('acupractice_' + todayKey());
+    if (raw){
+      var d = JSON.parse(raw);
+      pss = d.pss || {}; done = d.done || {};
+      document.getElementById('stressSlider').value = d.stress != null ? d.stress : 5;
+      document.getElementById('sliderVal').textContent = document.getElementById('stressSlider').value;
+      document.getElementById('savedMsg').style.display = 'block';
+    }
+  }catch(e){}
+}
+
+function save(){
+  if (Object.keys(pss).length < PSS.length){
+    alert('仲未答晒 4 條壓力問題呀～ 答晒先儲存 😊');
+    return;
+  }
+  var total = 0;
+  PSS.forEach(function(item, i){
+    var v = pss[i];
+    total += item.rev ? (4 - v) : v;
+  });
+  var data = {
+    pss: pss, done: done,
+    stress: parseInt(document.getElementById('stressSlider').value, 10),
+    pssScore: total, ts: new Date().toISOString()
+  };
+  try{
+    localStorage.setItem('acupractice_' + todayKey(), JSON.stringify(data));
+    document.getElementById('savedMsg').style.display = 'block';
+    renderStreak();
+    alert('已儲存！今日壓力分數：' + total + '/16' + (total<=5?'，狀態幾好 🌿':total<=10?'，中等壓力 🌤️':'，壓力偏高 🌧️ 記得照顧自己'));
+  }catch(e){}
+}
+
+function renderStreak(){
+  var box = document.getElementById('streakBox');
+  var weekdays = ['日','一','二','三','四','五','六'];
+  var h = ''; var count = 0; var cur = new Date();
+  for (var i = 6; i >= 0; i--){
+    var d = new Date(cur); d.setDate(cur.getDate() - i);
+    var key = d.toISOString().slice(0,10);
+    var has = false;
+    try{ has = !!localStorage.getItem('acupractice_' + key); }catch(e){}
+    if (has) count++;
+    var lbl = (i === 0) ? '今日' : weekdays[d.getDay()];
+    h += '<div class="day"><div class="dot' + (has?' done':'') + '">' + (has?'✓':(i===0?'‧':'')) + '</div><div class="lbl">' + lbl + '</div></div>';
+  }
+  box.innerHTML = h;
+  document.getElementById('streakMsg').textContent = count > 0
+    ? ('最近 7 日你記錄咗 ' + count + ' 次 👍 持續記錄，睇到進步')
+    : '仲未開始記錄～ 今日做第一次！';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  renderPSS(); renderPoints(); loadToday(); renderStreak();
+  document.getElementById('stressSlider').addEventListener('input', function(){
+    document.getElementById('sliderVal').textContent = this.value;
+  });
+  document.getElementById('saveBtn').addEventListener('click', save);
+});
+</script>
+</body>
+</html>

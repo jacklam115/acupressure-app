@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>按壓教學・照顧者減壓</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="tutorial">
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand"><span class="logo">🌸</span>按壓減壓<small>穴位按壓教學（Tiwari 2016 方案）</small></div>
+    <span class="pill">研究版</span>
+  </header>
+
+  <main class="page">
+
+    <div class="card hero">
+      <div class="kicker">8 個穴位・每日 2 次・每次 15 分鐘</div>
+      <h1>自我穴位按壓教學</h1>
+      <p>跟住香港大學實證方案（Tiwari et al., 2016）一步一步做。建議飯後至少 1 小時先開始，坐得舒服，深呼吸放鬆。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#" id="startBtn">▶ 開始計時練習</a>
+        <a class="btn btn-ghost" href="#steps">先睇步驟</a>
+      </div>
+    </div>
+
+    <div class="card notice">
+      <p>📷 每步都有「示範相片」位置。真實示範相片放喺 <b>photos/</b> 資料夾（baihui.jpg、fengchi.jpg、hegu.jpg、shenshu.jpg、zhongwan.jpg、qihai.jpg、zusanli.jpg、yongquan.jpg）就會自動顯示。</p>
+    </div>
+
+    <!-- ===== 計時練習 Session ===== -->
+    <div id="sessionScreen">
+      <div class="session-top">
+        <button class="back-btn" id="exitBtn">✕ 離開練習</button>
+        <div style="flex:1;font-size:12.5px;font-weight:700;color:var(--accent-deep);" id="stepCounter">第 1 / 8 步</div>
+      </div>
+      <div class="progress"><i id="progressBar" style="width:0%"></i></div>
+      <div class="timer-card">
+        <div class="step-label" id="sLabel">STEP 1</div>
+        <div class="point-name" id="sName">百會</div>
+        <div class="point-en" id="sEn">Baihui (GV20)</div>
+        <div class="timer-ring">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle class="ring-bg" cx="75" cy="75" r="66"/>
+            <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="66" stroke-dasharray="414.7" stroke-dashoffset="0"/>
+          </svg>
+          <div class="ring-txt">
+            <span class="t" id="sTime">01:00</span>
+            <span class="s" id="sFreq">60 下</span>
+          </div>
+        </div>
+        <div class="how" id="sHow">四指指腹輕拍頭頂正中</div>
+        <div class="session-controls">
+          <button class="btn btn-pause" id="pauseBtn">⏸ 暫停</button>
+          <button class="btn btn-skip" id="skipBtn">跳過 ⏭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 完成畫面 ===== -->
+    <div id="doneScreen" style="display:none">
+      <div class="card">
+        <div class="done-screen">
+          <div class="emo">🌸</div>
+          <h3>今日練習完成！</h3>
+          <p>你啱啱完成咗 8 個穴位、約 15 分鐘嘅自我按壓。記得去「每日記錄」打個卡，睇住自己嘅壓力變化。</p>
+          <div class="cta-row" style="margin-top:18px;">
+            <a class="btn btn-primary" href="checkin.html">去每日記錄</a>
+            <a class="btn btn-ghost" href="#" id="againBtn">再做一次</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 步驟一覽（瀏覽模式） ===== -->
+    <h2 class="sect" id="steps"><span class="bar"></span>8 個步驟（由頭到腳）</h2>
+    <div id="stepList"></div>
+
+    <h2 class="sect"><span class="bar"></span>練習要點</h2>
+    <div class="card">
+      <div class="step"><div class="num">力</div><div><b>力度</b><span>以「痠、脹、麻」為準，唔應該痛</span></div></div>
+      <div class="step"><div class="num">時</div><div><b>時間</b><span>每日 2 次，每次約 15 分鐘；飯後至少 1 小時先做</span></div></div>
+      <div class="step"><div class="num">呼</div><div><b>呼吸</b><span>全程慢慢深呼吸，放鬆肩膀，唔好急</span></div></div>
+      <div class="step"><div class="num">記</div><div><b>記錄</b><span>做完去「每日記錄」剔返做咗邊幾個穴位</span></div></div>
+    </div>
+
+    <div class="card notice">
+      <p>⚠️ 注意事項：<br>・ 懷孕或計劃懷孕人士<b>請勿按壓</b>合谷、三陰交等穴位<br>・ 皮膚破損、感染或靜脈曲張位置唔好按<br>・ 太肚餓或太飽時避免按壓<br>・ 如出現劇痛、暈眩，立即停止<br>・ 此為研究項目嘅自我照護方法，唔可以取代正規醫療</p>
+    </div>
+
+  </main>
+
+  <nav class="tabbar">
+    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span>首頁</a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span>教學</a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span>記錄</a>
+    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span>研究</a>
+  </nav>
+
+</div>
+<script src="app.js"></script>
+<script>
+// ============================================================
+// Tiwari et al. (2016) 自我穴位按壓方案 — 8 步 × 每次15分鐘
+// ============================================================
+var STEPS = [
+  { n:1,  name:'百會',     en:'Baihui (GV20)',  cn:'百會',
+    loc:'頭頂正中，兩耳尖連線嘅中點',
+    how:'用四指指腹輕拍頭頂穴位位置',
+    freq:'60 下 / 1 分鐘', sec:60,
+    photo:'photos/baihui.jpg', part:'head' },
+  { n:2,  name:'風池',     en:'Fengchi (GB20)', cn:'風池',
+    loc:'頸後，胸鎖乳突肌同斜方肌之間嘅凹陷處',
+    how:'兩隻拇指按住兩側風池，其餘手指自然托住後腦',
+    freq:'60 下 / 1 分鐘', sec:60,
+    photo:'photos/fengchi.jpg', part:'nape' },
+  { n:3,  name:'合谷',     en:'Hegu (LI4)',     cn:'合谷',
+    loc:'手背，第一、二掌骨之間，約第二掌骨中點橈側',
+    how:'拇指指腹用力按揉，先做一邊再做另一邊',
+    freq:'每邊 30 下 / 1 分鐘', sec:60,
+    photo:'photos/hegu.jpg', part:'hand' },
+  { n:4,  name:'腎俞',     en:'Shenshu (UB23)', cn:'腎俞',
+    loc:'腰背，第二腰椎棘突旁開 1.5 寸（約兩指闊）',
+    how:'握拳，用拳面輕敲腰背兩側穴位',
+    freq:'60 下 / 1.5 分鐘', sec:90,
+    photo:'photos/shenshu.jpg', part:'back' },
+  { n:5,  name:'中脘',     en:'Zhongwan (CV12)', cn:'中脘',
+    loc:'上腹部，前正中線，臍上 4 寸（約五隻手指闊）',
+    how:'指腹順時針打圈，輕按上腹部',
+    freq:'200 圈 / 2 分鐘', sec:120,
+    photo:'photos/zhongwan.jpg', part:'belly' },
+  { n:6,  name:'氣海・關元', en:'Qihai (CV6) + Guanyuan (CV4)', cn:'氣海、關元',
+    loc:'下腹部，前正中線，臍下 1.5 寸及 3 寸',
+    how:'指腹順時針打圈，輕按下腹部（兩個穴位一齊做）',
+    freq:'200 圈 / 2 分鐘', sec:120,
+    photo:'photos/qihai.jpg', part:'lowerbelly' },
+  { n:7,  name:'足三里',   en:'Zusanli (ST36)', cn:'足三里',
+    loc:'小腿前外側，膝蓋對落 3 寸，脛骨前嵴外一橫指',
+    how:'拇指指腹用力按揉，兩邊都要做',
+    freq:'每邊 60 下 / 1.5 分鐘', sec:90,
+    photo:'photos/zusanli.jpg', part:'leg' },
+  { n:8,  name:'涌泉',     en:'Yongquan (KD1)', cn:'涌泉',
+    loc:'腳底，前 1/3 同後 2/3 交界嘅凹陷處',
+    how:'四指指腹用力按揉，兩隻腳都要做',
+    freq:'每邊 100 下 / 2.5 分鐘', sec:150,
+    photo:'photos/yongquan.jpg', part:'foot' }
+];
+
+// ---------- 示範圖（未有真實相片前嘅位置示意） ----------
+var SVG = {
+  head: '<svg viewBox="0 0 200 150"><ellipse cx="100" cy="75" rx="72" ry="62" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><path d="M30 75 Q12 75 14 92" stroke="#E8B8C4" stroke-width="2.5" fill="none"/><path d="M170 75 Q188 75 186 92" stroke="#E8B8C4" stroke-width="2.5" fill="none"/><circle cx="100" cy="55" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  nape: '<svg viewBox="0 0 200 150"><circle cx="100" cy="48" r="34" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><path d="M82 74 L76 132 Q75 140 84 140 L116 140 Q125 140 124 132 L118 74" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="92" cy="96" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/><circle cx="108" cy="96" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  hand: '<svg viewBox="0 0 200 150"><path d="M58 132 Q46 100 54 74 Q58 58 74 56 L78 44 Q80 36 88 38 L90 52 L96 36 Q98 30 104 34 L102 52 L110 40 Q114 34 120 40 L114 56 L124 48 Q130 44 132 52 L122 64 Q150 70 152 92 Q154 116 140 132 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="104" cy="86" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  back: '<svg viewBox="0 0 200 150"><path d="M70 20 Q70 8 84 8 L116 8 Q130 8 130 20 L128 128 Q128 138 100 138 Q72 138 72 128 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="82" cy="96" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/><circle cx="118" cy="96" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  belly: '<svg viewBox="0 0 200 150"><ellipse cx="100" cy="80" rx="62" ry="58" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="100" cy="96" r="5" fill="#E8B8C4"/><circle cx="100" cy="58" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  lowerbelly: '<svg viewBox="0 0 200 150"><ellipse cx="100" cy="80" rx="62" ry="58" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="100" cy="96" r="5" fill="#E8B8C4"/><circle cx="100" cy="118" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  leg: '<svg viewBox="0 0 200 150"><path d="M88 8 L112 8 L118 70 Q130 84 128 100 L126 138 Q126 144 118 144 L82 144 Q74 144 74 138 L74 100 Q70 84 84 70 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="99" cy="52" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  foot: '<svg viewBox="0 0 200 150"><path d="M52 96 Q40 70 66 52 Q110 30 140 44 Q168 58 166 84 Q164 112 138 118 Q110 124 86 116 Q60 108 52 96 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="112" cy="74" r="9" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>'
+};
+
+// ---------- 渲染步驟卡片（瀏覽模式） ----------
+function renderSteps(){
+  var box = document.getElementById('stepList');
+  var h = '';
+  STEPS.forEach(function(s){
+    h += '<div class="tut-card">'
+      + '<div class="tut-head"><div class="pno">' + s.n + '</div><div><h3>' + s.name + ' <span class="en">' + s.en + '</span></h3></div></div>'
+      + '<div class="tut-body">'
+      +   '<div class="lbl">位置</div><p>' + s.loc + '</p>'
+      +   '<div class="lbl">做法</div><p>' + s.how + '</p>'
+      +   '<span class="freq">⏱ ' + s.freq + '</span>'
+      +   '<div class="point-img" id="img-' + s.n + '">' + placeholderSVG(s) + '</div>'
+      + '</div></div>';
+  });
+  box.innerHTML = h;
+  // 嘗試載入真實相片；冇就保留示意圖
+  STEPS.forEach(function(s){
+    var img = new Image();
+    img.onload = function(){
+      var el = document.getElementById('img-' + s.n);
+      if (el) el.innerHTML = '<img src="' + s.photo + '" alt="' + s.name + ' 示範相片">';
+    };
+    img.src = s.photo;
+  });
+}
+function placeholderSVG(s){
+  return '<div class="ph"><span class="big">💆</span>' + SVG[s.part] + '<br><b>' + s.name + ' ' + s.en + '</b><br>位置示意（示範相片待上載）</div>';
+}
+
+// ---------- 計時練習引擎 ----------
+var session = { running:false, idx:0, left:0, timer:null, paused:false };
+
+function fmt(t){
+  var m = Math.floor(t/60), s = t%60;
+  return (m<10?'0':'') + m + ':' + (s<10?'0':'') + s;
+}
+function beep(){
+  try{
+    var ctx = new (window.AudioContext||window.webkitAudioContext)();
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880; g.gain.value = 0.15;
+    o.start(); o.stop(ctx.currentTime + 0.35);
+  }catch(e){}
+}
+function showStep(i){
+  var s = STEPS[i];
+  document.getElementById('sLabel').textContent = 'STEP ' + s.n + ' / 8';
+  document.getElementById('sName').textContent = s.name;
+  document.getElementById('sEn').textContent = s.en;
+  document.getElementById('sTime').textContent = fmt(s.sec);
+  document.getElementById('sFreq').textContent = s.freq;
+  document.getElementById('sHow').textContent = s.loc + '。' + s.how;
+  document.getElementById('stepCounter').textContent = '第 ' + s.n + ' / 8 步';
+  document.getElementById('progressBar').style.width = ((s.n-1)/8*100) + '%';
+  session.left = s.sec;
+  drawRing(1);
+}
+function drawRing(frac){
+  var C = 414.7;
+  document.getElementById('ringFg').style.strokeDashoffset = C * (1 - frac);
+}
+function tick(){
+  if (session.paused) return;
+  session.left--;
+  var s = STEPS[session.idx];
+  document.getElementById('sTime').textContent = fmt(Math.max(0,session.left));
+  drawRing(session.left / s.sec);
+  if (session.left <= 0){
+    beep();
+    next();
+  }
+}
+function next(){
+  if (session.idx < STEPS.length - 1){
+    session.idx++;
+    showStep(session.idx);
+  } else {
+    endSession();
+  }
+}
+function startSession(){
+  session.idx = 0; session.paused = false;
+  document.getElementById('sessionScreen').classList.add('on');
+  document.getElementById('doneScreen').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'none';
+  document.getElementById('steps').scrollIntoView({behavior:'smooth'});
+  showStep(0);
+  clearInterval(session.timer);
+  session.timer = setInterval(tick, 1000);
+}
+function endSession(){
+  clearInterval(session.timer);
+  document.getElementById('sessionScreen').classList.remove('on');
+  document.getElementById('doneScreen').style.display = 'block';
+  document.getElementById('doneScreen').scrollIntoView({behavior:'smooth'});
+  try{ localStorage.setItem('acupractice_last', new Date().toISOString()); }catch(e){}
+}
+function exitSession(){
+  clearInterval(session.timer);
+  session.paused = false;
+  document.getElementById('sessionScreen').classList.remove('on');
+  document.getElementById('doneScreen').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  renderSteps();
+  document.getElementById('startBtn').addEventListener('click', function(e){ e.preventDefault(); startSession(); });
+  document.getElementById('exitBtn').addEventListener('click', exitSession);
+  document.getElementById('againBtn').addEventListener('click', function(e){ e.preventDefault(); startSession(); });
+  document.getElementById('pauseBtn').addEventListener('click', function(){
+    session.paused = !session.paused;
+    this.textContent = session.paused ? '▶ 繼續' : '⏸ 暫停';
+  });
+  document.getElementById('skipBtn').addEventListener('click', next);
+});
+</script>
+</body>
+</html>
