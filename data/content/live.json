@@ -1,0 +1,17 @@
+{
+  "messages": {
+    "praise": {
+      "zh": ["做得好！", "十分棒！", "辛苦了，做得很棒！", "堅持就是力量！", "給自己一個讚！"],
+      "en": ["Well done!", "Great job!", "Beautiful work!", "Keep going, you are strong!", "Give yourself a round of applause!"]
+    },
+    "heroCheckin": {
+      "zh": ["每一步累積，都是照顧自己的開始。", "小小的記錄，見證大大的進步。", "今天的你，也值得被好好記錄。", "持續記錄，讓改變看得見。"],
+      "en": ["Each step you take is the start of caring for yourself.", "Small records show big progress.", "You deserve to be recorded today too.", "Keep logging, so change becomes visible."]
+    }
+  },
+  "photos": {
+    "hegu": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/photos/hegu.jpg",
+    "zusanli": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/photos/zusanli.jpg"
+  },
+  "videos": {}
+}

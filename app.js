@@ -388,13 +388,31 @@
   }
 
   function login(username, password) {
-    return api('/api/login', { method: 'POST', body: { username: username, password: password } })
-      .then(function (d) {
-        var p = getProfile();
-        p.token = d.token; p.name = d.name;
-        saveProfile(p);
-        localStorage.setItem('acup_session', JSON.stringify({ token: d.token, name: d.name }));
-        return d;
+    // permanent: verify against GitHub data/users.json
+    return fetch('https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/users.json')
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (us) {
+        var u = us.find(function (x) { return x.username === username; });
+        if (!u) throw new Error('bad');
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(password + u.salt)).then(function (buf) {
+          var h = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+          if (h !== u.hash) throw new Error('bad');
+          var p = getProfile();
+          p.token = 'github'; p.name = u.name || u.username;
+          saveProfile(p);
+          localStorage.setItem('acup_session', JSON.stringify({ token: 'github', name: p.name }));
+          return { token: 'github', name: p.name };
+        });
+      })
+      .catch(function () {
+        return api('/api/login', { method: 'POST', body: { username: username, password: password } })
+          .then(function (d) {
+            var p = getProfile();
+            p.token = d.token; p.name = d.name;
+            saveProfile(p);
+            localStorage.setItem('acup_session', JSON.stringify({ token: d.token, name: d.name }));
+            return d;
+          });
       });
   }
 
@@ -406,8 +424,18 @@
   }
 
   function fetchContent() {
-    return api('/api/content').then(function (d) { contentCache = d; return d; })
-      .catch(function () { contentCache = null; return null; });
+    // permanent GitHub live.json first, then tunnel backend, then built-in
+    return fetch('https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/content/live.json')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d) { contentCache = d; return d; }
+        return api('/api/content').then(function (d2) { contentCache = d2; return d2; })
+          .catch(function () { contentCache = null; return null; });
+      })
+      .catch(function () {
+        return api('/api/content').then(function (d2) { contentCache = d2; return d2; })
+          .catch(function () { contentCache = null; return null; });
+      });
   }
 
   // praise / hero messages: backend-published list (per language) overrides built-in
@@ -432,8 +460,35 @@
 
   function syncRecords() {
     var s = session();
-    if (!s.token) return Promise.resolve(false);
     var records = loadRecords();
+    // permanent GitHub path (if token configured in config.js)
+    var g = (typeof window.SYNC_GITHUB === 'object') ? window.SYNC_GITHUB : null;
+    if (g && g.token && g.repo) {
+      var path = 'data/records.json';
+      var url = 'https://api.github.com/repos/' + g.repo + '/contents/' + path;
+      var headers = { 'Authorization': 'Bearer ' + g.token, 'Accept': 'application/vnd.github+json' };
+      return fetch(url, { headers: headers, notFound: true }).then(function (r) {
+        return r.status === 404 ? null : r.json();
+      }).then(function (existing) {
+        var merged = {};
+        try { if (existing) merged = JSON.parse(decodeURIComponent(escape(atob(existing.content)))); } catch (e) {}
+        Object.keys(records).forEach(function (k) {
+          if (!merged[k]) merged[k] = {};
+          Object.assign(merged[k], records[k]);
+        });
+        return fetch(url, {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify({
+            message: 'sync records',
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(merged)))),
+            sha: existing ? existing.sha : undefined
+          })
+        }).then(function () { return true; });
+      }).catch(function () { return false; });
+    }
+    // tunnel backend fallback
+    if (!s.token) return Promise.resolve(false);
     return api('/api/sync', { method: 'POST', body: { token: s.token, records: records } })
       .then(function () { return true; })
       .catch(function () { return false; });

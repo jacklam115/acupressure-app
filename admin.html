@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按壓減壓 後台管理 (GitHub)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang TC","Segoe UI",sans-serif;background:#FAF6F7;color:#2A2A2E;padding:20px;max-width:920px;margin:0 auto}
+h1{font-size:22px;margin-bottom:4px;color:#C94F6B}
+h2{font-size:16px;margin:24px 0 10px;padding-left:8px;border-left:4px solid #E8728A}
+.card{background:#fff;border:1px solid #EFE7EA;border-radius:14px;padding:16px;margin-bottom:14px}
+label{font-size:12.5px;font-weight:700;display:block;margin:8px 0 4px}
+input[type=text],input[type=password],textarea{width:100%;border:1.5px solid #EFE7EA;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit}
+textarea{min-height:80px;resize:vertical}
+button{background:#E8728A;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;margin:6px 6px 0 0}
+button.ghost{background:#fff;color:#C94F6B;border:1.5px solid #F3CDD6}
+button.mini{background:#FCE9ED;color:#C94F6B;padding:5px 10px;font-size:11.5px}
+button.danger{background:#C0392B}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th,td{border-bottom:1px dashed #EFE7EA;padding:7px 6px;text-align:left}
+th{color:#909096;font-size:11px}
+.pill{display:inline-block;background:#FCE9ED;color:#C94F6B;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:800}
+.pill.on{background:#4CAF7D;color:#fff}
+.msg{font-size:13px;font-weight:800;color:#4CAF7D;margin-top:8px;display:none}
+.err{font-size:13px;font-weight:800;color:#C0392B;margin-top:8px;display:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>div{flex:1;min-width:200px}
+.upload-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #EFE7EA}
+.upload-item b{width:100px;font-size:12.5px}
+.upload-item input[type=file]{flex:1;font-size:12px}
+.upload-item img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#FBF2F4}
+.upload-item .st{font-size:11px;color:#909096;width:80px}
+.tip{background:#FFF8EC;border:1px solid #F5E3C0;border-radius:10px;padding:10px 12px;font-size:12px;color:#8A6A2F;margin-bottom:10px}
+</style>
+</head>
+<body>
+<h1>🌸 按壓減壓 後台管理（GitHub 版）</h1>
+<p style="font-size:12.5px;color:#909096">永久託管於 GitHub Pages。所有內容、相片、影片、用戶與記錄以檔案形式存入本 repo 的 <b>data/</b>，一按「儲存並發佈」即同步到患者端 App。</p>
+
+<div class="card" id="patCard">
+  <h2 style="margin-top:0">1. 連接 GitHub（一次性）</h2>
+  <div class="tip">
+    <b>建立 Fine-grained PAT（約 2 分鐘）：</b><br>
+    1. GitHub → Settings → Developer settings → <b>Fine-grained personal access tokens</b> → Generate new token<br>
+    2. Repository access：只選 <b>jacklam115/acupressure-app</b><br>
+    3. Permissions → <b>Contents: Read and write</b><br>
+    4. 產生後把 Token 貼到下面（只會儲存在你這部裝置的瀏覽器）<br>
+    <b>注意：</b>Token 有寫入權限，請勿分享給他人。
+  </div>
+  <label>GitHub Personal Access Token</label>
+  <input type="password" id="patInput" placeholder="github_pat_...">
+  <button id="patBtn">連接並驗證</button>
+  <span class="msg" id="patMsg">已連接</span>
+  <span class="err" id="patErr">驗證失敗，請檢查 Token</span>
+  <div class="login-state" id="patState" style="display:none;font-size:13px;font-weight:800;color:#4CAF7D;margin-top:8px"></div>
+</div>
+
+<div id="panel" style="display:none">
+
+  <div class="card">
+    <h2 style="margin-top:0">2. 隨機句子（每行一句）</h2>
+    <div class="row">
+      <div>
+        <label>練習完成鼓勵句 praise（中文）</label>
+        <textarea id="tPraiseZh"></textarea>
+        <label>練習完成鼓勵句 praise（English）</label>
+        <textarea id="tPraiseEn"></textarea>
+      </div>
+      <div>
+        <label>記錄頁鼓勵句 heroCheckin（中文）</label>
+        <textarea id="tHeroZh"></textarea>
+        <label>記錄頁鼓勵句 heroCheckin（English）</label>
+        <textarea id="tHeroEn"></textarea>
+      </div>
+    </div>
+    <button id="pubBtn">💾 儲存並發佈（寫入 live.json + 記入版本）</button>
+    <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
+    <span class="err" id="mErr">儲存失敗</span>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">3. 相片 / 影片上載（存於 data/uploads/）</h2>
+    <p style="font-size:12px;color:#909096;margin-bottom:8px">上載後按「發佈」即同步到 App（教學頁、計時練習、記錄頁都會顯示）。請保持拍攝風格一致。</p>
+    <div id="uploadList"></div>
+    <label>示範影片（教學頁「先看影片」）</label>
+    <div class="upload-item"><b>tutorial 影片</b><input type="file" id="fVideo" accept="video/*"><span class="st" id="stVideo"></span></div>
+    <button id="upVideo">上載影片</button>
+    <button class="ghost" id="pubAfterUpload">發佈目前內容</button>
+    <span class="msg" id="vMsg">已上載（尚未發佈，請按「發佈」）</span>
+    <span class="err" id="vErr">上載失敗</span>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">4. 用戶管理（照顧者帳號）</h2>
+    <div class="row">
+      <div><label>用戶名稱</label><input type="text" id="nUser"></div>
+      <div><label>密碼</label><input type="text" id="nPass"></div>
+      <div><label>顯示名稱</label><input type="text" id="nName"></div>
+    </div>
+    <button id="addUser">建立用戶</button>
+    <span class="err" id="uErr"></span>
+    <table id="userTable"></table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">5. 照顧者記錄</h2>
+    <button id="loadRecords" class="ghost">載入 data/records.json</button>
+    <table id="recTable"></table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">6. 版本歷史</h2>
+    <table id="verTable"></table>
+  </div>
+
+</div>
+
+<script>
+var REPO = 'jacklam115/acupressure-app';
+var TOKEN = null, USER = null;
+var live = null, versions = [];
+function $(id){return document.getElementById(id)}
+
+function gh(path, opt){
+  opt = opt||{};
+  return fetch('https://api.github.com' + path, {
+    method: opt.method || 'GET',
+    headers: { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/vnd.github+json' },
+    body: opt.body ? JSON.stringify(opt.body) : undefined
+  }).then(function(r){
+    if (r.status === 404 && opt.notFound) return null;
+    if (!r.ok) return r.json().then(function(j){ throw new Error(j.message || r.status); });
+    return r.json();
+  });
+}
+function b64(s){ return btoa(unescape(encodeURIComponent(s))); }
+function unb64(s){ return decodeURIComponent(escape(atob(s))); }
+function readJSON(path){
+  return gh('/repos/' + REPO + '/contents/' + path, {notFound:true}).then(function(d){
+    if (!d) return null;
+    try { return JSON.parse(unb64(d.content)); } catch(e){ return null; }
+  });
+}
+function writeJSON(path, data, msg){
+  return gh('/repos/' + REPO + '/contents/' + path, {notFound:true}).then(function(existing){
+    return gh('/repos/' + REPO + '/contents/' + path, {
+      method: 'PUT',
+      body: { message: msg, content: b64(JSON.stringify(data, null, 1)), sha: existing ? existing.sha : undefined }
+    });
+  });
+}
+
+function loadAll(){ loadLive(); loadUsers(); loadVersions(); }
+
+function loadLive(){
+  readJSON('data/content/live.json').then(function(c){
+    live = c || {messages:{praise:{zh:[],en:[]},heroCheckin:{zh:[],en:[]}},photos:{},videos:{}};
+    function fill(id, key, lang){
+      var m = (live.messages||{})[key] || {};
+      $(id).value = (Array.isArray(m) ? m : (m[lang]||[])).join('\n');
+    }
+    fill('tPraiseZh','praise','zh'); fill('tPraiseEn','praise','en');
+    fill('tHeroZh','heroCheckin','zh'); fill('tHeroEn','heroCheckin','en');
+    buildUploads();
+  });
+}
+function currentLive(){
+  function lines(id){ return $(id).value.split('\n').map(function(s){return s.trim()}).filter(Boolean); }
+  return {
+    messages: {
+      praise: { zh: lines('tPraiseZh'), en: lines('tPraiseEn') },
+      heroCheckin: { zh: lines('tHeroZh'), en: lines('tHeroEn') }
+    },
+    photos: (live&&live.photos)||{},
+    videos: (live&&live.videos)||{}
+  };
+}
+function buildUploads(){
+  var slugs = [['baihui','百會 GV20'],['fengchi','風池 GB20'],['hegu','合谷 LI4'],['shenshu','腎俞 UB23'],['zhongwan','中脘 CV12'],['qihai','氣海 CV6'],['guanyuan','關元 CV4'],['zusanli','足三里 ST36'],['yongquan','涌泉 KD1']];
+  var h = '';
+  slugs.forEach(function(s){
+    var url = (live.photos||{})[s[0]];
+    h += '<div class="upload-item"><b>'+s[1]+'</b>'
+      + (url ? '<img src="'+url+'" onerror="this.style.visibility=\'hidden\'">' : '<img style="visibility:hidden">')
+      + '<input type="file" accept="image/*" data-slug="'+s[0]+'">'
+      + '<span class="st">'+(url?'已上載':'未上載')+'</span></div>';
+  });
+  $('uploadList').innerHTML = h;
+  $('uploadList').querySelectorAll('input').forEach(function(inp){
+    inp.addEventListener('change', function(){ uploadFile(inp.getAttribute('data-slug'), inp.files[0]); });
+  });
+}
+function uploadFile(slug, file){
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    var content = reader.result.split(',')[1];
+    var ext = file.name.split('.').pop().toLowerCase();
+    if(!['jpg','jpeg','png','webp','mp4','mov'].includes(ext)) { alert('格式不支援'); return; }
+    var path = 'data/uploads/' + slug + '.' + ext;
+    gh('/repos/' + REPO + '/contents/' + path, {notFound:true}).then(function(existing){
+      return gh('/repos/' + REPO + '/contents/' + path, {
+        method:'PUT', body:{ message:'upload ' + slug, content: content, sha: existing?existing.sha:undefined }
+      });
+    }).then(function(){
+      if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
+      else live.videos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
+      buildUploads();
+      $('vMsg').style.display='block'; setTimeout(function(){$('vMsg').style.display='none';},2500);
+    }).catch(function(){ $('vErr').style.display='block'; });
+  };
+  reader.readAsDataURL(file);
+}
+$('upVideo').onclick = function(){ var f=$('fVideo').files[0]; if(f) uploadFile('tutorial', f); };
+
+function publish(){
+  var c = currentLive();
+  return Promise.all([
+    writeJSON('data/content/live.json', c, 'publish content v' + Date.now()),
+    readJSON('data/content/versions.json').then(function(vs){
+      vs = vs || [];
+      vs.unshift({ id: Date.now(), name: 'v-' + new Date().toISOString().slice(0,16).replace(/[T:]/g,'-'), content: c, published: true, created: new Date().toISOString() });
+      vs = vs.slice(0, 100);
+      return writeJSON('data/content/versions.json', vs, 'add version');
+    })
+  ]);
+}
+$('pubBtn').onclick = function(){
+  publish().then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
+    .catch(function(e){ $('mErr').textContent = '儲存失敗：' + e.message; $('mErr').style.display='block'; });
+};
+$('pubAfterUpload').onclick = function(){ $('pubBtn').click(); };
+
+function loadUsers(){
+  readJSON('data/users.json').then(function(us){
+    us = us || [];
+    var h = '<tr><th>ID</th><th>用戶</th><th>名稱</th><th>操作</th></tr>';
+    us.forEach(function(u){
+      h += '<tr><td>'+u.id+'</td><td>'+u.username+'</td><td>'+u.name+'</td>'
+        + '<td><button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
+    });
+    $('userTable').innerHTML = h;
+  });
+}
+function sha256hex(str){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  });
+}
+$('addUser').onclick = function(){
+  var uname = $('nUser').value.trim(), pw = $('nPass').value, name = $('nName').value.trim();
+  if(!uname || !pw){ $('uErr').textContent = '請填用戶名稱與密碼'; $('uErr').style.display='block'; return; }
+  readJSON('data/users.json').then(function(us){
+    us = us || [];
+    if (us.some(function(u){ return u.username === uname; })) { $('uErr').textContent = '用戶名稱已存在'; $('uErr').style.display='block'; return; }
+    var salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    return sha256hex(pw + salt).then(function(hash){
+      us.push({ id: Date.now(), username: uname, name: name, salt: salt, hash: hash, created: new Date().toISOString() });
+      return writeJSON('data/users.json', us, 'add user ' + uname);
+    }).then(function(){ loadUsers(); $('nUser').value=$('nPass').value=$('nName').value=''; $('uErr').style.display='none'; });
+  });
+};
+function delUser(id){
+  if(!confirm('刪除用戶？')) return;
+  readJSON('data/users.json').then(function(us){
+    us = us || [];
+    us = us.filter(function(u){ return u.id !== id; });
+    return writeJSON('data/users.json', us, 'delete user ' + id);
+  }).then(loadUsers);
+}
+function resetPw(id){
+  var p = prompt('新密碼');
+  if(!p) return;
+  readJSON('data/users.json').then(function(us){
+    var u = us.find(function(x){ return x.id === id; });
+    u.salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    return sha256hex(p + u.salt).then(function(hash){ u.hash = hash; return writeJSON('data/users.json', us, 'reset pw ' + id); });
+  }).then(loadUsers);
+}
+
+$('loadRecords').onclick = function(){
+  readJSON('data/records.json').then(function(rec){
+    rec = rec || {};
+    var h = '<tr><th>用戶</th><th>日期</th><th>心情</th><th>壓力</th><th>穴位</th><th>不適</th></tr>';
+    Object.keys(rec).forEach(function(user){
+      Object.keys(rec[user]).forEach(function(day){
+        var d = rec[user][day] || {};
+        var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
+        var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||d.mood : '';
+        var score = d.score!==undefined && d.score!==null ? d.score+'/16' : '';
+        h += '<tr><td>'+user+'</td><td>'+day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/9</td><td>'+(d.adverse||'')+'</td></tr>';
+      });
+    });
+    $('recTable').innerHTML = h;
+  });
+};
+
+function loadVersions(){
+  readJSON('data/content/versions.json').then(function(vs){
+    vs = vs || [];
+    var h = '<tr><th>名稱</th><th>建立</th><th>操作</th></tr>';
+    vs.slice(0,20).forEach(function(v){
+      h += '<tr><td>'+v.name+'</td><td>'+(v.created||'').slice(0,16)+'</td>'
+        + '<td><button class="mini" onclick="publishVersion('+v.id+')">回復到此版本</button></td></tr>';
+    });
+    $('verTable').innerHTML = h;
+  });
+}
+function publishVersion(id){
+  readJSON('data/content/versions.json').then(function(vs){
+    var v = vs.find(function(x){ return x.id === id; });
+    if(!v) return;
+    return writeJSON('data/content/live.json', v.content, 'restore version ' + id);
+  }).then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadLive(); });
+}
+
+$('patBtn').onclick = function(){
+  TOKEN = $('patInput').value.trim();
+  if(!TOKEN) return;
+  gh('/user').then(function(u){
+    USER = u.login;
+    localStorage.setItem('acup_pat', TOKEN);
+    localStorage.setItem('acup_pat_user', USER);
+    $('patCard').style.display = 'none';
+    $('panel').style.display = 'block';
+    $('patState').textContent = '已連接：' + USER + '（Token 只儲存在本機瀏覽器）';
+    $('patState').style.display = 'block';
+    loadAll();
+  }).catch(function(){ $('patErr').style.display='block'; });
+};
+if (localStorage.getItem('acup_pat')) {
+  TOKEN = localStorage.getItem('acup_pat');
+  gh('/user').then(function(u){
+    USER = u.login;
+    $('patCard').style.display = 'none';
+    $('panel').style.display = 'block';
+    $('patState').textContent = '已連接：' + USER;
+    $('patState').style.display = 'block';
+    loadAll();
+  }).catch(function(){ localStorage.removeItem('acup_pat'); });
+}
+</script>
+</body>
+</html>
