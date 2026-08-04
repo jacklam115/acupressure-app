@@ -3,83 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>按壓減壓・照顧者自我穴位按壓計劃</title>
+<title>照顧者自我穴位按壓計劃</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body data-page="home">
 <div class="app">
 
   <header class="topbar">
-    <div class="brand"><span class="logo">🌸</span>按壓減壓<small>自我穴位按壓・照顧者減壓計劃</small></div>
-    <span class="pill">研究版</span>
+    <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
+    <span class="pill" data-i18n="version">v0.1</span>
   </header>
 
   <main class="page">
 
-    <div class="card hero">
-      <div class="kicker">科研實證・照顧者適用</div>
-      <h1>照顧者減壓<br>自我穴位按壓計劃</h1>
-      <p>每日 15 分鐘，喺屋企自己跟住做，舒緩照顧壓力同疲勞。方案跟隨香港大學實證研究（Tiwari 2016 方案），研究證實能顯著減輕照顧者壓力。</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="tutorial.html">開始今日練習</a>
-        <a class="btn btn-ghost" href="checkin.html">每日記錄</a>
+    <!-- Pikmin Bloom style calendar -->
+    <div class="hero" style="padding:14px 12px;">
+      <div class="cal-wrap" style="border:none;box-shadow:none;margin-bottom:0;background:transparent;">
+        <div class="cal-head">
+          <button class="cal-nav" id="prevMonth">‹</button>
+          <div class="cal-title" id="calTitle"></div>
+          <button class="cal-nav" id="nextMonth">›</button>
+        </div>
+        <div class="cal-grid" id="calDow"></div>
+        <div class="cal-grid" id="calGrid"></div>
+        <p class="sub" style="text-align:center;margin-top:10px;" data-i18n="tapDayHint">點擊日期查看當日記錄</p>
       </div>
     </div>
 
-    <h2 class="sect"><span class="bar"></span>點樣運作</h2>
-    <div class="card">
-      <div class="step"><div class="num">1</div><div><b>跟住教學做</b><span>「教學」頁有 8 個穴位步驟，撳「開始計時練習」會一步步帶住你做</span></div></div>
-      <div class="step"><div class="num">2</div><div><b>每日 2 次・每次 15 分鐘</b><span>飯後至少 1 小時先做；力度以「痠脹但唔痛」為準</span></div></div>
-      <div class="step"><div class="num">3</div><div><b>每日 1 分鐘記錄</b><span>答 4 條壓力問題＋剔返做咗邊幾個穴位，睇住自己嘅變化</span></div></div>
-    </div>
-
-    <h2 class="sect"><span class="bar"></span>8 個穴位・由頭到腳</h2>
-    <div class="card">
-      <div class="chips">
-        <a class="chip" href="tutorial.html">百會 GV20</a>
-        <a class="chip" href="tutorial.html">風池 GB20</a>
-        <a class="chip" href="tutorial.html">合谷 LI4</a>
-        <a class="chip" href="tutorial.html">腎俞 UB23</a>
-        <a class="chip" href="tutorial.html">中脘 CV12</a>
-        <a class="chip" href="tutorial.html">氣海・關元 CV6/CV4</a>
-        <a class="chip" href="tutorial.html">足三里 ST36</a>
-        <a class="chip" href="tutorial.html">涌泉 KD1</a>
+    <!-- 8-week progress -->
+    <h2 class="sect"><span class="bar"></span><span data-i18n="weekPlan">8 週計劃進度</span></h2>
+    <div class="week-progress">
+      <div class="wp-head">
+        <b data-i18n="weekPlan">8 週計劃進度</b>
+        <span id="wpLabel"></span>
       </div>
-      <p class="sub" style="margin-top:12px;">每個穴位都有位置圖、功效同做法示範</p>
-    </div>
-
-    <h2 class="sect"><span class="bar"></span>實證有效</h2>
-    <div class="card">
-      <div class="ev"><div class="ico">📉</div><div><b>壓力顯著下降</b><span>RCT（n=207）：8 週後照顧者壓力顯著降低（P=.002），12 週跟進仍有效</span></div></div>
-      <div class="ev"><div class="ico">😴</div><div><b>睡眠同情緒改善</b><span>失眠、疲勞、抑鬱症狀均顯著改善（Cheung et al., 2020）</span></div></div>
-      <div class="ev"><div class="ico">🏠</div><div><b>屋企自己做都得</b><span>學識之後完全自我練習，唔使儀器、唔使出門</span></div></div>
-      <div style="margin-top:12px;text-align:center;">
-        <a class="chip" href="research.html">睇研究資料</a>
-      </div>
-    </div>
-
-    <h2 class="sect"><span class="bar"></span>8 週計劃一覽</h2>
-    <div class="card">
-      <div class="week"><div class="tag">第1–2週<small>訓練期</small></div><div><b>學識穴位</b><span>4 次訓練，認識 8 個穴位位置同手法</span></div></div>
-      <div class="week"><div class="tag">第3–4週<small>鞏固期</small></div><div><b>跟進練習</b><span>家訪跟進＋開始每日自我練習</span></div></div>
-      <div class="week"><div class="tag">第3–8週<small>每日練習</small></div><div><b>每日 15 分鐘 × 2 次</b><span>用 App 計時練習，每日記錄打卡</span></div></div>
-      <div class="week"><div class="tag">每週<small>跟進</small></div><div><b>研究團隊跟進</b><span>電話提醒＋按壓日記，睇住依從性</span></div></div>
-    </div>
-
-    <div class="card notice">
-      <p>⚠️ 此為研究概念試版，並非醫療建議。懷孕或計劃懷孕人士請勿按壓相關穴位；如有疑問請諮詢醫護專業人員。穴位按壓屬輔助自我照護方法，唔可以取代正規醫療。</p>
+      <div class="wp-bar" id="wpBar"></div>
     </div>
 
   </main>
 
+  <!-- day detail modal -->
+  <div class="modal-mask" id="dayModal">
+    <div class="modal">
+      <button class="m-close" id="modalClose">✕</button>
+      <h3 id="modalTitle" data-i18n="dayDetail">當日記錄</h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span>首頁</a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span>教學</a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span>記錄</a>
-    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span>研究</a>
+    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span><span data-i18n="tabResearch">研究</span></a>
   </nav>
 
 </div>
 <script src="app.js"></script>
+<script>
+var DOW = { zh: ['日','一','二','三','四','五','六'], en: ['Su','Mo','Tu','We','Th','Fr','Sa'] };
+var MONTHS = { zh: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+               en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] };
+var MOODS = { happy: '😄', okay: '😐', sad: '☹️' };
+var viewY, viewM;
+
+function monthTitle() {
+  var d = APP.lang === 'en' ? 'en' : 'zh';
+  return MONTHS[d][viewM] + ' ' + viewY;
+}
+
+function moodOf(rec) {
+  if (!rec || !rec.mood) return null;
+  return MOODS[rec.mood] || null;
+}
+
+function daySessions(rec) {
+  if (!rec) return 0;
+  return (rec.acup && rec.acup.filter(function (s) { return s && s.length > 0; }).length) || 0;
+}
+
+function renderCalendar() {
+  var now = APP.hkNow();
+  var todayKey = APP.hkDayKey(now);
+  var records = APP.loadRecords();
+  var grid = document.getElementById('calGrid');
+  var dow = document.getElementById('calDow');
+  var l = APP.lang;
+  dow.innerHTML = DOW[l].map(function (d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
+  document.getElementById('calTitle').textContent = monthTitle();
+
+  var first = new Date(viewY, viewM, 1);
+  var startDow = first.getDay();
+  var daysInMonth = new Date(viewY, viewM + 1, 0).getDate();
+  var h = '';
+  for (var i = 0; i < startDow; i++) h += '<div class="cal-day empty"></div>';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var key = viewY + '-' + String(viewM + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var rec = records[key];
+    var mood = moodOf(rec);
+    var isToday = key === todayKey;
+    var has = !!rec;
+    h += '<div class="cal-day' + (isToday ? ' today' : '') + (has ? ' done' : '') + '" data-key="' + key + '">'
+       + (mood ? '<span class="mood-emoji">' + mood + '</span>' : '<span class="day-num">' + d + '</span>')
+       + (mood ? '<span class="day-num">' + d + '</span>' : '')
+       + '</div>';
+  }
+  grid.innerHTML = h;
+  grid.querySelectorAll('.cal-day[data-key]').forEach(function (el) {
+    el.addEventListener('click', function () { openDay(el.getAttribute('data-key')); });
+  });
+  renderWeekProgress(records);
+}
+
+function renderWeekProgress(records) {
+  var bar = document.getElementById('wpBar');
+  var label = document.getElementById('wpLabel');
+  var keys = Object.keys(records).sort();
+  if (!keys.length) {
+    bar.innerHTML = '';
+    for (var i = 0; i < 8; i++) bar.innerHTML += '<div class="wp-seg"><i></i></div>';
+    label.textContent = APP.fmt(APP.t('weeksDone'), { n: 0 });
+    return;
+  }
+  var firstKey = keys[0];
+  var base = new Date(firstKey.slice(0, 4), parseInt(firstKey.slice(5, 7), 10) - 1, parseInt(firstKey.slice(8, 10), 10));
+  var weekDone = [0, 0, 0, 0, 0, 0, 0, 0];
+  keys.forEach(function (k) {
+    var rec = records[k];
+    if (!rec || !rec.acup || !rec.acup.some(function (s) { return s && s.length; })) return;
+    var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
+    var w = Math.floor((dt - base) / 86400000 / 7);
+    if (w >= 0 && w < 8) weekDone[w] = 1;
+  });
+  var filled = weekDone.reduce(function (a, b) { return a + b; }, 0);
+  bar.innerHTML = '';
+  for (var i = 0; i < 8; i++) {
+    bar.innerHTML += '<div class="wp-seg' + (weekDone[i] ? ' filled' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
+  }
+  label.textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
+}
+
+function openDay(key) {
+  var records = APP.loadRecords();
+  var rec = records[key];
+  var l = APP.lang;
+  var body = document.getElementById('modalBody');
+  var d = new Date(key.slice(0, 4), parseInt(key.slice(5, 7), 10) - 1, parseInt(key.slice(8, 10), 10));
+  var title = MONTHS[l][d.getMonth()] + ' ' + d.getDate();
+  document.getElementById('modalTitle').textContent = title;
+  if (!rec) {
+    body.innerHTML = '<div class="m-row"><span class="k">' + APP.t('noRecord') + '</span></div>';
+  } else {
+    var mood = moodOf(rec);
+    var sessions = daySessions(rec);
+    var pts = 0;
+    if (rec.acup) rec.acup.forEach(function (s) { if (s) pts += s.length; });
+    var stressTxt = rec.score !== null && rec.score !== undefined ? rec.score + ' / 16' : (rec.slider !== null && rec.slider !== undefined ? rec.slider + ' / 10' : '—');
+    body.innerHTML =
+      '<div class="m-row"><span class="k">' + APP.t('moodLabel') + '</span><span class="v">' + (mood || '—') + '</span></div>' +
+      '<div class="m-row"><span class="k">' + APP.t('stressLabel') + '</span><span class="v">' + stressTxt + '</span></div>' +
+      '<div class="m-row"><span class="k">' + APP.t('acupointLabel') + '</span><span class="v">' + pts + ' / 9</span></div>' +
+      '<div class="m-row"><span class="k">' + APP.t('complianceLabel') + '</span><span class="v">' + sessions + ' ' + APP.t('complianceUnit') + '</span></div>';
+  }
+  document.getElementById('dayModal').classList.add('on');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var now = APP.hkNow();
+  viewY = now.getFullYear(); viewM = now.getMonth();
+  renderCalendar();
+  document.getElementById('prevMonth').addEventListener('click', function () { viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCalendar(); });
+  document.getElementById('nextMonth').addEventListener('click', function () { viewM++; if (viewM > 11) { viewM = 0; viewY++; } renderCalendar(); });
+  document.getElementById('modalClose').addEventListener('click', function () { document.getElementById('dayModal').classList.remove('on'); });
+  document.getElementById('dayModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
+  window.pageI18n = function () { renderCalendar(); };
+});
+</script>
 </body>
 </html>

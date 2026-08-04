@@ -1,6 +1,329 @@
-document.addEventListener('DOMContentLoaded', function(){
-  var page = document.body.getAttribute('data-page');
-  document.querySelectorAll('.tab').forEach(function(t){
-    if (t.getAttribute('data-tab') === page) t.classList.add('on');
+/* ============================================================
+   按壓減壓 照顧者自我穴位按壓計劃 — shared app logic
+   i18n (書面中文 / English), profile, HK-time records, UI helpers
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- 書面中文 / English dictionary ---------- */
+  var ZH = {
+    appTitle: '照顧者自我穴位按壓計劃',
+    appTitleEn: 'Caregiver Self-Acupressure Program',
+    version: 'v0.1',
+    langSwitch: 'EN',
+    tabHome: '首頁', tabTutorial: '教學', tabCheckin: '記錄', tabResearch: '研究',
+    // home
+    homeGreet: '歡迎回來',
+    today: '今日',
+    monthlyPlan: '本月記錄',
+    weekPlan: '8 週計劃進度',
+    weekLabel: '第 {n} 週',
+    weeksDone: '已完成 {n} / 8 週',
+    tapDayHint: '點擊日期查看當日記錄',
+    noRecord: '尚無記錄',
+    dayDetail: '當日記錄',
+    moodLabel: '心情', stressLabel: '壓力分數', acupointLabel: '穴位完成',
+    complianceLabel: '按壓次數', complianceUnit: '次 / 每日 2 次',
+    sessionDone: '已完成',
+    sessionNone: '未完成',
+    // tutorial
+    heroTutorial: '每一次練習，都是給自己的禮物。',
+    heroTutorialSub: '每日兩次、每次 15 分鐘，跟自己好好相處。',
+    statPoints: '個穴位',
+    statTimes: '每日 2 次',
+    statMinutes: '每次 15 分鐘',
+    keyPoints: '練習要點',
+    kpForce: '力度', kpForceTxt: '以「痠、脹、麻」為準，不應感到痛',
+    kpTime: '時間', kpTimeTxt: '每穴依計時練習進行；每日 1–2 次',
+    kpBreath: '呼吸', kpBreathTxt: '全程緩慢深呼吸，放鬆肩膀',
+    kpMind: '心態', kpMindTxt: '專注當下，不著急、不勉強',
+    startBtn: '開始計時練習',
+    watchBtn: '先看影片',
+    stepsTitle: '9 個步驟（由頭到腳）',
+    practiceTips: '練習提示',
+    location: '位置',
+    method: '做法',
+    frequency: '頻率',
+    stepOf: '第 {n} / 9 步',
+    stepLabel: 'STEP {n}',
+    prepTitle: '練習要點',
+    prepSub: '準備開始',
+    prepGo: '開始',
+    pauseBtn: '暫停', resumeBtn: '繼續', skipBtn: '跳過', leaveBtn: '離開',
+    volLabel: '音樂音量',
+    finish: '完成',
+    finishMsg: '今日練習完成！',
+    praise: ['做得好！', '十分棒！', '辛苦了，做得很棒！', '堅持就是力量！', '給自己一個讚！'],
+    recordRemind: '別忘了到「記錄」頁面打個卡',
+    videoSoon: '示範影片準備中，稍後上載',
+    videoHint: '影片將展示每個穴位的準確位置與按壓手法',
+    // checkin
+    heroCheckin: ['每一步累積，都是照顧自己的開始。', '小小的記錄，見證大大的進步。', '今天的你，也值得被好好記錄。', '持續記錄，讓改變看得見。'],
+    heroCheckinSub: '每一次練習與記錄，都是旅程中重要的一步。',
+    acupressureRecord: '今日按壓記錄',
+    acupressureRecordSub: '每日可按壓兩次（如上午、晚上），完成後逐項勾選',
+    sessionMorning: '第一次',
+    sessionEvening: '第二次',
+    moodTitle: '今日心情',
+    moodSub: '睡前（完成第二次按壓後）填寫',
+    moodHappy: '開心', moodOkay: '一般', moodSad: '低落',
+    stressTitle: '今日壓力記錄',
+    stressSub: '睡前填寫一次，回顧今天的感受',
+    stressQ: '今天，你覺得……',
+    pssOpts: ['從未', '間中', '有時', '經常', '總是'],
+    stressSlider: '今日整體壓力',
+    slider0: '完全放鬆', slider10: '壓力最大',
+    saveBtn: '儲存今日記錄',
+    savedMsg: '已儲存，辛苦了！',
+    fillAll: '請先完成所有項目，才能儲存。',
+    doneToday: '今日已完成，明日 4:00 後可再記錄',
+    doneAcup: '今日兩次按壓已完成',
+    saveAcupBtn: '儲存按壓記錄',
+    saveNightBtn: '儲存睡前記錄',
+    // research
+    heroResearch: '關於本研究',
+    researchIntro: '本計劃將自我穴位按壓方案融入智能手機應用程式，讓照顧者可以隨時隨地自行練習。',
+    evidence: '實證結果',
+    evidence1: '隨機對照試驗顯示，自我穴位按壓能顯著減輕照顧者壓力',
+    evidence2: '失眠、疲勞、抑鬱症狀均有顯著改善',
+    evidence3: '照顧者可以在家中自行練習，毋須儀器',
+    protocol: '方案內容',
+    protocol1: '9 個穴位：百會、風池、合谷、腎俞、中脘、氣海、關元、足三里、涌泉',
+    protocol2: '每日 2 次，每次約 15 分鐘，飯後至少 1 小時才開始',
+    protocol3: '力度以「痠、脹、麻」為準，不應感到痛',
+    delivery: '傳遞方式',
+    delivery1: '應用程式內建計時練習、示範圖片與影片',
+    delivery2: '自動記錄練習時間與穴位完成情況',
+    delivery3: '每日提醒，協助養成習慣',
+    notes: '注意事項',
+    notesTxt: '懷孕或計劃懷孕人士請勿按壓相關穴位。皮膚破損、感染或靜脈曲張位置請勿按壓。太飢餓或太飽時避免按壓。如出現劇痛或暈眩，請立即停止。此為研究項目之自我照護方法，不能取代正規醫療。',
+    disclaimer: '此為研究項目之概念試版，內容會按研究方案及督導意見調整。',
+    references: '參考文獻'
+  };
+
+  var EN = {
+    appTitle: 'Caregiver Self-Acupressure Program',
+    appTitleEn: '照顧者自我穴位按壓計劃',
+    version: 'v0.1',
+    langSwitch: '中',
+    tabHome: 'Home', tabTutorial: 'Guide', tabCheckin: 'Log', tabResearch: 'Study',
+    // home
+    homeGreet: 'Welcome back',
+    today: 'Today',
+    monthlyPlan: 'Monthly record',
+    weekPlan: '8-week progress',
+    weekLabel: 'Week {n}',
+    weeksDone: '{n} / 8 weeks done',
+    tapDayHint: 'Tap a day to view its record',
+    noRecord: 'No record',
+    dayDetail: 'Day record',
+    moodLabel: 'Mood', stressLabel: 'Stress score', acupointLabel: 'Acupoints',
+    complianceLabel: 'Sessions', complianceUnit: '/ 2 per day',
+    sessionDone: 'Done',
+    sessionNone: 'Not done',
+    // tutorial
+    heroTutorial: 'Every practice is a gift to yourself.',
+    heroTutorialSub: 'Twice a day, 15 minutes each time, time with yourself.',
+    statPoints: 'acupoints',
+    statTimes: 'twice daily',
+    statMinutes: '15 min each',
+    keyPoints: 'Key points',
+    kpForce: 'Pressure', kpForceTxt: 'Sore, swollen, numb — but never painful',
+    kpTime: 'Time', kpTimeTxt: 'Follow the guided timer; 1–2 sessions a day',
+    kpBreath: 'Breath', kpBreathTxt: 'Breathe slowly and deeply, relax your shoulders',
+    kpMind: 'Mind', kpMindTxt: 'Stay with the present moment; no rush, no force',
+    startBtn: 'Start guided session',
+    watchBtn: 'Watch video',
+    stepsTitle: '9 steps (head to toe)',
+    practiceTips: 'Practice tips',
+    location: 'Location',
+    method: 'Method',
+    frequency: 'Frequency',
+    stepOf: 'Step {n} / 9',
+    stepLabel: 'STEP {n}',
+    prepTitle: 'Key points',
+    prepSub: 'Get ready',
+    prepGo: 'Begin',
+    pauseBtn: 'Pause', resumeBtn: 'Resume', skipBtn: 'Skip', leaveBtn: 'Leave',
+    volLabel: 'Music volume',
+    finish: 'Done',
+    finishMsg: 'Session complete!',
+    praise: ['Well done!', 'Great job!', 'Beautiful work!', 'Keep going, you are strong!', 'Give yourself a round of applause!'],
+    recordRemind: 'Remember to log it on the Log page',
+    videoSoon: 'Demo video coming soon',
+    videoHint: 'The video will show the exact location and technique of each acupoint',
+    // checkin
+    heroCheckin: ['Each step you take is the start of caring for yourself.', 'Small records show big progress.', 'You deserve to be recorded today too.', 'Keep logging, so change becomes visible.'],
+    heroCheckinSub: 'Every practice and record is an important step of the journey.',
+    acupressureRecord: 'Today\u2019s acupressure record',
+    acupressureRecordSub: 'Practice up to twice a day (e.g. morning and evening); tick each acupoint done',
+    sessionMorning: 'Session 1',
+    sessionEvening: 'Session 2',
+    moodTitle: 'How do you feel today',
+    moodSub: 'Fill in before sleep (after the second session)',
+    moodHappy: 'Happy', moodOkay: 'Okay', moodSad: 'Low',
+    stressTitle: 'Today\u2019s stress record',
+    stressSub: 'Fill in once before sleep, review your day',
+    stressQ: 'Today, do you feel...',
+    pssOpts: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
+    stressSlider: 'Overall stress today',
+    slider0: 'Relaxed', slider10: 'Maximum stress',
+    saveBtn: 'Save today\u2019s record',
+    savedMsg: 'Saved. Well done!',
+    fillAll: 'Please complete every item before saving.',
+    doneToday: 'Completed today. You can record again after 4:00 am.',
+    doneAcup: 'Both sessions done today',
+    saveAcupBtn: 'Save practice record',
+    saveNightBtn: 'Save evening record',
+    // research
+    heroResearch: 'About this study',
+    researchIntro: 'This project turns a self-administered acupressure protocol into a smartphone app, so caregivers can practice anytime at home.',
+    evidence: 'Evidence',
+    evidence1: 'A randomized controlled trial showed self-administered acupressure significantly reduces caregiver stress',
+    evidence2: 'Insomnia, fatigue, and depressive symptoms also improved significantly',
+    evidence3: 'Caregivers can practice at home without any device',
+    protocol: 'The protocol',
+    protocol1: '9 acupoints: Baihui, Fengchi, Hegu, Shenshu, Zhongwan, Qihai, Guanyuan, Zusanli, Yongquan',
+    protocol2: 'Twice a day, about 15 minutes each; start at least 1 hour after a meal',
+    protocol3: 'Pressure should feel sore, swollen, or numb — never painful',
+    delivery: 'How it is delivered',
+    delivery1: 'Guided timer, illustrations, and videos built into the app',
+    delivery2: 'Practice time and acupoint completion are logged automatically',
+    delivery3: 'Daily reminders help build the habit',
+    notes: 'Precautions',
+    notesTxt: 'Do not press these acupoints if you are pregnant or planning pregnancy. Do not press on broken skin, infected areas, or varicose veins. Avoid practice when very hungry or very full. Stop immediately if you feel severe pain or dizziness. This is a self-care method for a research project and cannot replace medical care.',
+    disclaimer: 'This is a concept version for a research project; content will be adjusted with the study protocol and supervisor input.',
+    references: 'References'
+  };
+
+  var LANG = { zh: ZH, en: EN };
+  var lang = 'zh';
+
+  /* ---------- profile ---------- */
+  function getProfile() {
+    var p = null;
+    try { p = JSON.parse(localStorage.getItem('acup_profile')); } catch (e) {}
+    if (!p || !p.id) {
+      p = { id: 'U' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), lang: 'zh', created: new Date().toISOString() };
+      try { localStorage.setItem('acup_profile', JSON.stringify(p)); } catch (e) {}
+    }
+    return p;
+  }
+  function saveProfile(p) { try { localStorage.setItem('acup_profile', JSON.stringify(p)); } catch (e) {} }
+
+  /* ---------- HK time helpers (day boundary 04:00 HKT) ---------- */
+  function hkNow() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Hong_Kong' }));
+  }
+  function hkDayKey(d) {
+    d = d || hkNow();
+    var y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + dd;
+  }
+  // key of the current "record day" (shift back if before 04:00 HKT)
+  function recordDayKey() {
+    var now = hkNow();
+    var h = now.getHours();
+    if (h < 4) {
+      now = new Date(now.getTime() - 86400000);
+    }
+    return hkDayKey(now);
+  }
+
+  /* ---------- records ---------- */
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem('acup_records')) || {}; } catch (e) { return {}; }
+  }
+  function saveRecords(r) { try { localStorage.setItem('acup_records', JSON.stringify(r)); } catch (e) {} }
+  function getToday() {
+    var r = loadRecords();
+    return r[recordDayKey()] || { acup: [[], []], mood: null, pss: {}, slider: null, score: null, ts: null };
+  }
+  function setToday(patch) {
+    var r = loadRecords();
+    var k = recordDayKey();
+    r[k] = Object.assign(getToday(), patch, { ts: new Date().toISOString() });
+    saveRecords(r);
+  }
+
+  /* ---------- i18n helpers ---------- */
+  function t(key) {
+    var d = LANG[lang];
+    return d && d[key] !== undefined ? d[key] : ZH[key] !== undefined ? ZH[key] : key;
+  }
+  function fmt(s, map) {
+    return s.replace(/\{(\w+)\}/g, function (m, k) { return map[k] !== undefined ? map[k] : m; });
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function applyI18n(root) {
+    (root || document).querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      var v = t(k);
+      if (v !== undefined && v !== null) el.textContent = v;
+    });
+    (root || document).querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-html');
+      el.innerHTML = t(k);
+    });
+    (root || document).querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-ph');
+      el.setAttribute('placeholder', t(k));
+    });
+  }
+
+  function setLang(l) {
+    lang = (l === 'en') ? 'en' : 'zh';
+    APP.lang = lang;
+    var p = getProfile(); p.lang = lang; saveProfile(p);
+    localStorage.setItem('acup_lang', lang);
+    document.documentElement.lang = (lang === 'en') ? 'en' : 'zh-Hant';
+    var btn = document.getElementById('langBtn');
+    if (btn) btn.textContent = t('langSwitch');
+    if (window.pageI18n) window.pageI18n();   // page-specific re-render
+    applyI18n(document);
+  }
+
+  /* ---------- language button + tabbar ---------- */
+  function initTopbar() {
+    var topbar = document.querySelector('.topbar');
+    if (!topbar) return;
+    var langBtn = document.createElement('button');
+    langBtn.id = 'langBtn';
+    langBtn.className = 'lang-btn';
+    langBtn.setAttribute('aria-label', 'language');
+    langBtn.textContent = t('langSwitch');
+    var pill = topbar.querySelector('.pill');
+    topbar.insertBefore(langBtn, pill ? pill.nextSibling : null);
+    langBtn.addEventListener('click', function () {
+      setLang(lang === 'zh' ? 'en' : 'zh');
+    });
+  }
+
+  function initTabs() {
+    var page = document.body.getAttribute('data-page');
+    document.querySelectorAll('.tab').forEach(function (t) {
+      if (t.getAttribute('data-tab') === page) t.classList.add('on');
+    });
+  }
+
+  /* ---------- init ---------- */
+  document.addEventListener('DOMContentLoaded', function () {
+    try { lang = localStorage.getItem('acup_lang') === 'en' ? 'en' : 'zh'; } catch (e) {}
+    var p = getProfile(); if (p.lang) lang = p.lang;
+    document.documentElement.lang = (lang === 'en') ? 'en' : 'zh-Hant';
+    initTopbar();
+    initTabs();
+    applyI18n(document);
+    if (window.pageInit) window.pageInit();
   });
-});
+
+  window.APP = {
+    t: t, fmt: fmt, pick: pick, lang: lang,
+    getProfile: getProfile, saveProfile: saveProfile,
+    hkNow: hkNow, hkDayKey: hkDayKey, recordDayKey: recordDayKey,
+    loadRecords: loadRecords, saveRecords: saveRecords,
+    getToday: getToday, setToday: setToday,
+    setLang: setLang, applyI18n: applyI18n
+  };
+})();
