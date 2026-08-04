@@ -410,12 +410,16 @@
       .catch(function () { contentCache = null; return null; });
   }
 
-  // praise / hero messages: backend-published list overrides built-in
+  // praise / hero messages: backend-published list (per language) overrides built-in
   function pickMsg(key) {
-    if (contentCache && contentCache.messages && contentCache.messages[key] && contentCache.messages[key].length) {
-      return pick(contentCache.messages[key]);
+    var src = null;
+    if (contentCache && contentCache.messages && contentCache.messages[key]) {
+      var m = contentCache.messages[key];
+      if (Array.isArray(m)) src = m;                 // legacy flat list
+      else if (m[lang] && m[lang].length) src = m[lang];
     }
-    return pick(t(key));
+    if (!src || !src.length) src = t(key);
+    return pick(src);
   }
 
   // photo URL: backend upload wins, else local photos/<slug>.jpg
