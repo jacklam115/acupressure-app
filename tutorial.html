@@ -11,16 +11,15 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.1</span>
+    <span class="pill" data-i18n="version">v0.2</span>
   </header>
 
   <main class="page">
 
-    <!-- Hero: encouraging, stats prominent -->
     <div class="hero">
       <div class="kicker" data-i18n="heroTutorial">每一次練習，都是給自己的禮物。</div>
       <h1 data-i18n="heroTutorialSub">每日兩次、每次 15 分鐘，跟自己好好相處。</h1>
-      <div class="stats" style="margin-top:14px;">
+      <div class="stats" style="margin-top:12px;">
         <div class="stat-box"><div class="v">9</div><div class="l" data-i18n="statPoints">個穴位</div></div>
         <div class="stat-box"><div class="v">2</div><div class="l" data-i18n="statTimes">每日 2 次</div></div>
         <div class="stat-box"><div class="v">15</div><div class="l" data-i18n="statMinutes">每次 15 分鐘</div></div>
@@ -31,22 +30,18 @@
       </div>
     </div>
 
-    <!-- Key points on top, prominent -->
     <h2 class="sect"><span class="bar"></span><span data-i18n="keyPoints">練習要點</span></h2>
     <div class="kp-grid">
       <div class="kp-card"><div class="ico">💪</div><b data-i18n="kpForce">力度</b><span data-i18n="kpForceTxt">以「痠、脹、麻」為準，不應感到痛</span></div>
-      <div class="kp-card"><div class="ico">⏱</div><b data-i18n="kpTime">時間</b><span data-i18n="kpTimeTxt">依計時練習進行；每日 1–2 次</span></div>
       <div class="kp-card"><div class="ico">🌬</div><b data-i18n="kpBreath">呼吸</b><span data-i18n="kpBreathTxt">全程緩慢深呼吸，放鬆肩膀</span></div>
       <div class="kp-card"><div class="ico">🧘</div><b data-i18n="kpMind">心態</b><span data-i18n="kpMindTxt">專注當下，不著急、不勉強</span></div>
     </div>
 
-    <!-- Steps -->
     <h2 class="sect"><span class="bar"></span><span data-i18n="stepsTitle">9 個步驟（由頭到腳）</span></h2>
     <div id="stepList"></div>
 
   </main>
 
-  <!-- Full-screen session -->
   <div class="session-overlay" id="sessionOverlay">
     <div class="so-top">
       <span class="so-step" id="soStep">STEP 1 / 9</span>
@@ -54,25 +49,25 @@
     </div>
 
     <div class="so-point">
+      <div class="so-photo" id="soPhoto"></div>
       <div class="watch-ring">
-        <svg width="250" height="250" viewBox="0 0 250 250">
-          <circle class="ring-bg" cx="125" cy="125" r="110"/>
-          <circle class="ring-fg" id="ringFg" cx="125" cy="125" r="110" stroke-dasharray="691.2" stroke-dashoffset="0"/>
+        <svg width="210" height="210" viewBox="0 0 210 210">
+          <circle class="ring-bg" cx="105" cy="105" r="92"/>
+          <circle class="ring-fg" id="ringFg" cx="105" cy="105" r="92" stroke-dasharray="578.1" stroke-dashoffset="0"/>
         </svg>
         <div class="ring-txt">
-          <span class="t" id="ringTime">01:00</span>
+          <span class="t" id="ringTime">00:10</span>
           <span class="s" id="ringFreq"></span>
         </div>
-        <!-- prep card overlays the ring -->
         <div class="prep-card" id="prepCard" style="display:none;">
-          <div class="t" id="prepTitle">練習要點</div>
-          <div class="s" id="prepStep"></div>
+          <div class="t" data-i18n="prepKpTitle">練習要點</div>
+          <div class="kp"><span data-i18n="kpForce">力度</span>・<span data-i18n="kpBreath">呼吸</span>・<span data-i18n="kpMind">心態</span></div>
           <div class="n" id="prepCount">10</div>
         </div>
       </div>
-      <div class="so-point-name" id="soName" style="font-size:26px;font-weight:800;margin-top:6px;"></div>
-      <div class="so-point-en" id="soEn" style="font-size:13px;color:var(--accent-deep);font-weight:700;"></div>
-      <div class="how" id="soHow" style="font-size:13px;color:#7A5A63;margin-top:6px;max-width:340px;margin-left:auto;margin-right:auto;"></div>
+      <div class="so-point-name" id="soName" style="font-size:24px;font-weight:800;margin-top:4px;"></div>
+      <div class="so-point-en" id="soEn" style="font-size:12px;color:var(--accent-deep);font-weight:700;"></div>
+      <div class="how" id="soHow" style="font-size:12px;color:#7A5A63;margin-top:4px;max-width:330px;margin-left:auto;margin-right:auto;"></div>
     </div>
 
     <div class="so-bottom">
@@ -91,7 +86,6 @@
     </div>
   </div>
 
-  <!-- Praise screen -->
   <div class="praise-screen" id="praiseScreen">
     <div class="emo">🌸</div>
     <h3 id="praiseText"></h3>
@@ -99,7 +93,6 @@
     <div class="sub-remind" id="remindText"></div>
   </div>
 
-  <!-- Video modal -->
   <div class="modal-mask" id="videoModal">
     <div class="modal">
       <button class="m-close" id="videoClose">✕</button>
@@ -113,38 +106,37 @@
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span><span data-i18n="tabResearch">研究</span></a>
+    <a class="tab" data-tab="home" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
 <script src="app.js"></script>
 <script>
-/* ============ 9-step protocol data (Cheung 2020: 9 acupoints) ============ */
+/* ============ 9-step protocol (Cheung 2020: 9 acupoints) ============ */
 var STEPS = [
-  { zh:'百會', en:'Baihui (GV20)', locZh:'頭頂正中，兩耳尖連線的中點', locEn:'Top of the head, midpoint of the line between the ear tips',
+  { slug:'baihui', zh:'百會', en:'Baihui (GV20)', locZh:'頭頂正中，兩耳尖連線的中點', locEn:'Top of the head, midpoint of the line between the ear tips',
     howZh:'四指指腹輕拍頭頂穴位', howEn:'Gently tap with four finger pads', freqZh:'60 下 / 1 分鐘', freqEn:'60 taps / 1 min', sec:60, part:'head' },
-  { zh:'風池', en:'Fengchi (GB20)', locZh:'頸後，胸鎖乳突肌與斜方肌之間的凹陷處', locEn:'Nape, depression between the sternocleidomastoid and trapezius',
+  { slug:'fengchi', zh:'風池', en:'Fengchi (GB20)', locZh:'頸後，胸鎖乳突肌與斜方肌之間的凹陷處', locEn:'Nape, depression between the sternocleidomastoid and trapezius',
     howZh:'兩拇指按住兩側風池，其餘手指托住後腦', howEn:'Press both thumbs on the points, fingers hold the back of the head', freqZh:'60 下 / 1 分鐘', freqEn:'60 presses / 1 min', sec:60, part:'nape' },
-  { zh:'合谷', en:'Hegu (LI4)', locZh:'手背，第一、二掌骨之間，約第二掌骨中點橈側', locEn:'Back of hand, between 1st and 2nd metacarpal bones',
+  { slug:'hegu', zh:'合谷', en:'Hegu (LI4)', locZh:'手背，第一、二掌骨之間，約第二掌骨中點橈側', locEn:'Back of hand, between 1st and 2nd metacarpal bones',
     howZh:'拇指指腹用力按揉，先做一邊再做另一邊', howEn:'Press firmly with thumb pad, one side then the other', freqZh:'每邊 30 下 / 1 分鐘', freqEn:'30 each side / 1 min', sec:60, part:'hand' },
-  { zh:'腎俞', en:'Shenshu (UB23)', locZh:'腰背，第二腰椎棘突旁開 1.5 寸（約兩指寬）', locEn:'Low back, 1.5 cun lateral to the 2nd lumbar spine',
+  { slug:'shenshu', zh:'腎俞', en:'Shenshu (UB23)', locZh:'腰背，第二腰椎棘突旁開 1.5 寸（約兩指寬）', locEn:'Low back, 1.5 cun lateral to the 2nd lumbar spine',
     howZh:'握拳，用拳面輕敲腰背兩側', howEn:'Gently tap the low back with loose fists', freqZh:'60 下 / 1.5 分鐘', freqEn:'60 taps / 1.5 min', sec:90, part:'back' },
-  { zh:'中脘', en:'Zhongwan (CV12)', locZh:'上腹部，前正中線，臍上 4 寸（約五指寬）', locEn:'Upper abdomen, midline, 4 cun above the navel',
+  { slug:'zhongwan', zh:'中脘', en:'Zhongwan (CV12)', locZh:'上腹部，前正中線，臍上 4 寸（約五指寬）', locEn:'Upper abdomen, midline, 4 cun above the navel',
     howZh:'指腹順時針打圈，輕按上腹部', howEn:'Finger pads in clockwise circles on the upper abdomen', freqZh:'200 圈 / 2 分鐘', freqEn:'200 circles / 2 min', sec:120, part:'belly' },
-  { zh:'氣海', en:'Qihai (CV6)', locZh:'下腹部，前正中線，臍下 1.5 寸', locEn:'Lower abdomen, midline, 1.5 cun below the navel',
+  { slug:'qihai', zh:'氣海', en:'Qihai (CV6)', locZh:'下腹部，前正中線，臍下 1.5 寸', locEn:'Lower abdomen, midline, 1.5 cun below the navel',
     howZh:'指腹順時針打圈，輕按下腹部', howEn:'Finger pads in clockwise circles on the lower abdomen', freqZh:'200 圈 / 2 分鐘', freqEn:'200 circles / 2 min', sec:120, part:'lowerbelly' },
-  { zh:'關元', en:'Guanyuan (CV4)', locZh:'下腹部，前正中線，臍下 3 寸（約四指寬）', locEn:'Lower abdomen, midline, 3 cun below the navel',
+  { slug:'guanyuan', zh:'關元', en:'Guanyuan (CV4)', locZh:'下腹部，前正中線，臍下 3 寸（約四指寬）', locEn:'Lower abdomen, midline, 3 cun below the navel',
     howZh:'指腹順時針打圈，輕按下腹部', howEn:'Finger pads in clockwise circles on the lower abdomen', freqZh:'200 圈 / 2 分鐘', freqEn:'200 circles / 2 min', sec:120, part:'guanyuan' },
-  { zh:'足三里', en:'Zusanli (ST36)', locZh:'小腿前外側，膝蓋下 3 寸，脛骨前嵴外一橫指', locEn:'Lower leg, 3 cun below the knee, one finger from the shin bone',
+  { slug:'zusanli', zh:'足三里', en:'Zusanli (ST36)', locZh:'小腿前外側，膝蓋下 3 寸，脛骨前嵴外一橫指', locEn:'Lower leg, 3 cun below the knee, one finger from the shin bone',
     howZh:'拇指指腹用力按揉，兩邊都要做', howEn:'Press firmly with thumb pad, both sides', freqZh:'每邊 60 下 / 1.5 分鐘', freqEn:'60 each side / 1.5 min', sec:90, part:'leg' },
-  { zh:'涌泉', en:'Yongquan (KD1)', locZh:'腳底，前 1/3 與後 2/3 交界的凹陷處', locEn:'Sole, depression at the front third of the foot',
+  { slug:'yongquan', zh:'涌泉', en:'Yongquan (KD1)', locZh:'腳底，前 1/3 與後 2/3 交界的凹陷處', locEn:'Sole, depression at the front third of the foot',
     howZh:'四指指腹用力按揉，兩隻腳都要做', howEn:'Press firmly with four finger pads, both feet', freqZh:'每邊 100 下 / 2.5 分鐘', freqEn:'100 each side / 2.5 min', sec:150, part:'foot' }
 ];
 
-/* consistent-style illustrations */
 var SVG = {
   head: '<svg viewBox="0 0 200 150"><ellipse cx="100" cy="75" rx="72" ry="62" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="3"/><path d="M30 75 Q12 75 14 92" stroke="#E8B8C4" stroke-width="3" fill="none"/><path d="M170 75 Q188 75 186 92" stroke="#E8B8C4" stroke-width="3" fill="none"/><circle cx="100" cy="55" r="10" fill="#E8728A" stroke="#fff" stroke-width="3"/></svg>',
   nape: '<svg viewBox="0 0 200 150"><circle cx="100" cy="46" r="34" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="3"/><path d="M82 72 L76 130 Q75 140 84 140 L116 140 Q125 140 124 130 L118 72" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="3"/><circle cx="90" cy="94" r="8" fill="#E8728A" stroke="#fff" stroke-width="3"/><circle cx="110" cy="94" r="8" fill="#E8728A" stroke="#fff" stroke-width="3"/></svg>',
@@ -162,8 +154,10 @@ function s(i, f) {
   if (f === 'name') return APP.lang === 'en' ? x.en : x.zh;
   return APP.lang === 'en' ? x[f + 'En'] : x[f + 'Zh'];
 }
+function imgHtml(x, cls) {
+  return '<img src="' + APP.photoURL(x.slug) + '" alt="' + x.zh + '" onerror="this.outerHTML=\'' + SVG[x.part] + '\'">';
+}
 
-/* browse cards */
 function renderSteps() {
   var box = document.getElementById('stepList');
   var h = '';
@@ -174,7 +168,7 @@ function renderSteps() {
       + '<div class="lbl">' + APP.t('location') + '</div><p>' + s(i, 'loc') + '</p>'
       + '<div class="lbl">' + APP.t('method') + '</div><p>' + s(i, 'how') + '</p>'
       + '<span class="freq">⏱ ' + (APP.lang === 'en' ? x.freqEn : x.freqZh) + '</span>'
-      + '<div class="point-img">' + SVG[x.part] + '</div>'
+      + '<div class="point-img">' + imgHtml(x) + '</div>'
       + '</div></div>';
   });
   box.innerHTML = h;
@@ -183,38 +177,43 @@ function renderSteps() {
 /* ============ guided session ============ */
 var audio = null;
 var sess = { on: false, idx: 0, phase: 'prep', left: 10, timer: null, paused: false, totalSec: 0, doneCount: 0 };
-var RING_C = 691.2;
+var RING_C = 578.1;
 var PREP_SEC = 10;
 
-function fmtTime(t) {
-  var m = Math.floor(t / 60), s = t % 60;
-  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-}
-
+function fmtTime(t) { var m = Math.floor(t / 60), s = t % 60; return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s; }
 function totalSeconds() { return STEPS.reduce(function (a, x) { return a + x.sec; }, 0); }
 
-function showPrep() {
-  var x = STEPS[sess.idx];
-  sess.phase = 'prep'; sess.left = PREP_SEC;
-  document.getElementById('prepCard').style.display = 'flex';
-  document.getElementById('prepStep').textContent = s(sess.idx, 'zh') + ' · ' + s(sess.idx, 'en');
-  document.getElementById('prepCount').textContent = PREP_SEC;
-  document.getElementById('ringTime').textContent = fmtTime(PREP_SEC);
-  document.getElementById('ringFreq').textContent = APP.t('prepSub');
-  document.getElementById('ringFg').style.strokeDashoffset = 0;
-  document.getElementById('soStep').textContent = APP.fmt(APP.t('stepLabel'), { n: sess.idx + 1 });
-  document.getElementById('soName').textContent = s(sess.idx, 'name');
-  document.getElementById('soEn').textContent = STEPS[sess.idx].en;
-  document.getElementById('soHow').textContent = s(sess.idx, 'loc') + (APP.lang === 'en' ? '. ' : '。') + s(sess.idx, 'how');
+function setPhoto(i) {
+  var x = STEPS[i];
+  document.getElementById('soPhoto').innerHTML = '<img src="' + APP.photoURL(x.slug) + '" onerror="this.outerHTML=\'' + SVG[x.part] + '\'">';
 }
 
-function showCount() {
-  var x = STEPS[sess.idx];
+function showPrep() {
+  sess.phase = 'prep'; sess.left = PREP_SEC;
+  document.getElementById('prepCard').style.display = 'flex';
+  document.getElementById('prepCount').textContent = PREP_SEC;
+  document.getElementById('ringTime').textContent = fmtTime(PREP_SEC);
+  document.getElementById('ringFreq').textContent = APP.t('prepStart');
+  document.getElementById('ringFg').style.strokeDashoffset = 0;
+  document.getElementById('soStep').textContent = APP.t('prepKpTitle');
+  document.getElementById('soName').textContent = '';
+  document.getElementById('soEn').textContent = '';
+  document.getElementById('soHow').textContent = APP.fmt(APP.t('stepOf'), { n: 1 });
+  document.getElementById('soPhoto').innerHTML = '';
+}
+
+function showCount(i) {
+  var x = STEPS[i];
   sess.phase = 'count'; sess.left = x.sec;
   document.getElementById('prepCard').style.display = 'none';
   document.getElementById('ringTime').textContent = fmtTime(x.sec);
   document.getElementById('ringFreq').textContent = APP.lang === 'en' ? x.freqEn : x.freqZh;
   document.getElementById('ringFg').style.strokeDashoffset = 0;
+  document.getElementById('soStep').textContent = APP.fmt(APP.t('stepLabel'), { n: i + 1 });
+  document.getElementById('soName').textContent = s(i, 'name');
+  document.getElementById('soEn').textContent = x.en;
+  document.getElementById('soHow').textContent = s(i, 'loc') + (APP.lang === 'en' ? '. ' : '。') + s(i, 'how');
+  setPhoto(i);
 }
 
 function tick() {
@@ -223,7 +222,7 @@ function tick() {
   if (sess.phase === 'prep') {
     document.getElementById('prepCount').textContent = Math.max(0, sess.left);
     document.getElementById('ringTime').textContent = fmtTime(Math.max(0, sess.left));
-    if (sess.left <= 0) { showCount(); return; }
+    if (sess.left <= 0) { sess.doneCount = 0; showCount(0); }
   } else {
     var x = STEPS[sess.idx];
     document.getElementById('ringTime').textContent = fmtTime(Math.max(0, sess.left));
@@ -242,23 +241,18 @@ function updateProgress() {
   var frac = done / totalSeconds();
   document.getElementById('soProgress').style.width = (frac * 100) + '%';
   document.getElementById('soTimer').textContent = fmtTime(done);
-  document.getElementById('soStep').textContent = APP.fmt(APP.t('stepOf'), { n: sess.idx + 1 });
 }
 
 function next() {
   if (sess.idx < STEPS.length - 1) {
-    sess.idx++; sess.doneCount = 0; showPrep();
+    sess.idx++; sess.doneCount = 0; showCount(sess.idx);
   } else {
     finishSession();
   }
 }
 
 function startMusic() {
-  if (!audio) {
-    audio = new Audio('audio/mindfulness.wav');
-    audio.loop = true;
-    audio.volume = 0.7;
-  }
+  if (!audio) { audio = new Audio('audio/mindfulness.wav'); audio.loop = true; audio.volume = 0.7; }
   audio.play().catch(function () {});
 }
 
@@ -267,7 +261,7 @@ function startSession() {
   document.getElementById('sessionOverlay').classList.add('on');
   document.getElementById('praiseScreen').classList.remove('on');
   startMusic();
-  showPrep();
+  showPrep();   // key points once, 10s
   clearInterval(sess.timer);
   sess.timer = setInterval(tick, 1000);
 }
@@ -276,12 +270,10 @@ function finishSession() {
   clearInterval(sess.timer);
   if (audio) audio.pause();
   document.getElementById('sessionOverlay').classList.remove('on');
-  document.getElementById('praiseText').textContent = APP.pick(APP.t('praise'));
+  document.getElementById('praiseText').textContent = APP.pickMsg('praise');
   document.getElementById('remindText').textContent = APP.t('recordRemind');
   document.getElementById('praiseScreen').classList.add('on');
-  setTimeout(function () {
-    location.href = 'checkin.html';
-  }, 3000);
+  setTimeout(function () { location.href = 'checkin.html'; }, 3000);
 }
 
 function leaveSession() {
@@ -294,6 +286,7 @@ function leaveSession() {
 
 document.addEventListener('DOMContentLoaded', function () {
   renderSteps();
+  APP.fetchContent().then(function () { renderSteps(); });
   document.getElementById('startBtn').addEventListener('click', function (e) { e.preventDefault(); startSession(); });
   document.getElementById('leaveBtn').addEventListener('click', leaveSession);
   document.getElementById('pauseBtn').addEventListener('click', function () {
@@ -302,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (audio) { sess.paused ? audio.pause() : audio.play(); }
   });
   document.getElementById('skipBtn').addEventListener('click', function () {
-    if (sess.phase === 'prep') { showCount(); return; }
+    if (sess.phase === 'prep') { sess.doneCount = 0; showCount(0); return; }
     next();
   });
   document.getElementById('volSlider').addEventListener('input', function () {
@@ -314,12 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     document.getElementById('videoModal').classList.add('on');
   });
-  document.getElementById('videoClose').addEventListener('click', function () {
-    document.getElementById('videoModal').classList.remove('on');
-  });
-  document.getElementById('videoModal').addEventListener('click', function (e) {
-    if (e.target === this) this.classList.remove('on');
-  });
+  document.getElementById('videoClose').addEventListener('click', function () { document.getElementById('videoModal').classList.remove('on'); });
+  document.getElementById('videoModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   window.pageI18n = function () { renderSteps(); };
 });
 </script>

@@ -98,7 +98,29 @@
     notes: '注意事項',
     notesTxt: '懷孕或計劃懷孕人士請勿按壓相關穴位。皮膚破損、感染或靜脈曲張位置請勿按壓。太飢餓或太飽時避免按壓。如出現劇痛或暈眩，請立即停止。此為研究項目之自我照護方法，不能取代正規醫療。',
     disclaimer: '此為研究項目之概念試版，內容會按研究方案及督導意見調整。',
-    references: '參考文獻'
+    references: '參考文獻',
+    tabResearch: '資料',
+    aim: '本計劃目的',
+    aimText: '本計劃旨在開發一款自我穴位按壓應用程式，讓家庭照顧者可以在家中自行練習，以紓緩照顧壓力，並測試應用程式的可用性與接受度。',
+    aimTextEn: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
+    loginTitle: '登入',
+    username: '用戶名稱',
+    password: '密碼',
+    loginBtn: '登入',
+    logoutBtn: '登出',
+    welcomeBack: '歡迎，{name}',
+    loginErr: '用戶名稱或密碼不正確',
+    loginHint: '請輸入研究團隊提供的帳號登入，以同步你的記錄。',
+    nightBlock: '今日睡前記錄',
+    nightBlockSub: '完成第二次按壓後填寫（心情、壓力、任何不適）',
+    adverseTitle: '今日有否任何不適或不良反應？',
+    adversePlaceholder: '（選填）例如：皮膚紅腫、痠痛加劇、頭暈……',
+    noAdverse: '沒有不適',
+    prepKpTitle: '練習要點',
+    prepStart: '準備開始',
+    prepReady: '準備好了，開始練習',
+    syncOk: '記錄已同步',
+    syncFail: '目前離線，記錄已儲存在本機'
   };
 
   var EN = {
@@ -193,7 +215,29 @@
     notes: 'Precautions',
     notesTxt: 'Do not press these acupoints if you are pregnant or planning pregnancy. Do not press on broken skin, infected areas, or varicose veins. Avoid practice when very hungry or very full. Stop immediately if you feel severe pain or dizziness. This is a self-care method for a research project and cannot replace medical care.',
     disclaimer: 'This is a concept version for a research project; content will be adjusted with the study protocol and supervisor input.',
-    references: 'References'
+    references: 'References',
+    tabResearch: 'Information',
+    aim: 'Project aim',
+    aimText: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
+    aimTextEn: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
+    loginTitle: 'Log in',
+    username: 'Username',
+    password: 'Password',
+    loginBtn: 'Log in',
+    logoutBtn: 'Log out',
+    welcomeBack: 'Welcome, {name}',
+    loginErr: 'Incorrect username or password',
+    loginHint: 'Log in with the account provided by the research team to sync your records.',
+    nightBlock: 'Evening record',
+    nightBlockSub: 'Fill in after the second session (mood, stress, any discomfort)',
+    adverseTitle: 'Any discomfort or adverse reaction today?',
+    adversePlaceholder: '(optional) e.g. skin redness, worse soreness, dizziness...',
+    noAdverse: 'No discomfort',
+    prepKpTitle: 'Key points',
+    prepStart: 'Get ready',
+    prepReady: 'Ready, begin',
+    syncOk: 'Records synced',
+    syncFail: 'Offline now, records saved on this device'
   };
 
   var LANG = { zh: ZH, en: EN };
@@ -318,12 +362,88 @@
     if (window.pageInit) window.pageInit();
   });
 
+  /* ---------- backend client (sync + content) ---------- */
+  // Backend URL: set after the tunnel is started; '' = offline mode.
+  window.APP_BACKEND = 'https://bridal-match-checked-greetings.trycloudflare.com';
+  var BACKEND = window.APP_BACKEND || '';
+  var contentCache = null;
+
+  function api(path, opts) {
+    if (!BACKEND) return Promise.reject(new Error('offline'));
+    opts = opts || {};
+    var cfg = {
+      method: opts.method || 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    };
+    if (opts.body) cfg.body = JSON.stringify(opts.body);
+    return fetch(BACKEND + path, cfg).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    });
+  }
+
+  function session() {
+    var p = getProfile();
+    return { token: p.token || null, name: p.name || null };
+  }
+
+  function login(username, password) {
+    return api('/api/login', { method: 'POST', body: { username: username, password: password } })
+      .then(function (d) {
+        var p = getProfile();
+        p.token = d.token; p.name = d.name;
+        saveProfile(p);
+        localStorage.setItem('acup_session', JSON.stringify({ token: d.token, name: d.name }));
+        return d;
+      });
+  }
+
+  function logout() {
+    var p = getProfile();
+    delete p.token; delete p.name;
+    saveProfile(p);
+    localStorage.removeItem('acup_session');
+  }
+
+  function fetchContent() {
+    return api('/api/content').then(function (d) { contentCache = d; return d; })
+      .catch(function () { contentCache = null; return null; });
+  }
+
+  // praise / hero messages: backend-published list overrides built-in
+  function pickMsg(key) {
+    if (contentCache && contentCache.messages && contentCache.messages[key] && contentCache.messages[key].length) {
+      return pick(contentCache.messages[key]);
+    }
+    return pick(t(key));
+  }
+
+  // photo URL: backend upload wins, else local photos/<slug>.jpg
+  function photoURL(slug) {
+    if (contentCache && contentCache.photos && contentCache.photos[slug]) {
+      return contentCache.photos[slug];
+    }
+    return 'photos/' + slug + '.jpg';
+  }
+
+  function syncRecords() {
+    var s = session();
+    if (!s.token) return Promise.resolve(false);
+    var records = loadRecords();
+    return api('/api/sync', { method: 'POST', body: { token: s.token, records: records } })
+      .then(function () { return true; })
+      .catch(function () { return false; });
+  }
+
   window.APP = {
     t: t, fmt: fmt, pick: pick, lang: lang,
     getProfile: getProfile, saveProfile: saveProfile,
     hkNow: hkNow, hkDayKey: hkDayKey, recordDayKey: recordDayKey,
     loadRecords: loadRecords, saveRecords: saveRecords,
     getToday: getToday, setToday: setToday,
-    setLang: setLang, applyI18n: applyI18n
+    setLang: setLang, applyI18n: applyI18n,
+    login: login, logout: logout, fetchContent: fetchContent,
+    pickMsg: pickMsg, photoURL: photoURL, syncRecords: syncRecords,
+    session: session
   };
 })();

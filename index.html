@@ -11,27 +11,22 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.1</span>
+    <span class="pill" data-i18n="version">v0.2</span>
   </header>
 
-  <main class="page">
+  <main class="page" style="padding-top:4px;">
 
-    <!-- Pikmin Bloom style calendar -->
-    <div class="hero" style="padding:14px 12px;">
-      <div class="cal-wrap" style="border:none;box-shadow:none;margin-bottom:0;background:transparent;">
-        <div class="cal-head">
-          <button class="cal-nav" id="prevMonth">‹</button>
-          <div class="cal-title" id="calTitle"></div>
-          <button class="cal-nav" id="nextMonth">›</button>
-        </div>
-        <div class="cal-grid" id="calDow"></div>
-        <div class="cal-grid" id="calGrid"></div>
-        <p class="sub" style="text-align:center;margin-top:10px;" data-i18n="tapDayHint">點擊日期查看當日記錄</p>
+    <div class="cal-wrap">
+      <div class="cal-head">
+        <button class="cal-nav" id="prevMonth">‹</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="cal-nav" id="nextMonth">›</button>
       </div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-hint" data-i18n="tapDayHint">點擊日期查看當日記錄</div>
     </div>
 
-    <!-- 8-week progress -->
-    <h2 class="sect"><span class="bar"></span><span data-i18n="weekPlan">8 週計劃進度</span></h2>
     <div class="week-progress">
       <div class="wp-head">
         <b data-i18n="weekPlan">8 週計劃進度</b>
@@ -42,20 +37,19 @@
 
   </main>
 
-  <!-- day detail modal -->
   <div class="modal-mask" id="dayModal">
     <div class="modal">
       <button class="m-close" id="modalClose">✕</button>
-      <h3 id="modalTitle" data-i18n="dayDetail">當日記錄</h3>
+      <h3 id="modalTitle"></h3>
       <div id="modalBody"></div>
     </div>
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span><span data-i18n="tabResearch">研究</span></a>
+    <a class="tab" data-tab="home" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
@@ -67,66 +61,46 @@ var MONTHS = { zh: ['一月','二月','三月','四月','五月','六月','七�
 var MOODS = { happy: '😄', okay: '😐', sad: '☹️' };
 var viewY, viewM;
 
-function monthTitle() {
-  var d = APP.lang === 'en' ? 'en' : 'zh';
-  return MONTHS[d][viewM] + ' ' + viewY;
-}
-
-function moodOf(rec) {
-  if (!rec || !rec.mood) return null;
-  return MOODS[rec.mood] || null;
-}
-
-function daySessions(rec) {
-  if (!rec) return 0;
-  return (rec.acup && rec.acup.filter(function (s) { return s && s.length > 0; }).length) || 0;
-}
+function monthTitle() { return MONTHS[APP.lang === 'en' ? 'en' : 'zh'][viewM] + ' ' + viewY; }
+function moodOf(rec) { return rec && rec.mood ? (MOODS[rec.mood] || null) : null; }
+function daySessions(rec) { return rec && rec.acup ? rec.acup.filter(function (s) { return s && s.length > 0; }).length : 0; }
 
 function renderCalendar() {
-  var now = APP.hkNow();
-  var todayKey = APP.hkDayKey(now);
+  var todayKey = APP.hkDayKey(APP.hkNow());
   var records = APP.loadRecords();
-  var grid = document.getElementById('calGrid');
-  var dow = document.getElementById('calDow');
   var l = APP.lang;
-  dow.innerHTML = DOW[l].map(function (d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
+  document.getElementById('calDow').innerHTML = DOW[l].map(function (d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
   document.getElementById('calTitle').textContent = monthTitle();
-
   var first = new Date(viewY, viewM, 1);
-  var startDow = first.getDay();
   var daysInMonth = new Date(viewY, viewM + 1, 0).getDate();
   var h = '';
-  for (var i = 0; i < startDow; i++) h += '<div class="cal-day empty"></div>';
+  for (var i = 0; i < first.getDay(); i++) h += '<div class="cal-day empty"></div>';
   for (var d = 1; d <= daysInMonth; d++) {
     var key = viewY + '-' + String(viewM + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     var rec = records[key];
     var mood = moodOf(rec);
     var isToday = key === todayKey;
-    var has = !!rec;
-    h += '<div class="cal-day' + (isToday ? ' today' : '') + (has ? ' done' : '') + '" data-key="' + key + '">'
+    h += '<div class="cal-day' + (isToday ? ' today' : '') + (rec ? ' done' : '') + '" data-key="' + key + '">'
        + (mood ? '<span class="mood-emoji">' + mood + '</span>' : '<span class="day-num">' + d + '</span>')
-       + (mood ? '<span class="day-num">' + d + '</span>' : '')
-       + '</div>';
+       + (mood ? '<span class="day-num">' + d + '</span>' : '') + '</div>';
   }
-  grid.innerHTML = h;
-  grid.querySelectorAll('.cal-day[data-key]').forEach(function (el) {
+  document.getElementById('calGrid').innerHTML = h;
+  document.getElementById('calGrid').querySelectorAll('.cal-day[data-key]').forEach(function (el) {
     el.addEventListener('click', function () { openDay(el.getAttribute('data-key')); });
   });
   renderWeekProgress(records);
 }
 
 function renderWeekProgress(records) {
-  var bar = document.getElementById('wpBar');
-  var label = document.getElementById('wpLabel');
   var keys = Object.keys(records).sort();
+  var bar = document.getElementById('wpBar');
   if (!keys.length) {
     bar.innerHTML = '';
     for (var i = 0; i < 8; i++) bar.innerHTML += '<div class="wp-seg"><i></i></div>';
-    label.textContent = APP.fmt(APP.t('weeksDone'), { n: 0 });
+    document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: 0 });
     return;
   }
-  var firstKey = keys[0];
-  var base = new Date(firstKey.slice(0, 4), parseInt(firstKey.slice(5, 7), 10) - 1, parseInt(firstKey.slice(8, 10), 10));
+  var base = new Date(keys[0].slice(0, 4), parseInt(keys[0].slice(5, 7), 10) - 1, parseInt(keys[0].slice(8, 10), 10));
   var weekDone = [0, 0, 0, 0, 0, 0, 0, 0];
   keys.forEach(function (k) {
     var rec = records[k];
@@ -140,30 +114,27 @@ function renderWeekProgress(records) {
   for (var i = 0; i < 8; i++) {
     bar.innerHTML += '<div class="wp-seg' + (weekDone[i] ? ' filled' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
   }
-  label.textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
+  document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
 }
 
 function openDay(key) {
-  var records = APP.loadRecords();
-  var rec = records[key];
-  var l = APP.lang;
-  var body = document.getElementById('modalBody');
+  var rec = APP.loadRecords()[key];
   var d = new Date(key.slice(0, 4), parseInt(key.slice(5, 7), 10) - 1, parseInt(key.slice(8, 10), 10));
-  var title = MONTHS[l][d.getMonth()] + ' ' + d.getDate();
-  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalTitle').textContent = MONTHS[APP.lang === 'en' ? 'en' : 'zh'][d.getMonth()] + ' ' + d.getDate();
+  var body = document.getElementById('modalBody');
   if (!rec) {
     body.innerHTML = '<div class="m-row"><span class="k">' + APP.t('noRecord') + '</span></div>';
   } else {
-    var mood = moodOf(rec);
     var sessions = daySessions(rec);
     var pts = 0;
     if (rec.acup) rec.acup.forEach(function (s) { if (s) pts += s.length; });
     var stressTxt = rec.score !== null && rec.score !== undefined ? rec.score + ' / 16' : (rec.slider !== null && rec.slider !== undefined ? rec.slider + ' / 10' : '—');
     body.innerHTML =
-      '<div class="m-row"><span class="k">' + APP.t('moodLabel') + '</span><span class="v">' + (mood || '—') + '</span></div>' +
+      '<div class="m-row"><span class="k">' + APP.t('moodLabel') + '</span><span class="v">' + (moodOf(rec) || '—') + '</span></div>' +
       '<div class="m-row"><span class="k">' + APP.t('stressLabel') + '</span><span class="v">' + stressTxt + '</span></div>' +
       '<div class="m-row"><span class="k">' + APP.t('acupointLabel') + '</span><span class="v">' + pts + ' / 9</span></div>' +
-      '<div class="m-row"><span class="k">' + APP.t('complianceLabel') + '</span><span class="v">' + sessions + ' ' + APP.t('complianceUnit') + '</span></div>';
+      '<div class="m-row"><span class="k">' + APP.t('complianceLabel') + '</span><span class="v">' + sessions + ' ' + APP.t('complianceUnit') + '</span></div>' +
+      (rec.adverse ? '<div class="m-note">⚠️ ' + rec.adverse + '</div>' : '');
   }
   document.getElementById('dayModal').classList.add('on');
 }
@@ -172,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var now = APP.hkNow();
   viewY = now.getFullYear(); viewM = now.getMonth();
   renderCalendar();
+  APP.fetchContent();
   document.getElementById('prevMonth').addEventListener('click', function () { viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCalendar(); });
   document.getElementById('nextMonth').addEventListener('click', function () { viewM++; if (viewM > 11) { viewM = 0; viewY++; } renderCalendar(); });
   document.getElementById('modalClose').addEventListener('click', function () { document.getElementById('dayModal').classList.remove('on'); });

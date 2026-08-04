@@ -11,47 +11,49 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.1</span>
+    <span class="pill" data-i18n="version">v0.2</span>
   </header>
 
   <main class="page">
 
-    <div class="hero" id="checkinHero">
+    <div class="hero" style="padding:12px 14px;">
       <div class="kicker" id="heroMsg"></div>
-      <h1 data-i18n="heroCheckinSub">每一次練習與記錄，都是旅程中重要的一步。</h1>
+      <h1 style="font-size:17px;margin-top:2px;" data-i18n="heroCheckinSub">每一次練習與記錄，都是旅程中重要的一步。</h1>
     </div>
 
     <!-- 今日按壓記錄 -->
     <div class="ci-block" id="acupBlock">
       <h3 data-i18n="acupressureRecord">今日按壓記錄</h3>
-      <p class="sub" data-i18n="acupressureRecordSub">每日可按壓兩次（如上午、晚上），完成後逐項勾選</p>
+      <p class="sub" data-i18n="acupressureRecordSub">每日可按壓兩次，完成後點擊穴位圖即可標記</p>
       <div class="session-tick" id="sessionTabs"></div>
-      <div id="acupList"></div>
-      <div style="margin-top:12px;">
+      <div class="point-grid" id="acupGrid"></div>
+      <div style="margin-top:10px;">
         <button class="btn btn-primary" id="saveAcupBtn" style="width:100%;"><span data-i18n="saveAcupBtn">儲存按壓記錄</span></button>
       </div>
     </div>
 
-    <!-- 今日心情 -->
-    <div class="ci-block" id="moodBlock">
-      <h3 data-i18n="moodTitle">今日心情</h3>
-      <p class="sub" data-i18n="moodSub">睡前（完成第二次按壓後）填寫</p>
-      <div class="mood-row" id="moodRow">
-        <button class="mood-btn" data-mood="happy"><span class="e">😄</span><span class="l" data-i18n="moodHappy">開心</span></button>
-        <button class="mood-btn" data-mood="okay"><span class="e">😐</span><span class="l" data-i18n="moodOkay">一般</span></button>
-        <button class="mood-btn" data-mood="sad"><span class="e">☹️</span><span class="l" data-i18n="moodSad">低落</span></button>
-      </div>
-    </div>
+    <!-- 睡前記錄（心情＋壓力＋不適） -->
+    <div class="ci-block" id="nightBlock">
+      <h3 data-i18n="nightBlock">今日睡前記錄</h3>
+      <p class="sub" data-i18n="nightBlockSub">完成第二次按壓後填寫（心情、壓力、任何不適）</p>
 
-    <!-- 今日壓力記錄 -->
-    <div class="ci-block" id="stressBlock">
-      <h3 data-i18n="stressTitle">今日壓力記錄</h3>
-      <p class="sub" data-i18n="stressSub">睡前填寫一次，回顧今天的感受</p>
-      <p style="font-size:13px;font-weight:700;margin-bottom:10px;" data-i18n="stressQ">今天，你覺得……</p>
+      <p style="font-size:12.5px;font-weight:700;margin-bottom:6px;" data-i18n="moodTitle">今日心情</p>
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn" data-mood="sad"><span class="e">☹️</span><span class="l" data-i18n="moodSad">低落</span></button>
+        <button class="mood-btn" data-mood="okay"><span class="e">😐</span><span class="l" data-i18n="moodOkay">一般</span></button>
+        <button class="mood-btn" data-mood="happy"><span class="e">😄</span><span class="l" data-i18n="moodHappy">開心</span></button>
+      </div>
+
+      <p style="font-size:12.5px;font-weight:700;margin:12px 0 6px;" data-i18n="stressTitle">今日壓力記錄</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:8px;" data-i18n="stressQ">今天，你覺得……</p>
       <div id="pssBox"></div>
-      <p style="font-size:13.5px;font-weight:700;margin:12px 0 6px;"><span data-i18n="stressSlider">今日整體壓力</span>：<b id="sliderVal" style="color:var(--accent-deep)">5</b></p>
+      <p style="font-size:12.5px;font-weight:700;margin:10px 0 6px;"><span data-i18n="stressSlider">今日整體壓力</span>：<b id="sliderVal" style="color:var(--accent-deep)">5</b></p>
       <input type="range" min="0" max="10" value="5" class="ci-slider" id="stressSlider">
       <div class="ci-slider-row"><span data-i18n="slider0">完全放鬆</span><span>5</span><span data-i18n="slider10">壓力最大</span></div>
+
+      <p style="font-size:12.5px;font-weight:700;margin:12px 0 6px;" data-i18n="adverseTitle">今日有否任何不適或不良反應？</p>
+      <textarea class="ci-text" id="adverseBox" placeholder="" data-i18n-ph="adversePlaceholder"></textarea>
+
       <div style="margin-top:12px;">
         <button class="btn btn-primary" id="saveNightBtn" style="width:100%;"><span data-i18n="saveNightBtn">儲存睡前記錄</span></button>
       </div>
@@ -62,20 +64,31 @@
   </main>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><span class="ico">🏠</span><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><span class="ico">💆‍♀️</span><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><span class="ico">📝</span><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html"><span class="ico">📚</span><span data-i18n="tabResearch">研究</span></a>
+    <a class="tab" data-tab="home" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
 <script src="app.js"></script>
 <script>
 var POINTS = [
-  { zh:'百會', en:'GV20' }, { zh:'風池', en:'GB20' }, { zh:'合谷', en:'LI4' },
-  { zh:'腎俞', en:'UB23' }, { zh:'中脘', en:'CV12' }, { zh:'氣海', en:'CV6' },
-  { zh:'關元', en:'CV4' }, { zh:'足三里', en:'ST36' }, { zh:'涌泉', en:'KD1' }
+  { slug:'baihui', zh:'百會', en:'GV20' }, { slug:'fengchi', zh:'風池', en:'GB20' }, { slug:'hegu', zh:'合谷', en:'LI4' },
+  { slug:'shenshu', zh:'腎俞', en:'UB23' }, { slug:'zhongwan', zh:'中脘', en:'CV12' }, { slug:'qihai', zh:'氣海', en:'CV6' },
+  { slug:'guanyuan', zh:'關元', en:'CV4' }, { slug:'zusanli', zh:'足三里', en:'ST36' }, { slug:'yongquan', zh:'涌泉', en:'KD1' }
 ];
+var SVG = {
+  baihui: '<svg viewBox="0 0 100 75"><ellipse cx="50" cy="38" rx="36" ry="31" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="28" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  fengchi: '<svg viewBox="0 0 100 75"><circle cx="50" cy="22" r="17" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><path d="M41 36 L38 66 Q37 70 42 70 L58 70 Q63 70 62 66 L59 36" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="44" cy="48" r="6" fill="#E8728A" stroke="#fff" stroke-width="2.5"/><circle cx="56" cy="48" r="6" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  hegu: '<svg viewBox="0 0 100 75"><path d="M30 66 Q23 50 27 37 Q29 29 37 28 L39 22 Q40 18 44 19 L45 26 L48 18 Q49 15 52 17 L51 26 L55 20 Q57 17 60 20 L57 28 L62 24 Q65 22 66 26 L61 32 Q75 35 76 46 Q77 58 70 66 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="52" cy="43" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  shenshu: '<svg viewBox="0 0 100 75"><path d="M35 10 Q35 4 42 4 L58 4 Q65 4 65 10 L64 64 Q64 69 50 69 Q36 69 36 64 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="40" cy="48" r="6.5" fill="#E8728A" stroke="#fff" stroke-width="2.5"/><circle cx="60" cy="48" r="6.5" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  zhongwan: '<svg viewBox="0 0 100 75"><ellipse cx="50" cy="40" rx="31" ry="29" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="49" r="3.5" fill="#E8B8C4"/><circle cx="50" cy="26" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  qihai: '<svg viewBox="0 0 100 75"><ellipse cx="50" cy="40" rx="31" ry="29" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="49" r="3.5" fill="#E8B8C4"/><circle cx="50" cy="58" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  guanyuan: '<svg viewBox="0 0 100 75"><ellipse cx="50" cy="40" rx="31" ry="29" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="49" r="3.5" fill="#E8B8C4"/><circle cx="50" cy="64" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  zusanli: '<svg viewBox="0 0 100 75"><path d="M44 4 L56 4 L59 35 Q65 42 64 50 L63 69 Q63 72 59 72 L41 72 Q37 72 37 69 L36 50 Q35 42 41 35 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="25" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
+  yongquan: '<svg viewBox="0 0 100 75"><path d="M26 48 Q20 35 33 26 Q55 15 70 22 Q84 29 83 42 Q82 56 69 59 Q55 62 43 58 Q30 54 26 48 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="56" cy="36" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>'
+};
 var PSS = [
   { zh:'覺得無法控制生活中重要的事情？', en:'You felt unable to control the important things in your life?', rev:false },
   { zh:'對自己處理個人問題有信心？', en:'You felt confident about handling your personal problems?', rev:true },
@@ -83,11 +96,9 @@ var PSS = [
   { zh:'覺得困難多到應付不來？', en:'You felt difficulties were piling up so high you could not overcome them?', rev:false }
 ];
 var OPTS = APP.t('pssOpts');
-var cur = { session: 0, acup: [[], []], mood: null, pss: {}, slider: 5, savedAcup: [false, false], moodSaved: false, stressSaved: false };
+var cur = { session: 0, acup: [[], []], mood: null, pss: {}, slider: 5, adverse: '', savedAcup: [false, false], nightSaved: false };
 
-function renderHero() {
-  document.getElementById('heroMsg').textContent = APP.pick(APP.t('heroCheckin'));
-}
+function renderHero() { document.getElementById('heroMsg').textContent = APP.pickMsg('heroCheckin'); }
 
 function load() {
   var rec = APP.getToday();
@@ -96,39 +107,42 @@ function load() {
   cur.mood = rec.mood || null;
   cur.pss = rec.pss || {};
   cur.slider = rec.slider !== null && rec.slider !== undefined ? rec.slider : 5;
-  cur.moodSaved = !!rec.mood;
-  cur.stressSaved = (rec.pss && Object.keys(rec.pss).length === PSS.length) || (rec.score !== null && rec.score !== undefined);
+  cur.adverse = rec.adverse || '';
+  cur.nightSaved = !!(rec.mood || (rec.pss && Object.keys(rec.pss).length) || rec.score !== undefined);
 }
 
 function renderSessionTabs() {
-  var el = document.getElementById('sessionTabs');
   var labels = [APP.t('sessionMorning'), APP.t('sessionEvening')];
-  el.innerHTML = labels.map(function (l, i) {
+  document.getElementById('sessionTabs').innerHTML = labels.map(function (l, i) {
     var done = cur.savedAcup[i];
-    return '<button class="st-btn' + (cur.session === i ? ' on' : '') + (done ? '" style="border-color:var(--ok);color:var(--ok);"' : '"') + ' data-s="' + i + '">' + l + (done ? ' ✓' : '') + '</button>';
+    return '<button class="st-btn' + (cur.session === i ? ' on' : '') + '" data-s="' + i + '" style="' + (done ? 'border-color:var(--ok);color:var(--ok);' : '') + '">' + l + (done ? ' ✓' : '') + '</button>';
   }).join('');
-  el.querySelectorAll('.st-btn').forEach(function (b) {
-    b.addEventListener('click', function () { cur.session = parseInt(b.getAttribute('data-s'), 10); renderSessionTabs(); renderAcupList(); });
+  document.getElementById('sessionTabs').querySelectorAll('.st-btn').forEach(function (b) {
+    b.addEventListener('click', function () { cur.session = parseInt(b.getAttribute('data-s'), 10); renderSessionTabs(); renderAcupGrid(); });
   });
 }
 
-function renderAcupList() {
-  var el = document.getElementById('acupList');
+function renderAcupGrid() {
   var idx = cur.session;
   var done = cur.savedAcup[idx];
   var h = '';
   POINTS.forEach(function (p, i) {
-    var checked = cur.acup[idx].indexOf(i) >= 0;
-    h += '<label class="point-check"><input type="checkbox" data-p="' + i + '"' + (checked ? ' checked' : '') + (done ? ' disabled' : '') + '>'
-      + '<span><b>' + p.zh + ' <span style="color:var(--muted);font-size:11px;">' + p.en + '</span></b>'
-      + '<span>' + (done ? '✓' : '') + '</span></span></label>';
+    var on = cur.acup[idx].indexOf(i) >= 0;
+    var url = APP.photoURL(p.slug);
+    h += '<div class="point-card' + (on ? ' on' : '') + '" data-p="' + i + '">'
+      + '<div class="pc-img"><img src="' + url + '" alt="' + p.zh + '" loading="lazy" onerror="this.outerHTML=\'' + SVG[p.slug] + '\'">'
+      + '<span class="pc-tick">' + (on ? '✓' : '') + '</span></div>'
+      + '<div class="pc-name">' + p.zh + '<small>' + p.en + '</small></div></div>';
   });
-  el.innerHTML = h;
-  el.querySelectorAll('input').forEach(function (inp) {
-    inp.addEventListener('change', function () {
-      var i = parseInt(inp.getAttribute('data-p'), 10);
+  document.getElementById('acupGrid').innerHTML = h;
+  document.getElementById('acupGrid').querySelectorAll('.point-card').forEach(function (el) {
+    el.addEventListener('click', function () {
+      if (done) return;
+      var i = parseInt(el.getAttribute('data-p'), 10);
       var a = cur.acup[idx];
-      if (inp.checked) { if (a.indexOf(i) < 0) a.push(i); } else { a = a.filter(function (x) { return x !== i; }); cur.acup[idx] = a; }
+      var pos = a.indexOf(i);
+      if (pos >= 0) a.splice(pos, 1); else a.push(i);
+      renderAcupGrid();
     });
   });
 }
@@ -139,8 +153,7 @@ function renderPSS() {
   PSS.forEach(function (item, i) {
     h += '<div class="ci-q"><label>' + (i + 1) + '. ' + (APP.lang === 'en' ? item.en : item.zh) + '</label><div class="ci-opts">';
     OPTS.forEach(function (o, v) {
-      var sel = cur.pss[i] === v ? ' sel' : '';
-      h += '<div class="ci-opt' + sel + '" data-q="' + i + '" data-v="' + v + '">' + o + '</div>';
+      h += '<div class="ci-opt' + (cur.pss[i] === v ? ' sel' : '') + '" data-q="' + i + '" data-v="' + v + '">' + o + '</div>';
     });
     h += '</div></div>';
   });
@@ -170,24 +183,27 @@ function lockBlock(id, msg) {
 }
 
 function applyLock() {
-  var L = function (id) { var el = document.getElementById(id); if (el) el.classList.remove('locked'); };
-  ['acupBlock', 'moodBlock', 'stressBlock'].forEach(function (id) {
+  ['acupBlock', 'nightBlock'].forEach(function (id) {
     var el = document.getElementById(id);
     el.classList.remove('locked');
     var old = el.querySelector('.lock-msg'); if (old) old.remove();
   });
   if (cur.savedAcup[0] && cur.savedAcup[1]) lockBlock('acupBlock', APP.t('doneAcup'));
-  if (cur.moodSaved) lockBlock('moodBlock', APP.t('doneToday'));
-  if (cur.stressSaved) lockBlock('stressBlock', APP.t('doneToday'));
+  if (cur.nightSaved) lockBlock('nightBlock', APP.t('doneToday'));
+}
+
+function afterSave() {
+  renderSessionTabs(); renderAcupGrid(); applyLock();
+  APP.syncRecords().then(function (ok) {
+    showSaved(ok ? APP.t('syncOk') : APP.t('savedMsg'));
+  });
 }
 
 function saveAcup() {
-  var idx = cur.session;
-  if (cur.acup[idx].length === 0) { alert(APP.t('fillAll')); return; }
+  if (cur.acup[cur.session].length === 0) { alert(APP.t('fillAll')); return; }
   APP.setToday({ acup: cur.acup });
-  cur.savedAcup[idx] = true;
-  showSaved(APP.t('savedMsg'));
-  renderSessionTabs(); renderAcupList(); applyLock();
+  cur.savedAcup[cur.session] = true;
+  afterSave();
 }
 
 function saveNight() {
@@ -195,26 +211,26 @@ function saveNight() {
   if (Object.keys(cur.pss).length < PSS.length) { alert(APP.t('fillAll')); return; }
   var total = 0;
   PSS.forEach(function (item, i) { total += item.rev ? (4 - cur.pss[i]) : cur.pss[i]; });
-  APP.setToday({ mood: cur.mood, pss: cur.pss, slider: parseInt(document.getElementById('stressSlider').value, 10), score: total });
-  cur.moodSaved = true; cur.stressSaved = true;
-  showSaved(APP.t('savedMsg') + ' (' + total + '/16)');
-  applyLock();
+  APP.setToday({ mood: cur.mood, pss: cur.pss, slider: parseInt(document.getElementById('stressSlider').value, 10), score: total, adverse: document.getElementById('adverseBox').value.trim() });
+  cur.nightSaved = true;
+  afterSave();
 }
 
 function showSaved(msg) {
   var el = document.getElementById('savedMsg');
   el.textContent = msg;
   el.style.display = 'block';
-  setTimeout(function () { el.style.display = 'none'; }, 2500);
+  setTimeout(function () { el.style.display = 'none'; }, 2600);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
   OPTS = APP.t('pssOpts');
   renderHero();
   load();
-  renderSessionTabs(); renderAcupList(); renderPSS(); renderMood(); applyLock();
+  renderSessionTabs(); renderAcupGrid(); renderPSS(); renderMood(); applyLock();
   document.getElementById('stressSlider').value = cur.slider;
   document.getElementById('sliderVal').textContent = cur.slider;
+  document.getElementById('adverseBox').value = cur.adverse;
   document.getElementById('stressSlider').addEventListener('input', function () {
     cur.slider = this.value;
     document.getElementById('sliderVal').textContent = this.value;
@@ -224,7 +240,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.getElementById('saveAcupBtn').addEventListener('click', saveAcup);
   document.getElementById('saveNightBtn').addEventListener('click', saveNight);
-  window.pageI18n = function () { OPTS = APP.t('pssOpts'); renderHero(); renderSessionTabs(); renderAcupList(); renderPSS(); applyLock(); };
+  APP.fetchContent().then(function () { renderHero(); renderAcupGrid(); });
+  window.pageI18n = function () { OPTS = APP.t('pssOpts'); renderHero(); renderSessionTabs(); renderAcupGrid(); renderPSS(); applyLock(); };
 });
 </script>
 </body>
