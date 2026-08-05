@@ -79,6 +79,7 @@
     doneToday: '今日已完成，明日 04:00 後可再記錄',
     doneAcup: '今日兩次按壓已完成',
     resetToday: '（如非今日所填，點此重設今日記錄）',
+    resetAcup: '（非今日所填？點此重設今日按壓記錄）',
     resetConfirm: '再按一次確認重設',
     saveAcupBtn: '儲存按壓記錄',
     saveNightBtn: '儲存睡前記錄',
@@ -156,7 +157,7 @@
     slider10: '壓力最大',
     tabTutorial: '教學',
     tabCheckin: '記錄',
-    version: 'v0.10',
+    version: 'v0.11',
     weekOf: '第 {n} 週 / 共 2 週',
     programStart: '開始',
     programEnd: '結束',
@@ -240,6 +241,7 @@
     doneToday: 'Completed today. You can record again after 04:00 am.',
     doneAcup: 'Both sessions done today',
     resetToday: '(Not filled by you today? Tap to reset today\'s record)',
+    resetAcup: '(Not today? Tap to reset today\'s practice record)',
     resetConfirm: 'Tap again to confirm reset',
     saveAcupBtn: 'Save practice record',
     saveNightBtn: 'Save evening record',
@@ -317,7 +319,7 @@
     slider10: 'Most stressed',
     tabTutorial: 'Guide',
     tabCheckin: 'Log',
-    version: 'v0.10',
+    version: 'v0.11',
     weekOf: 'Week {n} of 2',
     programStart: 'Start',
     programEnd: 'End',
@@ -604,17 +606,20 @@
           records = {};
           delete server.__clearedUsers[me];
         }
+        // RE-READ the latest local state: a reset may have happened while the
+        // fetch was in flight — never overwrite it with the stale snapshot
+        var latest = loadRecords();
         // merge: LOCAL wins for days already on this device (user may have reset them);
         // server only fills in days the device has never seen
         Object.keys(server).forEach(function (k) {
           if (k === '__clearedUsers') return;
-          if (!records[k]) records[k] = server[k];
+          if (!latest[k]) latest[k] = server[k];
         });
-        Object.keys(records).forEach(function (k) {
+        Object.keys(latest).forEach(function (k) {
           if (!server[k]) server[k] = {};
-          Object.assign(server[k], records[k]);
+          Object.assign(server[k], latest[k]);
         });
-        saveRecords(records);
+        saveRecords(latest);
         return fetch(url, {
           method: 'PUT',
           headers: headers,
