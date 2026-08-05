@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>教學・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body data-page="tutorial">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.6</span>
+    <span class="pill" data-i18n="version">v0.7</span>
   </header>
 
   <main class="page">
@@ -51,11 +51,22 @@
 
     <div class="so-photo-lg" id="soPhoto"></div>
 
-    <div class="so-info">
+    <div class="so-info" id="soInfo">
       <div class="so-name" id="soName"></div>
       <div class="so-en" id="soEn"></div>
       <div class="so-loc" id="soLoc"></div>
       <div class="so-how" id="soHow"></div>
+    </div>
+
+    <!-- detailed prep (in-flow: occupies the photo area only, bottom controls always visible) -->
+    <div class="prep-layer" id="prepLayer">
+      <div class="prep-box">
+        <div class="prep-title" data-i18n="prepKpTitle">練習要點</div>
+        <div class="prep-item"><span class="pi-ico">💪</span><div><b data-i18n="kpForce">力度</b><p data-i18n="kpForceTxt">以「痠、脹、麻」為準，不應感到痛</p></div></div>
+        <div class="prep-item"><span class="pi-ico">🌬</span><div><b data-i18n="kpBreath">呼吸</b><p data-i18n="kpBreathTxt">全程緩慢深呼吸，放鬆肩膀</p></div></div>
+        <div class="prep-item"><span class="pi-ico">🧘</span><div><b data-i18n="kpMind">心態</b><p data-i18n="kpMindTxt">專注當下，不著急、不勉強</p></div></div>
+        <div class="prep-count"><span id="prepCount">10</span><br><small data-i18n="prepStart">準備開始</small></div>
+      </div>
     </div>
 
     <div class="so-bottom">
@@ -84,17 +95,6 @@
         <span class="vl" id="volVal">70%</span>
       </div>
     </div>
-
-    <!-- detailed prep layer (covers middle only: top bar + bottom controls stay usable) -->
-    <div class="prep-layer" id="prepLayer">
-      <div class="prep-box">
-        <div class="prep-title" data-i18n="prepKpTitle">練習要點</div>
-        <div class="prep-item"><span class="pi-ico">💪</span><div><b data-i18n="kpForce">力度</b><p data-i18n="kpForceTxt">以「痠、脹、麻」為準，不應感到痛</p></div></div>
-        <div class="prep-item"><span class="pi-ico">🌬</span><div><b data-i18n="kpBreath">呼吸</b><p data-i18n="kpBreathTxt">全程緩慢深呼吸，放鬆肩膀</p></div></div>
-        <div class="prep-item"><span class="pi-ico">🧘</span><div><b data-i18n="kpMind">心態</b><p data-i18n="kpMindTxt">專注當下，不著急、不勉強</p></div></div>
-        <div class="prep-count"><span id="prepCount">10</span><br><small data-i18n="prepStart">準備開始</small></div>
-      </div>
-    </div>
   </div>
 
   <div class="praise-screen" id="praiseScreen">
@@ -117,15 +117,15 @@
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=7"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=7"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=8"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=8"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=8"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=8"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=7"></script>
-<script src="app.js?v=7"></script>
+<script src="config.js?v=8"></script>
+<script src="app.js?v=8"></script>
 <script>
 /* ============ 9-step protocol (Cheung 2020: 9 acupoints) ============ */
 var STEPS = [
@@ -205,7 +205,9 @@ function setPhoto(i) {
 
 function showPrep() {
   sess.phase = 'prep'; sess.left = PREP_SEC;
-  document.getElementById('prepLayer').style.display = 'flex';
+  document.getElementById('prepLayer').classList.add('show');
+  document.getElementById('soPhoto').style.display = 'none';
+  document.getElementById('soInfo').style.display = 'none';
   document.getElementById('prepCount').textContent = PREP_SEC;
   document.getElementById('ringTime').textContent = fmtTime(PREP_SEC);
   document.getElementById('ringFreq').textContent = APP.t('prepStart');
@@ -221,7 +223,9 @@ function showPrep() {
 function showCount(i) {
   var x = STEPS[i];
   sess.phase = 'count'; sess.left = x.sec;
-  document.getElementById('prepLayer').style.display = 'none';
+  document.getElementById('prepLayer').classList.remove('show');
+  document.getElementById('soPhoto').style.display = 'flex';
+  document.getElementById('soInfo').style.display = 'block';
   document.getElementById('ringTime').textContent = fmtTime(x.sec);
   document.getElementById('ringFreq').textContent = APP.lang === 'en' ? x.freqEn : x.freqZh;
   document.getElementById('ringFg').style.strokeDashoffset = 0;
@@ -331,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.getElementById('videoClose').addEventListener('click', function () { document.getElementById('videoModal').classList.remove('on'); });
   document.getElementById('videoModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
-  // direct start from home: tutorial.html?v=7#start
+  // direct start from home: tutorial.html?v=8#start
   if (location.hash === '#start') setTimeout(startSession, 400);
   window.pageI18n = function () { renderSteps(); };
 });

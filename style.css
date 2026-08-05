@@ -194,17 +194,17 @@ h2.sect .bar{ width:4px; height:14px; border-radius:2px; background:var(--accent
 .so-vol input{ flex:1; accent-color:var(--accent); }
 .so-vol .vl{ font-size:10.5px; color:var(--accent-deep); font-weight:800; width:34px; text-align:right; }
 
-/* detailed prep layer: covers the middle area only, so top bar + bottom controls stay usable */
-.prep-layer{ position:absolute; top:52px; left:0; right:0; bottom:176px; z-index:3; background:linear-gradient(165deg,#FDEEF2,#F8D9E3); display:none; align-items:center; justify-content:center; padding:16px; border-radius:22px; }
-.prep-layer.on, .prep-layer[style*="flex"]{ }
-.prep-box{ width:100%; max-width:360px; background:#fff; border-radius:22px; padding:22px 20px; box-shadow:0 12px 34px rgba(201,79,107,.22); text-align:center; }
-.prep-title{ font-size:18px; font-weight:800; color:var(--accent-deep); margin-bottom:14px; }
-.prep-item{ display:flex; gap:12px; align-items:flex-start; text-align:left; padding:9px 0; border-bottom:1px dashed var(--line); }
+/* detailed prep (in-flow: occupies the middle area; top bar + bottom controls always visible) */
+.prep-layer{ display:none; flex:1 1 auto; min-height:0; align-items:center; justify-content:center; padding:12px 0; background:linear-gradient(165deg,#FDEEF2,#F8D9E3); border-radius:22px; width:100%; max-width:430px; }
+.prep-layer.show{ display:flex; }
+.prep-box{ width:100%; max-width:360px; background:#fff; border-radius:22px; padding:18px 18px; box-shadow:0 12px 34px rgba(201,79,107,.22); text-align:center; }
+.prep-title{ font-size:18px; font-weight:800; color:var(--accent-deep); margin-bottom:12px; }
+.prep-item{ display:flex; gap:12px; align-items:flex-start; text-align:left; padding:8px 0; border-bottom:1px dashed var(--line); }
 .prep-item:last-of-type{ border-bottom:none; }
 .prep-item .pi-ico{ font-size:22px; flex-shrink:0; }
 .prep-item b{ font-size:14px; display:block; }
 .prep-item p{ font-size:12px; color:#5A5A60; margin-top:1px; }
-.prep-count{ margin-top:14px; font-size:40px; font-weight:800; color:var(--accent); line-height:1.1; }
+.prep-count{ margin-top:12px; font-size:38px; font-weight:800; color:var(--accent); line-height:1.1; }
 .prep-count small{ font-size:11px; color:var(--muted); font-weight:700; }
 
 .praise-screen{ position:fixed; inset:0; z-index:55; background:linear-gradient(165deg,#FDEEF2,#F8D9E3); display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; }

@@ -100,12 +100,6 @@ th{color:#909096;font-size:11px}
         <textarea id="tNoticeEn"></textarea>
       </div>
     </div>
-    <div class="row">
-      <div>
-        <label>📅 計劃開始日期（患者首頁顯示，進度由此起計）</label>
-        <input type="date" id="progStart">
-      </div>
-    </div>
     <div id="uploadList"></div>
     <button id="saveDraft">📥 儲存草稿（不影響患者端）</button>
     <button id="pubBtn">💾 發佈（同步到患者端 + 記入版本）</button>
@@ -123,7 +117,14 @@ th{color:#909096;font-size:11px}
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0">用戶管理（照顧者帳號）</h2>
+    <h2 style="margin-top:0">用戶管理與計劃設定（照顧者帳號）</h2>
+    <div class="row">
+      <div>
+        <label>📅 計劃開始日期（患者首頁顯示，進度由此起計）</label>
+        <input type="date" id="progStart">
+        <button id="pubDate" class="ghost">💾 發佈開始日期</button>
+      </div>
+    </div>
     <div class="row">
       <div><label>用戶名稱</label><input type="text" id="nUser"></div>
       <div><label>密碼</label><input type="text" id="nPass"></div>
@@ -346,6 +347,7 @@ $('pubBtn').onclick = function(){
   publish().then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
     .catch(function(e){ $('mErr').textContent = '發佈失敗：' + e.message; $('mErr').style.display='block'; });
 };
+$('pubDate').onclick = function(){ $('pubBtn').click(); };
 $('saveDraft').onclick = function(){
   var c = currentLive();
   readJSON('data/content/versions.json').then(function(vs){
