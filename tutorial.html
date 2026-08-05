@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>教學・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body data-page="tutorial">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.7</span>
+    <span class="pill" data-i18n="version">v0.8</span>
   </header>
 
   <main class="page">
@@ -117,15 +117,15 @@
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=8"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=8"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=8"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=8"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=9"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=9"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=9"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=9"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=8"></script>
-<script src="app.js?v=8"></script>
+<script src="config.js?v=9"></script>
+<script src="app.js?v=9"></script>
 <script>
 /* ============ 9-step protocol (Cheung 2020: 9 acupoints) ============ */
 var STEPS = [
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.getElementById('videoClose').addEventListener('click', function () { document.getElementById('videoModal').classList.remove('on'); });
   document.getElementById('videoModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
-  // direct start from home: tutorial.html?v=8#start
+  // direct start from home: tutorial.html?v=9#start
   if (location.hash === '#start') setTimeout(startSession, 400);
   window.pageI18n = function () { renderSteps(); };
 });
