@@ -1,5 +1,94 @@
 [
  {
+  "id": 1785931196871,
+  "name": "draft-2026-08-05-11-59",
+  "content": {
+   "messages": {
+    "praise": {
+     "zh": [
+      "做得好！",
+      "十分棒！",
+      "辛苦了，做得很棒！",
+      "堅持就是力量！",
+      "給自己一個讚！"
+     ],
+     "en": [
+      "Well done!",
+      "Great job!",
+      "Beautiful work!",
+      "Keep going, you are strong!",
+      "Give yourself a round of applause!"
+     ]
+    },
+    "heroCheckin": {
+     "zh": [
+      "每一步累積，都是照顧自己的開始。",
+      "小小的記錄，見證大大的進步。",
+      "今天的你，也值得被好好記錄。",
+      "持續記錄，讓改變看得見。"
+     ],
+     "en": [
+      "Each step you take is the start of caring for yourself.",
+      "Small records show big progress.",
+      "You deserve to be recorded today too.",
+      "Keep logging, so change becomes visible."
+     ]
+    }
+   },
+   "research": {
+    "zh": [
+     "本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。",
+     "研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk) | 指導教授：張淑婷 助理教授",
+     "所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。",
+     "本研究並無接受任何資助。",
+     "倫理審批編號：（待定）",
+     "參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。",
+     "如有任何疑問，歡迎聯絡研究團隊。"
+    ],
+    "en": [
+     "This app is for research purposes only, developed by the research team of the School of Nursing, LKS Faculty of Medicine, The University of Hong Kong (HKU).",
+     "Principal investigator: Lam Chun Yin (u3618332@connect.hku.hk) | Supervisor: Denise Cheung, Assistant Professor",
+     "All data will be used for research analysis only, and will be deleted within 36 months after the project is completed.",
+     "This project receives no funding.",
+     "Ethics approval reference: (TBC)",
+     "Participants may leave this project at any time, without giving a reason and without affecting their existing rights.",
+     "For any questions, please contact the research team."
+    ]
+   },
+   "notice": {
+    "zh": [
+     "孕婦或計劃懷孕人士不建議進行穴位按壓。",
+     "如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。",
+     "本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。",
+     "此為研究項目之概念試版，內容會按研究方案及督導意見調整。"
+    ],
+    "en": [
+     "Pregnant women or women planning pregnancy are not advised to do acupressure.",
+     "If any adverse reaction occurs, stop self-administered acupressure immediately and seek professional medical advice.",
+     "This app is not a medical service and cannot replace professional diagnosis, treatment, or advice.",
+     "This is a concept version for a research project; content will be adjusted with the study protocol and supervisor input."
+    ]
+   },
+   "program": {
+    "startDate": "2026-08-05"
+   },
+   "photos": {
+    "hegu": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/hegu.png",
+    "zusanli": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/zusanli.png",
+    "baihui": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/baihui.png",
+    "fengchi": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/fengchi.png",
+    "shenshu": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/shenshu.png",
+    "zhongwan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/zhongwan.png",
+    "qihai": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/qihai.png",
+    "guanyuan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/guanyuan.png",
+    "yongquan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/yongquan.png"
+   },
+   "videos": {}
+  },
+  "published": false,
+  "created": "2026-08-05T11:59:56.871Z"
+ },
+ {
   "id": 1785931184041,
   "name": "v-2026-08-05-11-59",
   "content": {
