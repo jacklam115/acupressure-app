@@ -32,15 +32,15 @@
   }
  },
  "photos": {
-  "hegu": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/hegu.png",
-  "zusanli": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/zusanli.png",
-  "baihui": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/baihui.png",
-  "fengchi": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/fengchi.png",
-  "shenshu": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/shenshu.png",
-  "zhongwan": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/zhongwan.png",
-  "qihai": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/qihai.png",
-  "guanyuan": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/guanyuan.png",
-  "yongquan": "https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/uploads/yongquan.png"
+  "hegu": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/hegu.png",
+  "zusanli": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/zusanli.png",
+  "baihui": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/baihui.png",
+  "fengchi": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/fengchi.png",
+  "shenshu": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/shenshu.png",
+  "zhongwan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/zhongwan.png",
+  "qihai": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/qihai.png",
+  "guanyuan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/guanyuan.png",
+  "yongquan": "https://cdn.jsdelivr.net/gh/jacklam115/acupressure-app@main/data/uploads/yongquan.png"
  },
  "videos": {}
 }

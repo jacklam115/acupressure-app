@@ -265,8 +265,9 @@ function uploadFile(slug, file){
         method:'PUT', body:{ message:'upload ' + slug, content: content, sha: existing?existing.sha:undefined }
       });
     }).then(function(){
-      if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
-      else live.videos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
+      var url = 'https://cdn.jsdelivr.net/gh/' + REPO + '@main/' + path;
+      if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = url;
+      else live.videos[slug] = url;
       buildUploads();
       $('vMsg') && ($('vMsg').style.display='block');
     }).catch(function(){ alert('上載失敗'); });
