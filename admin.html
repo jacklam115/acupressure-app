@@ -118,17 +118,12 @@ th{color:#909096;font-size:11px}
 
   <div class="card">
     <h2 style="margin-top:0">用戶管理與計劃設定（照顧者帳號）</h2>
-    <div class="row">
-      <div>
-        <label>📅 計劃開始日期（患者首頁顯示，進度由此起計）</label>
-        <input type="date" id="progStart">
-        <button id="pubDate" class="ghost">💾 發佈開始日期</button>
-      </div>
-    </div>
+    <p style="font-size:12px;color:#909096;margin-bottom:8px">每位患者可設定各自的開始日期（開始日期 + 13 天 = 結束日期）。患者首頁的 2 週進度以其本人開始日期起計；未設定者沿用「開始日期待設定」直至有記錄。</p>
     <div class="row">
       <div><label>用戶名稱</label><input type="text" id="nUser"></div>
       <div><label>密碼</label><input type="text" id="nPass"></div>
       <div><label>顯示名稱</label><input type="text" id="nName"></div>
+      <div><label>開始日期</label><input type="date" id="nStart"></div>
     </div>
     <button id="addUser">建立用戶</button>
     <span class="err" id="uErr"></span>
@@ -286,7 +281,6 @@ function loadLive(){
     }
     fillList('tResZh','research','zh'); fillList('tResEn','research','en');
     fillList('tNoticeZh','notice','zh'); fillList('tNoticeEn','notice','en');
-    $('progStart').value = (live.program && live.program.startDate) || '';
     buildUploads();
   });
 }
@@ -299,7 +293,6 @@ function currentLive(){
     },
     research: { zh: lines('tResZh'), en: lines('tResEn') },
     notice: { zh: lines('tNoticeZh'), en: lines('tNoticeEn') },
-    program: { startDate: $('progStart').value || null },
     photos: (live&&live.photos)||{},
     videos: (live&&live.videos)||{}
   };
@@ -359,7 +352,6 @@ $('pubBtn').onclick = function(){
   publish().then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
     .catch(function(e){ $('mErr').textContent = '發佈失敗：' + e.message; $('mErr').style.display='block'; });
 };
-$('pubDate').onclick = function(){ $('pubBtn').click(); };
 $('saveDraft').onclick = function(){
   var c = currentLive();
   readJSON('data/content/versions.json').then(function(vs){
@@ -371,16 +363,35 @@ $('saveDraft').onclick = function(){
     .catch(function(e){ $('mErr').textContent = '儲存失敗：' + e.message; $('mErr').style.display='block'; });
 };
 
+function addDays(iso, days){
+  if(!iso) return '—';
+  var d = new Date(iso.slice(0,4), parseInt(iso.slice(5,7),10)-1, parseInt(iso.slice(8,10),10));
+  d.setDate(d.getDate() + days);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 function loadUsers(){
   readJSON('data/users.json').then(function(us){
     us = us || [];
-    var h = '<tr><th>用戶</th><th>密碼</th><th>名稱</th><th>操作</th></tr>';
+    var h = '<tr><th>用戶</th><th>密碼</th><th>名稱</th><th>開始日期</th><th>結束日期</th><th>操作</th></tr>';
     us.forEach(function(u){
+      var sd = u.startDate || '';
       h += '<tr><td><b>'+u.username+'</b></td><td style="color:#C94F6B;font-weight:800">'+(u.password||'—')+'</td><td>'+u.name+'</td>'
-        + '<td><button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini" onclick="viewUser(\''+u.username+'\')">查看記錄</button> <button class="mini danger" onclick="clearUserData(\''+u.username+'\')">清除記錄</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
+        + '<td><input type="date" id="sd_'+u.id+'" value="'+sd+'" style="font-size:12px;padding:6px 8px;width:140px"></td>'
+        + '<td>'+(sd ? addDays(sd, 13) : '—')+'</td>'
+        + '<td><button class="mini" onclick="saveStart('+u.id+')">儲存日期</button> <button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini" onclick="viewUser(\''+u.username+'\')">查看記錄</button> <button class="mini danger" onclick="clearUserData(\''+u.username+'\')">清除記錄</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
     });
     $('userTable').innerHTML = h;
+    if (!us.length) $('nStart').value = new Date().toISOString().slice(0,10);
   });
+}
+function saveStart(id){
+  var sd = $('sd_' + id).value;
+  readJSON('data/users.json').then(function(us){
+    var u = us.find(function(x){ return x.id === id; });
+    if(!u) return;
+    u.startDate = sd || null;
+    return writeJSON('data/users.json', us, 'set start date for ' + u.username);
+  }).then(function(){ loadUsers(); });
 }
 $('addUser').onclick = function(){
   var uname = $('nUser').value.trim(), pw = $('nPass').value, name = $('nName').value.trim();
@@ -390,7 +401,8 @@ $('addUser').onclick = function(){
     if (us.some(function(u){ return u.username === uname; })) { $('uErr').textContent = '用戶名稱已存在'; $('uErr').style.display='block'; return; }
     var salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
     return sha256hex(pw + salt).then(function(hash){
-      us.push({ id: Date.now(), username: uname, name: name, password: pw, salt: salt, hash: hash, created: new Date().toISOString() });
+      us.push({ id: Date.now(), username: uname, name: name, password: pw, salt: salt, hash: hash,
+                startDate: $('nStart').value || null, created: new Date().toISOString() });
       return writeJSON('data/users.json', us, 'add user ' + uname);
     }).then(function(){ loadUsers(); $('nUser').value=$('nPass').value=$('nName').value=''; $('uErr').style.display='none'; });
   });
