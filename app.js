@@ -76,8 +76,9 @@
     saveBtn: '儲存今日記錄',
     savedMsg: '已儲存，辛苦了！',
     fillAll: '請先完成所有項目，才能儲存。',
-    doneToday: '今日已完成，明日 4:00 後可再記錄',
+    doneToday: '今日已完成，明日 04:00 後可再記錄',
     doneAcup: '今日兩次按壓已完成',
+    resetToday: '（如非今日所填，點此重設今日記錄）',
     saveAcupBtn: '儲存按壓記錄',
     saveNightBtn: '儲存睡前記錄',
     // research
@@ -139,6 +140,18 @@
     prepKpTitle: '練習要點',
     prepStart: '準備開始',
     prepReady: '準備好了，開始練習',
+    kpForceTxt: '以「痠、脹、麻」為準，不應感到痛',
+    kpBreathTxt: '全程緩慢深呼吸，放鬆肩膀',
+    kpMindTxt: '專注當下，不著急、不勉強',
+    leaveBtn: '離開',
+    skipBtn: '跳過',
+    prevBtn: '上一步',
+    moodSad: '低落',
+    moodOkay: '一般',
+    slider10: '壓力最大',
+    tabTutorial: '教學',
+    tabCheckin: '記錄',
+    version: 'v0.5',
     syncOk: '記錄已同步',
     syncFail: '目前離線，記錄已儲存在本機'
   };
@@ -213,8 +226,9 @@
     saveBtn: 'Save today\u2019s record',
     savedMsg: 'Saved. Well done!',
     fillAll: 'Please complete every item before saving.',
-    doneToday: 'Completed today. You can record again after 4:00 am.',
+    doneToday: 'Completed today. You can record again after 04:00 am.',
     doneAcup: 'Both sessions done today',
+    resetToday: '(Not filled by you today? Tap to reset today\'s record)',
     saveAcupBtn: 'Save practice record',
     saveNightBtn: 'Save evening record',
     // research
@@ -276,6 +290,18 @@
     prepKpTitle: 'Key points',
     prepStart: 'Get ready',
     prepReady: 'Ready, begin',
+    kpForceTxt: 'Aim for soreness, swelling or numbness — never pain',
+    kpBreathTxt: 'Breathe slowly and deeply; relax your shoulders',
+    kpMindTxt: 'Stay with the present; no rush, no force',
+    leaveBtn: 'Leave',
+    skipBtn: 'Skip',
+    prevBtn: 'Previous',
+    moodSad: 'Low',
+    moodOkay: 'Okay',
+    slider10: 'Most stressed',
+    tabTutorial: 'Guide',
+    tabCheckin: 'Log',
+    version: 'v0.5',
     syncOk: 'Records synced',
     syncFail: 'Offline now, records saved on this device'
   };
@@ -395,6 +421,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     try { lang = localStorage.getItem('acup_lang') === 'en' ? 'en' : 'zh'; } catch (e) {}
     var p = getProfile(); if (p.lang) lang = p.lang;
+    APP.lang = lang;
     document.documentElement.lang = (lang === 'en') ? 'en' : 'zh-Hant';
     initTopbar();
     initTabs();

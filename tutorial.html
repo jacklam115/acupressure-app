@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>教學・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body data-page="tutorial">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.4</span>
+    <span class="pill" data-i18n="version">v0.5</span>
   </header>
 
   <main class="page">
@@ -54,6 +54,7 @@
     <div class="so-info">
       <div class="so-name" id="soName"></div>
       <div class="so-en" id="soEn"></div>
+      <div class="so-loc" id="soLoc"></div>
       <div class="so-how" id="soHow"></div>
     </div>
 
@@ -70,9 +71,10 @@
             <span class="s" id="ringFreq"></span>
           </div>
         </div>
-        <div class="so-ctl">
+        <div class="so-ctl so-ctl3">
+          <button class="btn btn-ghost2" id="prevBtn">⏮ <span data-i18n="prevBtn">上一步</span></button>
           <button class="btn btn-pause" id="pauseBtn"><span data-i18n="pauseBtn">暫停</span></button>
-          <button class="btn btn-skip" id="skipBtn"><span data-i18n="skipBtn">跳過</span> ⏭</button>
+          <button class="btn btn-ghost2" id="nextBtn"><span data-i18n="skipBtn">跳過</span> ⏭</button>
         </div>
       </div>
       <div class="so-vol">
@@ -83,7 +85,7 @@
       </div>
     </div>
 
-    <!-- detailed prep layer -->
+    <!-- detailed prep layer (covers middle only: top bar + bottom controls stay usable) -->
     <div class="prep-layer" id="prepLayer">
       <div class="prep-box">
         <div class="prep-title" data-i18n="prepKpTitle">練習要點</div>
@@ -115,15 +117,15 @@
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=6"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=6"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=5"></script>
-<script src="app.js?v=5"></script>
+<script src="config.js?v=6"></script>
+<script src="app.js?v=6"></script>
 <script>
 /* ============ 9-step protocol (Cheung 2020: 9 acupoints) ============ */
 var STEPS = [
@@ -173,8 +175,10 @@ function renderSteps() {
   var box = document.getElementById('stepList');
   var h = '';
   STEPS.forEach(function (x, i) {
+    var main = APP.lang === 'en' ? x.en : x.zh;
+    var sub = APP.lang === 'en' ? x.zh : x.en;
     h += '<div class="tut-card">'
-      + '<div class="tut-head"><div class="pno">' + (i + 1) + '</div><div><h3>' + x.zh + ' <span class="en">' + x.en + '</span></h3></div></div>'
+      + '<div class="tut-head"><div class="pno">' + (i + 1) + '</div><div><h3>' + main + ' <span class="en">' + sub + '</span></h3></div></div>'
       + '<div class="tut-body">'
       + '<div class="lbl">' + APP.t('location') + '</div><p>' + s(i, 'loc') + '</p>'
       + '<div class="lbl">' + APP.t('method') + '</div><p>' + s(i, 'how') + '</p>'
@@ -209,6 +213,7 @@ function showPrep() {
   document.getElementById('soStep').textContent = APP.t('prepKpTitle');
   document.getElementById('soName').textContent = '';
   document.getElementById('soEn').textContent = '';
+  document.getElementById('soLoc').textContent = '';
   document.getElementById('soHow').textContent = '';
   document.getElementById('soPhoto').innerHTML = '';
 }
@@ -223,7 +228,8 @@ function showCount(i) {
   document.getElementById('soStep').textContent = APP.fmt(APP.t('stepLabel'), { n: i + 1 });
   document.getElementById('soName').textContent = s(i, 'name');
   document.getElementById('soEn').textContent = x.en;
-  document.getElementById('soHow').textContent = s(i, 'loc') + (APP.lang === 'en' ? '. ' : '。') + s(i, 'how');
+  document.getElementById('soLoc').textContent = s(i, 'loc');
+  document.getElementById('soHow').textContent = s(i, 'how');
   setPhoto(i);
 }
 
@@ -305,7 +311,12 @@ document.addEventListener('DOMContentLoaded', function () {
     this.querySelector('span').textContent = sess.paused ? APP.t('resumeBtn') : APP.t('pauseBtn');
     if (audio) { sess.paused ? audio.pause() : audio.play(); }
   });
-  document.getElementById('skipBtn').addEventListener('click', function () {
+  document.getElementById('prevBtn').addEventListener('click', function () {
+    if (sess.phase === 'prep') return;
+    if (sess.idx === 0) { showPrep(); return; }
+    sess.idx--; sess.doneCount = 0; showCount(sess.idx);
+  });
+  document.getElementById('nextBtn').addEventListener('click', function () {
     if (sess.phase === 'prep') { sess.doneCount = 0; showCount(0); return; }
     next();
   });

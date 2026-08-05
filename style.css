@@ -141,14 +141,15 @@ h2.sect .bar{ width:4px; height:14px; border-radius:2px; background:var(--accent
 .so-step{ font-size:12px; font-weight:800; color:var(--accent-deep); letter-spacing:.5px; }
 .so-leave{ border:1.5px solid #F3CDD6; background:#fff; color:var(--accent-deep); font-weight:800; font-size:12px; padding:7px 13px; border-radius:999px; cursor:pointer; }
 
-/* large educational photo (dominant) */
+/* large educational photo (dominant, full picture visible) */
 .so-photo-lg{ width:100%; max-width:430px; flex:1 1 auto; min-height:0; max-height:52vh; border-radius:22px; overflow:hidden; background:#fff; box-shadow:0 10px 30px rgba(201,79,107,.22); display:flex; align-items:center; justify-content:center; }
-.so-photo-lg img, .so-photo-lg svg{ width:100%; height:100%; object-fit:cover; display:block; }
+.so-photo-lg img, .so-photo-lg svg{ max-width:100%; max-height:100%; object-fit:contain; display:block; margin:auto; }
 
 .so-info{ text-align:center; padding:10px 8px 6px; }
 .so-name{ font-size:27px; font-weight:800; color:var(--ink); line-height:1.2; }
 .so-en{ font-size:12.5px; color:var(--accent-deep); font-weight:700; margin-top:2px; }
-.so-how{ font-size:12.5px; color:#7A5A63; margin-top:5px; max-width:350px; margin-left:auto; margin-right:auto; }
+.so-loc{ font-size:14px; color:#7A5A63; font-weight:600; margin-top:6px; line-height:1.4; }
+.so-how{ font-size:14px; color:#5A5A60; font-weight:600; margin-top:2px; line-height:1.4; }
 
 /* bottom: fixed position area (timer stays here the whole session) */
 .so-bottom{ width:100%; max-width:430px; }
@@ -164,6 +165,9 @@ h2.sect .bar{ width:4px; height:14px; border-radius:2px; background:var(--accent
 .watch-ring-sm .ring-txt .s{ font-size:8.5px; color:#7A5A63; font-weight:700; margin-top:2px; }
 .so-ctl{ display:flex; gap:8px; flex:1; }
 .so-ctl .btn{ border:none; cursor:pointer; padding:13px 8px; font-size:12.5px; }
+.so-ctl3{ gap:6px; }
+.so-ctl3 .btn{ padding:12px 4px; font-size:12px; flex:1; }
+.btn-ghost2{ background:rgba(255,255,255,.65); color:var(--accent-deep); }
 .btn-pause{ background:#fff; color:var(--accent-deep); border:1.5px solid #F3CDD6 !important; }
 .btn-skip{ background:rgba(255,255,255,.65); color:var(--accent-deep); }
 .so-vol{ display:flex; align-items:center; gap:10px; margin-top:8px; }
@@ -171,8 +175,8 @@ h2.sect .bar{ width:4px; height:14px; border-radius:2px; background:var(--accent
 .so-vol input{ flex:1; accent-color:var(--accent); }
 .so-vol .vl{ font-size:10.5px; color:var(--accent-deep); font-weight:800; width:34px; text-align:right; }
 
-/* detailed prep layer (full screen, once at start) */
-.prep-layer{ position:absolute; inset:0; z-index:3; background:linear-gradient(165deg,#FDEEF2,#F8D9E3); display:none; align-items:center; justify-content:center; padding:22px; }
+/* detailed prep layer: covers the middle area only, so top bar + bottom controls stay usable */
+.prep-layer{ position:absolute; top:52px; left:0; right:0; bottom:176px; z-index:3; background:linear-gradient(165deg,#FDEEF2,#F8D9E3); display:none; align-items:center; justify-content:center; padding:16px; border-radius:22px; }
 .prep-layer.on, .prep-layer[style*="flex"]{ }
 .prep-box{ width:100%; max-width:360px; background:#fff; border-radius:22px; padding:22px 20px; box-shadow:0 12px 34px rgba(201,79,107,.22); text-align:center; }
 .prep-title{ font-size:18px; font-weight:800; color:var(--accent-deep); margin-bottom:14px; }

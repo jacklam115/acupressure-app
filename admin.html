@@ -88,30 +88,29 @@ th{color:#909096;font-size:11px}
     </div>
     <div class="row">
       <div>
-        <label>研究資訊（中文，每行一句）</label>
+        <label>📝 研究資訊（中文）— 顯示於患者「資料」頁</label>
         <textarea id="tResZh"></textarea>
-        <label>研究資訊（English）</label>
+        <label>📝 研究資訊（English）</label>
         <textarea id="tResEn"></textarea>
       </div>
       <div>
-        <label>注意事項／黃色框（中文，每行一句）</label>
+        <label>⚠️ 注意事項／黃色框（中文）— 「Pregnant women… Adverse effect…」等</label>
         <textarea id="tNoticeZh"></textarea>
-        <label>注意事項／黃色框（English）</label>
+        <label>⚠️ 注意事項／黃色框（English）</label>
         <textarea id="tNoticeEn"></textarea>
       </div>
     </div>
     <div id="uploadList"></div>
-    <label>示範影片（教學頁「先看影片」）</label>
-    <div class="upload-item"><b>tutorial 影片</b><input type="file" id="fVideo" accept="video/*"><span class="st" id="stVideo"></span></div>
-    <button id="upVideo" class="ghost">上載影片（尚未發佈）</button>
-    <button id="pubBtn">💾 發佈目前內容</button>
+    <button id="saveDraft">📥 儲存草稿（不影響患者端）</button>
+    <button id="pubBtn">💾 發佈（同步到患者端 + 記入版本）</button>
     <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
     <span class="err" id="mErr">發佈失敗</span>
   </div>
 
   <div class="card">
     <h2 style="margin-top:0">患者端自動同步</h2>
-    <p style="font-size:12px;color:#909096;margin-bottom:6px">一按把目前瀏覽器內的 GitHub Token 寫入 config.js，患者記錄便會自動同步到 data/records.json（每次儲存與開啟記錄頁時同步）。Token 會以明文存在公開的 config.js 內，只建議在原型階段使用。</p>
+    <p style="font-size:12px;color:#909096;margin-bottom:6px"><b>做法（只需一次）：</b>① 在上方「連接 GitHub」貼上 Token 並連接 → ② 按下面按鈕啟用。之後患者每次儲存記錄都會自動上載到 <b>data/records.json</b>，你在「照顧者記錄」即可看到。</p>
+    <p style="font-size:12.5px;font-weight:800;color:#C94F6B" id="syncStatus">檢查中…</p>
     <button id="enableSync">⚡ 一鍵啟用患者端自動同步</button>
     <span class="msg" id="sMsg">已啟用！患者下次儲存記錄即自動上載</span>
     <span class="err" id="sErr">未找到 GitHub Token，請先在「連接 GitHub」填入</span>
@@ -132,6 +131,7 @@ th{color:#909096;font-size:11px}
   <div class="card">
     <h2 style="margin-top:0">照顧者記錄</h2>
     <button id="loadRecords" class="ghost">載入 data/records.json</button>
+    <button id="exportCsv">📥 下載全部記錄（Excel CSV）</button>
     <div id="userList" style="margin-top:10px"></div>
     <div id="userDetail" style="display:none;margin-top:10px;border-top:2px dashed #EFE7EA;padding-top:10px">
       <p style="font-size:14px;font-weight:800;color:#C94F6B" id="userDetailTitle"></p>
@@ -240,7 +240,7 @@ $('patBtn').onclick = function(){
   }).catch(function(){ $('patErr').style.display='block'; });
 };
 
-function loadAll(){ loadLive(); loadUsers(); loadVersions(); }
+function loadAll(){ loadLive(); loadUsers(); loadVersions(); checkSyncStatus(); }
 
 var DEF_RESEARCH = {
   zh: ['本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。','研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk）','指導教授：張淑婷 Denise Cheung','香港大學李嘉誠醫學院護理學院 School of Nursing, LKS Faculty of Medicine, The University of Hong Kong','所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。','本研究並無接受任何資助。','倫理審批編號：（待定）','參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。','如有任何疑問，歡迎聯絡研究團隊。'],
@@ -261,8 +261,8 @@ function loadLive(){
     fill('tPraiseZh','praise','zh'); fill('tPraiseEn','praise','en');
     fill('tHeroZh','heroCheckin','zh'); fill('tHeroEn','heroCheckin','en');
     function fillList(id, key, lang){
-      var m = (live[key]||{})[lang] || DEF_RESEARCH[lang] || [];
-      if (key === 'notice' && !(live.notice||{})) m = DEF_NOTICE[lang];
+      var m = ((live[key]||{})[lang] || []).filter(Boolean);
+      if (!m.length) m = (key === 'notice' ? DEF_NOTICE[lang] : DEF_RESEARCH[lang]) || [];
       $(id).value = m.join('\n');
     }
     fillList('tResZh','research','zh'); fillList('tResEn','research','en');
@@ -320,7 +320,7 @@ function uploadFile(slug, file){
   };
   reader.readAsDataURL(file);
 }
-$('upVideo').onclick = function(){ var f=$('fVideo').files[0]; if(f) uploadFile('tutorial', f); };
+// (video upload removed in v0.5)
 
 function publish(){
   var c = currentLive();
@@ -337,6 +337,16 @@ function publish(){
 $('pubBtn').onclick = function(){
   publish().then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
     .catch(function(e){ $('mErr').textContent = '發佈失敗：' + e.message; $('mErr').style.display='block'; });
+};
+$('saveDraft').onclick = function(){
+  var c = currentLive();
+  readJSON('data/content/versions.json').then(function(vs){
+    vs = vs || [];
+    vs.unshift({ id: Date.now(), name: 'draft-' + new Date().toISOString().slice(0,16).replace(/[T:]/g,'-'), content: c, published: false, created: new Date().toISOString() });
+    vs = vs.slice(0, 100);
+    return writeJSON('data/content/versions.json', vs, 'save draft');
+  }).then(function(){ $('mMsg').textContent='草稿已儲存（患者端不受影響）'; $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
+    .catch(function(e){ $('mErr').textContent = '儲存失敗：' + e.message; $('mErr').style.display='block'; });
 };
 
 function loadUsers(){
@@ -466,6 +476,57 @@ function clearUserData(user){
     rec.__clearedUsers[user] = new Date().toISOString();
     return writeJSON('data/records.json', rec, 'clear data for ' + user);
   }).then(function(){ $('loadRecords').click(); });
+}
+
+/* ---- export all records to Excel-compatible CSV ---- */
+$('exportCsv').onclick = function(){
+  readJSON('data/records.json').then(function(rec){
+    rec = rec || {};
+    var users = Object.keys(rec).filter(function(u){ return u !== '__clearedUsers'; });
+    var rows = [['用戶','日期','心情','PSS_Q1','PSS_Q2','PSS_Q3','PSS_Q4','PSS分數','整體壓力(0-10)','穴位_第1次','穴位_第2次','穴位總數','不良反應','同步時間']];
+    users.forEach(function(user){
+      Object.keys(rec[user]).forEach(function(day){
+        var d = rec[user][day] || {};
+        var pss = d.pss || {};
+        var s1 = (d.acup&&d.acup[0])||[], s2 = (d.acup&&d.acup[1])||[];
+        rows.push([
+          user, day,
+          ({happy:'開心',okay:'一般',sad:'低落'})[d.mood]||'',
+          pss[0]!==undefined?pss[0]:'', pss[1]!==undefined?pss[1]:'', pss[2]!==undefined?pss[2]:'', pss[3]!==undefined?pss[3]:'',
+          d.score!==undefined?d.score:'',
+          d.slider!==undefined?d.slider:'',
+          s1.map(function(i){return ACUP_NAMES[i]||i}).join('+'),
+          s2.map(function(i){return ACUP_NAMES[i]||i}).join('+'),
+          s1.length+s2.length,
+          (d.adverse||'').replace(/\n/g,' '),
+          d.ts||''
+        ]);
+      });
+    });
+    var csv = '\ufeff' + rows.map(function(r){
+      return r.map(function(c){ return '"' + String(c==null?'':c).replace(/"/g,'""') + '"'; }).join(',');
+    }).join('\r\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '按壓減壓_全部記錄_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+};
+
+/* ---- sync status ---- */
+function checkSyncStatus(){
+  gh('/repos/' + REPO + '/contents/config.js', {notFound:true}).then(function(d){
+    if (!d) { $('syncStatus').textContent = '❌ 未啟用（config.js 沒有 Token）'; return; }
+    var txt = decodeURIComponent(escape(atob(d.content)));
+    if (txt.indexOf('token:') >= 0 && txt.indexOf('""') < 0 && txt.indexOf("''") < 0) {
+      $('syncStatus').textContent = '✅ 已啟用 — 患者記錄會自動同步';
+      $('syncStatus').style.color = '#4CAF7D';
+    } else {
+      $('syncStatus').textContent = '❌ 未啟用（config.js 沒有 Token）';
+    }
+  }).catch(function(){ $('syncStatus').textContent = '❓ 無法檢查（未連接 GitHub）'; });
 }
 
 function loadVersions(){

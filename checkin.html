@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>記錄・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body data-page="checkin">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.4</span>
+    <span class="pill" data-i18n="version">v0.5</span>
   </header>
 
   <main class="page">
@@ -25,7 +25,6 @@
     <div class="ci-block" id="acupBlock">
       <h3 data-i18n="acupressureRecord">今日按壓記錄</h3>
       <p class="sub" data-i18n="acupressureRecordSub">每日可按壓兩次，完成後點擊穴位圖即可標記</p>
-      <p class="sub" style="color:var(--accent-deep);font-weight:700;" data-i18n="resetTime">每日 04:00（香港時間）重置</p>
       <div class="session-tick" id="sessionTabs"></div>
       <div class="point-grid" id="acupGrid"></div>
       <div style="margin-top:10px;">
@@ -69,15 +68,15 @@
   </main>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=6"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=6"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=5"></script>
-<script src="app.js?v=5"></script>
+<script src="config.js?v=6"></script>
+<script src="app.js?v=6"></script>
 <script>
 var POINTS = [
   { slug:'baihui', zh:'百會', en:'GV20' }, { slug:'fengchi', zh:'風池', en:'GB20' }, { slug:'hegu', zh:'合谷', en:'LI4' },
@@ -140,12 +139,15 @@ function imgHtml(p) {
 function renderAcupGrid() {
   var idx = cur.session;
   var done = cur.savedAcup[idx];
+  var en = APP.lang === 'en';
   var h = '';
   POINTS.forEach(function (p, i) {
     var on = cur.acup[idx].indexOf(i) >= 0;
+    var main = en ? p.en : p.zh;
+    var sub = en ? p.zh : p.en;
     h += '<div class="point-card' + (on ? ' on' : '') + '" data-p="' + i + '">'
       + '<div class="pc-img">' + imgHtml(p) + '<span class="pc-tick">' + (on ? '✓' : '') + '</span></div>'
-      + '<div class="pc-name">' + p.zh + '<small>' + p.en + '</small></div></div>';
+      + '<div class="pc-name">' + main + '<small>' + sub + '</small></div></div>';
   });
   document.getElementById('acupGrid').innerHTML = h;
   document.getElementById('acupGrid').querySelectorAll('.point-card').forEach(function (el) {
@@ -197,12 +199,26 @@ function renderAdverse() {
   document.getElementById('adverseBox').value = cur.adverse;
 }
 
-function lockBlock(id, msg) {
+function lockBlock(id, msg, withReset) {
   var el = document.getElementById(id);
   el.classList.add('locked');
   var m = document.createElement('div');
   m.className = 'lock-msg';
-  m.textContent = msg;
+  m.innerHTML = '✓ ' + msg;
+  if (withReset) {
+    var r = document.createElement('button');
+    r.textContent = APP.t('resetToday');
+    r.style.cssText = 'display:block;margin:8px auto 0;background:#fff;border:1.5px solid #F3CDD6;color:var(--accent-deep);border-radius:999px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer;';
+    r.addEventListener('click', function () {
+      if (confirm(APP.t('resetToday'))) {
+        var rec = APP.getToday();
+        delete rec.mood; delete rec.pss; delete rec.slider; delete rec.score; delete rec.adverse; delete rec.adverseYes;
+        APP.setToday(rec);
+        load(); renderSessionTabs(); renderAcupGrid(); renderPSS(); renderMood(); renderAdverse(); applyLock();
+      }
+    });
+    m.appendChild(r);
+  }
   el.appendChild(m);
 }
 
@@ -212,8 +228,8 @@ function applyLock() {
     el.classList.remove('locked');
     var old = el.querySelector('.lock-msg'); if (old) old.remove();
   });
-  if (cur.savedAcup[0] && cur.savedAcup[1]) lockBlock('acupBlock', '✓ ' + APP.t('doneAcup'));
-  if (cur.nightSaved) lockBlock('nightBlock', '✓ ' + APP.t('doneToday'));
+  if (cur.savedAcup[0] && cur.savedAcup[1]) lockBlock('acupBlock', APP.t('doneAcup'));
+  if (cur.nightSaved) lockBlock('nightBlock', APP.t('doneToday'), true);
 }
 
 function afterSave() {
