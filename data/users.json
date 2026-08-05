@@ -1,10 +1,1 @@
-[
- {
-  "id": 1,
-  "username": "patient1",
-  "name": "\u6e2c\u8a66\u7167\u9867\u8005",
-  "salt": "rs339ld8xd20260804",
-  "hash": "7d83999ce0174beb065344d32e0e2fc1b5ccbd9273fb6569fd07ab970ef02f85",
-  "created": "2026-08-04T00:00:00"
- }
-]
+[]
