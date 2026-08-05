@@ -567,11 +567,11 @@
           records = {};
           delete server.__clearedUsers[me];
         }
-        // merge: server wins for days it already has, local wins otherwise
+        // merge: LOCAL wins for days already on this device (user may have reset them);
+        // server only fills in days the device has never seen
         Object.keys(server).forEach(function (k) {
           if (k === '__clearedUsers') return;
-          if (!records[k]) records[k] = {};
-          Object.assign(records[k], server[k]);
+          if (!records[k]) records[k] = server[k];
         });
         Object.keys(records).forEach(function (k) {
           if (!server[k]) server[k] = {};

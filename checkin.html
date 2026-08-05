@@ -113,7 +113,7 @@ function load() {
   cur.slider = rec.slider !== null && rec.slider !== undefined ? rec.slider : 5;
   cur.adverseYes = rec.adverseYes === true ? true : (rec.adverse ? true : null);
   cur.adverse = rec.adverse || '';
-  cur.nightSaved = !!(rec.mood || (rec.pss && Object.keys(rec.pss).length) || rec.score !== undefined);
+  cur.nightSaved = !!(rec.mood || (rec.pss && Object.keys(rec.pss).length) || (rec.score !== null && rec.score !== undefined));
   if (!cur.savedAcup[0] && cur.session !== 0) cur.session = 0;
 }
 
@@ -215,6 +215,7 @@ function lockBlock(id, msg, withReset) {
         delete rec.mood; delete rec.pss; delete rec.slider; delete rec.score; delete rec.adverse; delete rec.adverseYes;
         APP.setToday(rec);
         load(); renderSessionTabs(); renderAcupGrid(); renderPSS(); renderMood(); renderAdverse(); applyLock();
+        APP.syncRecords();   // push the cleared state to the server too
       }
     });
     m.appendChild(r);
