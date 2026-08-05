@@ -113,9 +113,27 @@
     loginHint: '請輸入研究團隊提供的帳號登入，以同步你的記錄。',
     nightBlock: '今日睡前記錄',
     nightBlockSub: '完成第二次按壓後填寫（心情、壓力、任何不適）',
-    adverseTitle: '今日有否任何不適或不良反應？',
-    adversePlaceholder: '（選填）例如：皮膚紅腫、痠痛加劇、頭暈……',
+    adverseTitle: '今日穴位按壓後有否任何不適或不良反應？',
+    adverseYes: '有',
+    adverseNo: '沒有',
+    adversePlaceholder: '請簡單描述不適或反應',
     noAdverse: '沒有不適',
+    researchInfo: '研究資訊',
+    devBy: '本應用程式僅供研究用途，由香港大學護理學院研究團隊開發。',
+    piLine: '研究負責人：林俊賢 Lam Chun Yin（u3618332@connect.hku.hk）',
+    supLine: '督導教授：謝淑君教授（香港大學護理學院助理教授）',
+    dataUse: '所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。',
+    funding: '本研究並無接受任何資助。',
+    ethics: '倫理審批編號：（待定）',
+    withdraw: '參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。',
+    contactInfo: '如有任何疑問，歡迎聯絡研究團隊。',
+    declPreg: '孕婦或計劃懷孕人士不建議進行穴位按壓。',
+    declAdverse: '如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。',
+    declService: '本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。',
+    thisWeekSessions: '本週按壓',
+    streakDays: '連續記錄',
+    daysUnit: '天',
+    timesUnit: '次',
     prepKpTitle: '練習要點',
     prepStart: '準備開始',
     prepReady: '準備好了，開始練習',
@@ -230,9 +248,27 @@
     loginHint: 'Log in with the account provided by the research team to sync your records.',
     nightBlock: 'Evening record',
     nightBlockSub: 'Fill in after the second session (mood, stress, any discomfort)',
-    adverseTitle: 'Any discomfort or adverse reaction today?',
-    adversePlaceholder: '(optional) e.g. skin redness, worse soreness, dizziness...',
+    adverseTitle: 'Any discomfort or adverse reaction after today\'s acupressure?',
+    adverseYes: 'Yes',
+    adverseNo: 'No',
+    adversePlaceholder: 'Briefly describe the discomfort or reaction',
     noAdverse: 'No discomfort',
+    researchInfo: 'Research information',
+    devBy: 'This app is for research purposes only, developed by the research team of the School of Nursing, The University of Hong Kong (HKU).',
+    piLine: 'Principal investigator: Lam Chun Yin (u3618332@connect.hku.hk)',
+    supLine: 'Supervisor: Prof. Denise Cheung, Assistant Professor, School of Nursing, HKU',
+    dataUse: 'All data will be used for research analysis only, and will be deleted within 36 months after the project is completed.',
+    funding: 'This project receives no funding.',
+    ethics: 'Ethics approval reference: (TBC)',
+    withdraw: 'Participants may leave this project at any time, without giving a reason and without affecting their existing rights.',
+    contactInfo: 'For any questions, please contact the research team.',
+    declPreg: 'Pregnant women or women planning pregnancy are not advised to do acupressure.',
+    declAdverse: 'If any adverse reaction occurs, stop self-administered acupressure immediately and seek professional medical advice.',
+    declService: 'This app is not a medical service and cannot replace professional diagnosis, treatment, or advice.',
+    thisWeekSessions: 'This week',
+    streakDays: 'Streak',
+    daysUnit: 'days',
+    timesUnit: 'sessions',
     prepKpTitle: 'Key points',
     prepStart: 'Get ready',
     prepReady: 'Ready, begin',
@@ -458,6 +494,13 @@
     return 'photos/' + slug + '.jpg';
   }
 
+  // safe SVG fallback: pages define window.ACUP_SVG (slug/part -> svg string)
+  function imgFallback(el) {
+    var key = el.getAttribute('data-part') || el.getAttribute('data-slug') || '';
+    var svg = (typeof window.ACUP_SVG === 'object' && window.ACUP_SVG[key]) ? window.ACUP_SVG[key] : null;
+    if (svg) { var d = document.createElement('div'); d.innerHTML = svg; el.parentNode.replaceChild(d.firstChild, el); }
+  }
+
   function syncRecords() {
     var s = session();
     var records = loadRecords();
@@ -487,11 +530,14 @@
         }).then(function () { return true; });
       }).catch(function () { return false; });
     }
-    // tunnel backend fallback
-    if (!s.token) return Promise.resolve(false);
-    return api('/api/sync', { method: 'POST', body: { token: s.token, records: records } })
-      .then(function () { return true; })
-      .catch(function () { return false; });
+    // tunnel backend fallback (only when logged in with a real tunnel token)
+    if (s.token && s.token !== 'github') {
+      return api('/api/sync', { method: 'POST', body: { token: s.token, records: records } })
+        .then(function () { return true; })
+        .catch(function () { return false; });
+    }
+    // GitHub login but no sync token configured -> local only
+    return Promise.resolve(null);
   }
 
   window.APP = {
@@ -502,7 +548,7 @@
     getToday: getToday, setToday: setToday,
     setLang: setLang, applyI18n: applyI18n,
     login: login, logout: logout, fetchContent: fetchContent,
-    pickMsg: pickMsg, photoURL: photoURL, syncRecords: syncRecords,
+    pickMsg: pickMsg, photoURL: photoURL, imgFallback: imgFallback, syncRecords: syncRecords,
     session: session
   };
 })();

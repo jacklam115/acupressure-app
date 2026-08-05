@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>按壓減壓 後台管理 (GitHub)</title>
+<title>照顧者自我穴位按壓計劃 後台管理</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,"PingFang TC","Segoe UI",sans-serif;background:#FAF6F7;color:#2A2A2E;padding:20px;max-width:920px;margin:0 auto}
-h1{font-size:22px;margin-bottom:4px;color:#C94F6B}
-h2{font-size:16px;margin:24px 0 10px;padding-left:8px;border-left:4px solid #E8728A}
+body{font-family:-apple-system,"PingFang TC","Segoe UI",sans-serif;background:#FAF6F7;color:#2A2A2E;padding:20px;max-width:940px;margin:0 auto}
+h1{font-size:21px;margin-bottom:14px;color:#C94F6B}
+h2{font-size:16px;margin:20px 0 10px;padding-left:8px;border-left:4px solid #E8728A}
 .card{background:#fff;border:1px solid #EFE7EA;border-radius:14px;padding:16px;margin-bottom:14px}
 label{font-size:12.5px;font-weight:700;display:block;margin:8px 0 4px}
 input[type=text],input[type=password],textarea{width:100%;border:1.5px solid #EFE7EA;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit}
-textarea{min-height:80px;resize:vertical}
+textarea{min-height:76px;resize:vertical}
 button{background:#E8728A;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;margin:6px 6px 0 0}
 button.ghost{background:#fff;color:#C94F6B;border:1.5px solid #F3CDD6}
 button.mini{background:#FCE9ED;color:#C94F6B;padding:5px 10px;font-size:11.5px}
 button.danger{background:#C0392B}
 table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
-th,td{border-bottom:1px dashed #EFE7EA;padding:7px 6px;text-align:left}
+th,td{border-bottom:1px dashed #EFE7EA;padding:7px 6px;text-align:left;vertical-align:top}
 th{color:#909096;font-size:11px}
 .pill{display:inline-block;background:#FCE9ED;color:#C94F6B;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:800}
 .pill.on{background:#4CAF7D;color:#fff}
@@ -32,34 +32,46 @@ th{color:#909096;font-size:11px}
 .upload-item img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#FBF2F4}
 .upload-item .st{font-size:11px;color:#909096;width:80px}
 .tip{background:#FFF8EC;border:1px solid #F5E3C0;border-radius:10px;padding:10px 12px;font-size:12px;color:#8A6A2F;margin-bottom:10px}
+.strip{display:flex;gap:4px;overflow-x:auto;margin-top:8px}
+.day-cell{flex:0 0 58px;text-align:center;border:1px solid #EFE7EA;border-radius:10px;padding:6px 2px;background:#FBF9FA}
+.day-cell .dm{font-size:10px;color:#909096;font-weight:700}
+.day-cell .em{font-size:18px;line-height:1.3}
+.day-cell .sc{font-size:10.5px;font-weight:800;color:#C94F6B}
+.day-cell .ap{height:4px;border-radius:2px;background:#F3E1E6;margin-top:3px;overflow:hidden}
+.day-cell .ap i{display:block;height:100%;background:#E8728A}
 </style>
 </head>
 <body>
-<h1>🌸 按壓減壓 後台管理（GitHub 版）</h1>
-<p style="font-size:12.5px;color:#909096">永久託管於 GitHub Pages。所有內容、相片、影片、用戶與記錄以檔案形式存入本 repo 的 <b>data/</b>，一按「儲存並發佈」即同步到患者端 App。</p>
+<h1>🌸 照顧者自我穴位按壓計劃 後台管理</h1>
 
-<div class="card" id="patCard">
-  <h2 style="margin-top:0">1. 連接 GitHub（一次性）</h2>
-  <div class="tip">
-    <b>建立 Fine-grained PAT（約 2 分鐘）：</b><br>
-    1. GitHub → Settings → Developer settings → <b>Fine-grained personal access tokens</b> → Generate new token<br>
-    2. Repository access：只選 <b>jacklam115/acupressure-app</b><br>
-    3. Permissions → <b>Contents: Read and write</b><br>
-    4. 產生後把 Token 貼到下面（只會儲存在你這部裝置的瀏覽器）<br>
-    <b>注意：</b>Token 有寫入權限，請勿分享給他人。
-  </div>
-  <label>GitHub Personal Access Token</label>
-  <input type="password" id="patInput" placeholder="github_pat_...">
-  <button id="patBtn">連接並驗證</button>
-  <span class="msg" id="patMsg">已連接</span>
-  <span class="err" id="patErr">驗證失敗，請檢查 Token</span>
-  <div class="login-state" id="patState" style="display:none;font-size:13px;font-weight:800;color:#4CAF7D;margin-top:8px"></div>
+<div class="card" id="loginCard">
+  <h2 style="margin-top:0">管理員登入</h2>
+  <label>用戶名稱</label><input type="text" id="aUser" value="admin">
+  <label>密碼</label><input type="password" id="aPass">
+  <button id="aLogin">登入</button>
+  <span class="err" id="aErr">登入失敗</span>
 </div>
 
 <div id="panel" style="display:none">
 
+  <div class="card" id="patCard">
+    <h2 style="margin-top:0">連接 GitHub（一次性）</h2>
+    <div class="tip">
+      <b>建立 Fine-grained PAT（約 2 分鐘）：</b> GitHub → Settings → Developer settings → <b>Fine-grained personal access tokens</b> → Generate new token →
+      Repository access 只選 <b>jacklam115/acupressure-app</b> → Permissions → <b>Contents: Read and write</b> → 產生後貼到下面。
+      Token 只儲存在你這部裝置的瀏覽器。
+    </div>
+    <label>GitHub Personal Access Token</label>
+    <input type="password" id="patInput" placeholder="github_pat_...">
+    <button id="patBtn">連接並驗證</button>
+    <span class="msg" id="patMsg">已連接</span>
+    <span class="err" id="patErr">驗證失敗</span>
+    <div id="patState" style="display:none;font-size:13px;font-weight:800;color:#4CAF7D;margin-top:8px"></div>
+  </div>
+
   <div class="card">
-    <h2 style="margin-top:0">2. 隨機句子（每行一句）</h2>
+    <h2 style="margin-top:0">內容與媒體</h2>
+    <p style="font-size:12px;color:#909096;margin-bottom:6px">隨機句子（每行一句）、穴位實拍相片、示範影片。所有改動按一次「發佈目前內容」即同步到患者端 App，並自動存入版本歷史。</p>
     <div class="row">
       <div>
         <label>練習完成鼓勵句 praise（中文）</label>
@@ -74,25 +86,17 @@ th{color:#909096;font-size:11px}
         <textarea id="tHeroEn"></textarea>
       </div>
     </div>
-    <button id="pubBtn">💾 儲存並發佈（寫入 live.json + 記入版本）</button>
-    <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
-    <span class="err" id="mErr">儲存失敗</span>
-  </div>
-
-  <div class="card">
-    <h2 style="margin-top:0">3. 相片 / 影片上載（存於 data/uploads/）</h2>
-    <p style="font-size:12px;color:#909096;margin-bottom:8px">上載後按「發佈」即同步到 App（教學頁、計時練習、記錄頁都會顯示）。請保持拍攝風格一致。</p>
     <div id="uploadList"></div>
     <label>示範影片（教學頁「先看影片」）</label>
     <div class="upload-item"><b>tutorial 影片</b><input type="file" id="fVideo" accept="video/*"><span class="st" id="stVideo"></span></div>
-    <button id="upVideo">上載影片</button>
-    <button class="ghost" id="pubAfterUpload">發佈目前內容</button>
-    <span class="msg" id="vMsg">已上載（尚未發佈，請按「發佈」）</span>
-    <span class="err" id="vErr">上載失敗</span>
+    <button id="upVideo" class="ghost">上載影片（尚未發佈）</button>
+    <button id="pubBtn">💾 發佈目前內容</button>
+    <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
+    <span class="err" id="mErr">發佈失敗</span>
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0">4. 用戶管理（照顧者帳號）</h2>
+    <h2 style="margin-top:0">用戶管理（照顧者帳號）</h2>
     <div class="row">
       <div><label>用戶名稱</label><input type="text" id="nUser"></div>
       <div><label>密碼</label><input type="text" id="nPass"></div>
@@ -104,13 +108,18 @@ th{color:#909096;font-size:11px}
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0">5. 照顧者記錄</h2>
+    <h2 style="margin-top:0">照顧者記錄</h2>
     <button id="loadRecords" class="ghost">載入 data/records.json</button>
+    <div id="graphWrap" style="display:none">
+      <p style="font-size:12.5px;font-weight:800;margin-top:10px" id="graphTitle"></p>
+      <div class="strip" id="graphStrip"></div>
+    </div>
     <table id="recTable"></table>
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0">6. 版本歷史</h2>
+    <h2 style="margin-top:0">版本歷史</h2>
+    <p style="font-size:12px;color:#909096">每次發佈自動記錄。點「發佈此版本」即可把指定版本直接推送給患者。</p>
     <table id="verTable"></table>
   </div>
 
@@ -119,7 +128,7 @@ th{color:#909096;font-size:11px}
 <script>
 var REPO = 'jacklam115/acupressure-app';
 var TOKEN = null, USER = null;
-var live = null, versions = [];
+var live = null;
 function $(id){return document.getElementById(id)}
 
 function gh(path, opt){
@@ -150,6 +159,58 @@ function writeJSON(path, data, msg){
     });
   });
 }
+function sha256hex(str){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  });
+}
+
+/* ---- admin login ---- */
+$('aLogin').onclick = function(){
+  var u = $('aUser').value.trim(), p = $('aPass').value;
+  fetch('https://raw.githubusercontent.com/' + REPO + '/main/data/admin.json')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(ad){
+      if (!ad || ad.username !== u) throw new Error('bad');
+      return sha256hex(p + ad.salt).then(function(h){
+        if (h !== ad.hash) throw new Error('bad');
+        sessionStorage.setItem('acup_admin_login', '1');
+        $('loginCard').style.display = 'none';
+        $('panel').style.display = 'block';
+        tryAutoConnect();
+      });
+    })
+    .catch(function(){ $('aErr').style.display='block'; });
+};
+if (sessionStorage.getItem('acup_admin_login') === '1') {
+  $('loginCard').style.display = 'none';
+  $('panel').style.display = 'block';
+  tryAutoConnect();
+}
+function tryAutoConnect(){
+  if (localStorage.getItem('acup_pat')) {
+    TOKEN = localStorage.getItem('acup_pat');
+    gh('/user').then(function(u){
+      USER = u.login;
+      $('patCard').style.display = 'none';
+      $('patState').textContent = '已連接：' + USER;
+      $('patState').style.display = 'block';
+      loadAll();
+    }).catch(function(){ localStorage.removeItem('acup_pat'); });
+  }
+}
+$('patBtn').onclick = function(){
+  TOKEN = $('patInput').value.trim();
+  if(!TOKEN) return;
+  gh('/user').then(function(u){
+    USER = u.login;
+    localStorage.setItem('acup_pat', TOKEN);
+    $('patCard').style.display = 'none';
+    $('patState').textContent = '已連接：' + USER;
+    $('patState').style.display = 'block';
+    loadAll();
+  }).catch(function(){ $('patErr').style.display='block'; });
+};
 
 function loadAll(){ loadLive(); loadUsers(); loadVersions(); }
 
@@ -207,8 +268,8 @@ function uploadFile(slug, file){
       if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
       else live.videos[slug] = 'https://raw.githubusercontent.com/' + REPO + '/main/' + path;
       buildUploads();
-      $('vMsg').style.display='block'; setTimeout(function(){$('vMsg').style.display='none';},2500);
-    }).catch(function(){ $('vErr').style.display='block'; });
+      $('vMsg') && ($('vMsg').style.display='block');
+    }).catch(function(){ alert('上載失敗'); });
   };
   reader.readAsDataURL(file);
 }
@@ -228,24 +289,18 @@ function publish(){
 }
 $('pubBtn').onclick = function(){
   publish().then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadVersions(); })
-    .catch(function(e){ $('mErr').textContent = '儲存失敗：' + e.message; $('mErr').style.display='block'; });
+    .catch(function(e){ $('mErr').textContent = '發佈失敗：' + e.message; $('mErr').style.display='block'; });
 };
-$('pubAfterUpload').onclick = function(){ $('pubBtn').click(); };
 
 function loadUsers(){
   readJSON('data/users.json').then(function(us){
     us = us || [];
-    var h = '<tr><th>ID</th><th>用戶</th><th>名稱</th><th>操作</th></tr>';
+    var h = '<tr><th>用戶</th><th>密碼</th><th>名稱</th><th>操作</th></tr>';
     us.forEach(function(u){
-      h += '<tr><td>'+u.id+'</td><td>'+u.username+'</td><td>'+u.name+'</td>'
+      h += '<tr><td>'+u.username+'</td><td style="color:#C94F6B;font-weight:800">'+(u.password||'')+'</td><td>'+u.name+'</td>'
         + '<td><button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
     });
     $('userTable').innerHTML = h;
-  });
-}
-function sha256hex(str){
-  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
-    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
   });
 }
 $('addUser').onclick = function(){
@@ -256,7 +311,7 @@ $('addUser').onclick = function(){
     if (us.some(function(u){ return u.username === uname; })) { $('uErr').textContent = '用戶名稱已存在'; $('uErr').style.display='block'; return; }
     var salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
     return sha256hex(pw + salt).then(function(hash){
-      us.push({ id: Date.now(), username: uname, name: name, salt: salt, hash: hash, created: new Date().toISOString() });
+      us.push({ id: Date.now(), username: uname, name: name, password: pw, salt: salt, hash: hash, created: new Date().toISOString() });
       return writeJSON('data/users.json', us, 'add user ' + uname);
     }).then(function(){ loadUsers(); $('nUser').value=$('nPass').value=$('nName').value=''; $('uErr').style.display='none'; });
   });
@@ -264,7 +319,6 @@ $('addUser').onclick = function(){
 function delUser(id){
   if(!confirm('刪除用戶？')) return;
   readJSON('data/users.json').then(function(us){
-    us = us || [];
     us = us.filter(function(u){ return u.id !== id; });
     return writeJSON('data/users.json', us, 'delete user ' + id);
   }).then(loadUsers);
@@ -274,35 +328,66 @@ function resetPw(id){
   if(!p) return;
   readJSON('data/users.json').then(function(us){
     var u = us.find(function(x){ return x.id === id; });
+    u.password = p;
     u.salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
     return sha256hex(p + u.salt).then(function(hash){ u.hash = hash; return writeJSON('data/users.json', us, 'reset pw ' + id); });
   }).then(loadUsers);
 }
 
+/* ---- records + graphic summary ---- */
 $('loadRecords').onclick = function(){
   readJSON('data/records.json').then(function(rec){
     rec = rec || {};
-    var h = '<tr><th>用戶</th><th>日期</th><th>心情</th><th>壓力</th><th>穴位</th><th>不適</th></tr>';
-    Object.keys(rec).forEach(function(user){
+    var users = Object.keys(rec);
+    var rows = [];
+    users.forEach(function(user){
       Object.keys(rec[user]).forEach(function(day){
-        var d = rec[user][day] || {};
-        var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
-        var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||d.mood : '';
-        var score = d.score!==undefined && d.score!==null ? d.score+'/16' : '';
-        h += '<tr><td>'+user+'</td><td>'+day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/9</td><td>'+(d.adverse||'')+'</td></tr>';
+        rows.push({ user: user, day: day, d: rec[user][day] || {} });
       });
     });
+    rows.sort(function(a,b){ return a.user.localeCompare(b.user) || a.day.localeCompare(b.day); });
+    var h = '<tr><th>用戶</th><th>日期</th><th>心情</th><th>壓力</th><th>穴位</th><th>不適</th></tr>';
+    rows.forEach(function(r){
+      var d = r.d;
+      var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
+      var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||d.mood : '';
+      var score = d.score!==undefined && d.score!==null ? d.score+'/16' : '';
+      h += '<tr><td>'+r.user+'</td><td>'+r.day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/9</td><td>'+(d.adverse||'')+'</td></tr>';
+    });
     $('recTable').innerHTML = h;
+    // graphic summary: last 14 days per user
+    if (users.length) {
+      var wrap = $('graphWrap');
+      wrap.style.display = 'block';
+      var out = '';
+      users.forEach(function(user){
+        var days = Object.keys(rec[user]).sort().slice(-14);
+        var cells = '';
+        days.forEach(function(day){
+          var d = rec[user][day] || {};
+          var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
+          var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||'' : '';
+          cells += '<div class="day-cell"><div class="dm">'+day.slice(5)+'</div><div class="em">'+mood+'</div>'
+            + '<div class="sc">'+(d.score!==undefined&&d.score!==null?d.score+'/16':'—')+'</div>'
+            + '<div class="ap"><i style="width:'+(pts/9*100)+'%"></i></div></div>';
+        });
+        out += '<p style="font-size:13px;font-weight:800;color:#C94F6B;margin-top:12px">'+user+'</p><div class="strip">'+cells+'</div>';
+      });
+      $('graphTitle').textContent = '最近 14 天圖表（心情・壓力・穴位完成度）';
+      $('graphStrip').innerHTML = out;
+    } else {
+      $('graphWrap').style.display = 'none';
+    }
   });
 };
 
 function loadVersions(){
   readJSON('data/content/versions.json').then(function(vs){
     vs = vs || [];
-    var h = '<tr><th>名稱</th><th>建立</th><th>操作</th></tr>';
+    var h = '<tr><th>版本</th><th>建立</th><th>操作</th></tr>';
     vs.slice(0,20).forEach(function(v){
       h += '<tr><td>'+v.name+'</td><td>'+(v.created||'').slice(0,16)+'</td>'
-        + '<td><button class="mini" onclick="publishVersion('+v.id+')">回復到此版本</button></td></tr>';
+        + '<td><button class="mini" onclick="publishVersion('+v.id+')">發佈此版本</button></td></tr>';
     });
     $('verTable').innerHTML = h;
   });
@@ -312,33 +397,7 @@ function publishVersion(id){
     var v = vs.find(function(x){ return x.id === id; });
     if(!v) return;
     return writeJSON('data/content/live.json', v.content, 'restore version ' + id);
-  }).then(function(){ $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadLive(); });
-}
-
-$('patBtn').onclick = function(){
-  TOKEN = $('patInput').value.trim();
-  if(!TOKEN) return;
-  gh('/user').then(function(u){
-    USER = u.login;
-    localStorage.setItem('acup_pat', TOKEN);
-    localStorage.setItem('acup_pat_user', USER);
-    $('patCard').style.display = 'none';
-    $('panel').style.display = 'block';
-    $('patState').textContent = '已連接：' + USER + '（Token 只儲存在本機瀏覽器）';
-    $('patState').style.display = 'block';
-    loadAll();
-  }).catch(function(){ $('patErr').style.display='block'; });
-};
-if (localStorage.getItem('acup_pat')) {
-  TOKEN = localStorage.getItem('acup_pat');
-  gh('/user').then(function(u){
-    USER = u.login;
-    $('patCard').style.display = 'none';
-    $('panel').style.display = 'block';
-    $('patState').textContent = '已連接：' + USER;
-    $('patState').style.display = 'block';
-    loadAll();
-  }).catch(function(){ localStorage.removeItem('acup_pat'); });
+  }).then(function(){ $('mMsg').textContent='已推送指定版本，App 約 1 分鐘後更新'; $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadLive(); });
 }
 </script>
 </body>

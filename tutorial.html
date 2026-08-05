@@ -11,7 +11,7 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.2</span>
+    <span class="pill" data-i18n="version">v0.3</span>
   </header>
 
   <main class="page">
@@ -149,14 +149,15 @@ var SVG = {
   leg: '<svg viewBox="0 0 200 150"><path d="M88 8 L112 8 L118 70 Q130 84 128 100 L126 138 Q126 144 118 144 L82 144 Q74 144 74 138 L74 100 Q70 84 84 70 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="3"/><circle cx="99" cy="50" r="10" fill="#E8728A" stroke="#fff" stroke-width="3"/></svg>',
   foot: '<svg viewBox="0 0 200 150"><path d="M52 96 Q40 70 66 52 Q110 30 140 44 Q168 58 166 84 Q164 112 138 118 Q110 124 86 116 Q60 108 52 96 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="3"/><circle cx="112" cy="72" r="10" fill="#E8728A" stroke="#fff" stroke-width="3"/></svg>'
 };
+window.ACUP_SVG = SVG;
 
 function s(i, f) {
   var x = STEPS[i];
   if (f === 'name') return APP.lang === 'en' ? x.en : x.zh;
   return APP.lang === 'en' ? x[f + 'En'] : x[f + 'Zh'];
 }
-function imgHtml(x, cls) {
-  return '<img src="' + APP.photoURL(x.slug) + '" alt="' + x.zh + '" onerror="this.outerHTML=\'' + SVG[x.part] + '\'">';
+function imgHtml(x) {
+  return '<img src="' + APP.photoURL(x.slug) + '" alt="' + x.zh + '" data-part="' + x.part + '" loading="lazy" onerror="APP.imgFallback(this)">';
 }
 
 function renderSteps() {
@@ -186,7 +187,7 @@ function totalSeconds() { return STEPS.reduce(function (a, x) { return a + x.sec
 
 function setPhoto(i) {
   var x = STEPS[i];
-  document.getElementById('soPhoto').innerHTML = '<img src="' + APP.photoURL(x.slug) + '" onerror="this.outerHTML=\'' + SVG[x.part] + '\'">';
+  document.getElementById('soPhoto').innerHTML = '<img src="' + APP.photoURL(x.slug) + '" data-part="' + x.part + '" onerror="APP.imgFallback(this)">';
 }
 
 function showPrep() {

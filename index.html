@@ -11,7 +11,7 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.2</span>
+    <span class="pill" data-i18n="version">v0.3</span>
   </header>
 
   <main class="page" style="padding-top:4px;">
@@ -33,6 +33,7 @@
         <span id="wpLabel"></span>
       </div>
       <div class="wp-bar" id="wpBar"></div>
+      <div class="wp-stats" id="wpStats"></div>
     </div>
 
   </main>
@@ -95,27 +96,53 @@ function renderCalendar() {
 function renderWeekProgress(records) {
   var keys = Object.keys(records).sort();
   var bar = document.getElementById('wpBar');
+  var stats = document.getElementById('wpStats');
+  var l = APP.lang;
+  // this-week sessions + streak
+  var now = APP.hkNow();
+  var wkStart = new Date(now); wkStart.setDate(now.getDate() - now.getDay());
+  var wkSessions = 0, streak = 0;
+  keys.forEach(function (k) {
+    var rec = records[k];
+    if (!rec || !rec.acup) return;
+    var n = rec.acup.filter(function (s) { return s && s.length > 0; }).length;
+    var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
+    if (dt >= wkStart && dt <= now) wkSessions += n;
+  });
+  var d = new Date(now);
+  while (true) {
+    var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    var rec = records[key];
+    if (rec && (rec.mood || (rec.acup && rec.acup.some(function (s) { return s && s.length; })))) streak++;
+    else if (streak > 0) break;
+    else if (d.getTime() < now.getTime() - 10 * 86400000) break;
+    d.setDate(d.getDate() - 1);
+  }
   if (!keys.length) {
     bar.innerHTML = '';
     for (var i = 0; i < 8; i++) bar.innerHTML += '<div class="wp-seg"><i></i></div>';
     document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: 0 });
-    return;
+  } else {
+    var base = new Date(keys[0].slice(0, 4), parseInt(keys[0].slice(5, 7), 10) - 1, parseInt(keys[0].slice(8, 10), 10));
+    var weekDone = [0, 0, 0, 0, 0, 0, 0, 0];
+    keys.forEach(function (k) {
+      var rec = records[k];
+      if (!rec || !rec.acup || !rec.acup.some(function (s) { return s && s.length; })) return;
+      var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
+      var w = Math.floor((dt - base) / 86400000 / 7);
+      if (w >= 0 && w < 8) weekDone[w] = 1;
+    });
+    var filled = weekDone.reduce(function (a, b) { return a + b; }, 0);
+    bar.innerHTML = '';
+    for (var i = 0; i < 8; i++) {
+      bar.innerHTML += '<div class="wp-seg' + (weekDone[i] ? ' filled' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
+    }
+    document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
   }
-  var base = new Date(keys[0].slice(0, 4), parseInt(keys[0].slice(5, 7), 10) - 1, parseInt(keys[0].slice(8, 10), 10));
-  var weekDone = [0, 0, 0, 0, 0, 0, 0, 0];
-  keys.forEach(function (k) {
-    var rec = records[k];
-    if (!rec || !rec.acup || !rec.acup.some(function (s) { return s && s.length; })) return;
-    var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
-    var w = Math.floor((dt - base) / 86400000 / 7);
-    if (w >= 0 && w < 8) weekDone[w] = 1;
-  });
-  var filled = weekDone.reduce(function (a, b) { return a + b; }, 0);
-  bar.innerHTML = '';
-  for (var i = 0; i < 8; i++) {
-    bar.innerHTML += '<div class="wp-seg' + (weekDone[i] ? ' filled' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
-  }
-  document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
+  stats.innerHTML =
+    '<div class="wp-stat"><div class="v">' + wkSessions + '</div><div class="l">' + APP.t('thisWeekSessions') + '</div></div>' +
+    '<div class="wp-stat"><div class="v">' + streak + '</div><div class="l">' + APP.t('streakDays') + ' ' + APP.t('daysUnit') + '</div></div>' +
+    '<div class="wp-stat"><div class="v">9</div><div class="l">' + APP.t('statPoints') + '</div></div>';
 }
 
 function openDay(key) {

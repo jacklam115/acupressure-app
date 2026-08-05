@@ -11,7 +11,7 @@
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.2</span>
+    <span class="pill" data-i18n="version">v0.3</span>
   </header>
 
   <main class="page">
@@ -51,8 +51,12 @@
       <input type="range" min="0" max="10" value="5" class="ci-slider" id="stressSlider">
       <div class="ci-slider-row"><span data-i18n="slider0">完全放鬆</span><span>5</span><span data-i18n="slider10">壓力最大</span></div>
 
-      <p style="font-size:12.5px;font-weight:700;margin:12px 0 6px;" data-i18n="adverseTitle">今日有否任何不適或不良反應？</p>
-      <textarea class="ci-text" id="adverseBox" placeholder="" data-i18n-ph="adversePlaceholder"></textarea>
+      <p style="font-size:12.5px;font-weight:700;margin:12px 0 6px;" data-i18n="adverseTitle">今日穴位按壓後有否任何不適或不良反應？</p>
+      <div class="ci-opts" style="max-width:280px;" id="adverseMC">
+        <div class="ci-opt" data-v="no" style="flex:1;"><span data-i18n="adverseNo">沒有</span></div>
+        <div class="ci-opt" data-v="yes" style="flex:1;"><span data-i18n="adverseYes">有</span></div>
+      </div>
+      <textarea class="ci-text" id="adverseBox" style="display:none;margin-top:8px;" data-i18n-ph="adversePlaceholder"></textarea>
 
       <div style="margin-top:12px;">
         <button class="btn btn-primary" id="saveNightBtn" style="width:100%;"><span data-i18n="saveNightBtn">儲存睡前記錄</span></button>
@@ -79,7 +83,7 @@ var POINTS = [
   { slug:'shenshu', zh:'腎俞', en:'UB23' }, { slug:'zhongwan', zh:'中脘', en:'CV12' }, { slug:'qihai', zh:'氣海', en:'CV6' },
   { slug:'guanyuan', zh:'關元', en:'CV4' }, { slug:'zusanli', zh:'足三里', en:'ST36' }, { slug:'yongquan', zh:'涌泉', en:'KD1' }
 ];
-var SVG = {
+window.ACUP_SVG = {
   baihui: '<svg viewBox="0 0 100 75"><ellipse cx="50" cy="38" rx="36" ry="31" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="50" cy="28" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
   fengchi: '<svg viewBox="0 0 100 75"><circle cx="50" cy="22" r="17" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><path d="M41 36 L38 66 Q37 70 42 70 L58 70 Q63 70 62 66 L59 36" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="44" cy="48" r="6" fill="#E8728A" stroke="#fff" stroke-width="2.5"/><circle cx="56" cy="48" r="6" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
   hegu: '<svg viewBox="0 0 100 75"><path d="M30 66 Q23 50 27 37 Q29 29 37 28 L39 22 Q40 18 44 19 L45 26 L48 18 Q49 15 52 17 L51 26 L55 20 Q57 17 60 20 L57 28 L62 24 Q65 22 66 26 L61 32 Q75 35 76 46 Q77 58 70 66 Z" fill="#FBEFF2" stroke="#E8B8C4" stroke-width="2.5"/><circle cx="52" cy="43" r="8" fill="#E8728A" stroke="#fff" stroke-width="2.5"/></svg>',
@@ -96,20 +100,21 @@ var PSS = [
   { zh:'覺得事情順心、一切如意？', en:'You felt that things were going your way?', rev:true },
   { zh:'覺得困難多到應付不來？', en:'You felt difficulties were piling up so high you could not overcome them?', rev:false }
 ];
-var OPTS = APP.t('pssOpts');
-var cur = { session: 0, acup: [[], []], mood: null, pss: {}, slider: 5, adverse: '', savedAcup: [false, false], nightSaved: false };
+var cur = { session: 0, acup: [[], []], mood: null, pss: {}, slider: 5, adverseYes: null, adverse: '', savedAcup: [false, false], nightSaved: false };
 
 function renderHero() { document.getElementById('heroMsg').textContent = APP.pickMsg('heroCheckin'); }
 
 function load() {
   var rec = APP.getToday();
-  cur.acup = rec.acup && rec.acup.length === 2 ? rec.acup : [[], []];
+  cur.acup = rec.acup && rec.acup.length === 2 ? rec.acup.map(function(a){return a.slice();}) : [[], []];
   cur.savedAcup = [cur.acup[0].length > 0, cur.acup[1].length > 0];
   cur.mood = rec.mood || null;
   cur.pss = rec.pss || {};
   cur.slider = rec.slider !== null && rec.slider !== undefined ? rec.slider : 5;
+  cur.adverseYes = rec.adverseYes === true ? true : (rec.adverse ? true : null);
   cur.adverse = rec.adverse || '';
   cur.nightSaved = !!(rec.mood || (rec.pss && Object.keys(rec.pss).length) || rec.score !== undefined);
+  if (!cur.savedAcup[0] && cur.session !== 0) cur.session = 0;
 }
 
 function renderSessionTabs() {
@@ -119,8 +124,16 @@ function renderSessionTabs() {
     return '<button class="st-btn' + (cur.session === i ? ' on' : '') + '" data-s="' + i + '" style="' + (done ? 'border-color:var(--ok);color:var(--ok);' : '') + '">' + l + (done ? ' ✓' : '') + '</button>';
   }).join('');
   document.getElementById('sessionTabs').querySelectorAll('.st-btn').forEach(function (b) {
-    b.addEventListener('click', function () { cur.session = parseInt(b.getAttribute('data-s'), 10); renderSessionTabs(); renderAcupGrid(); });
+    b.addEventListener('click', function () {
+      if (cur.savedAcup[parseInt(b.getAttribute('data-s'), 10)]) return;
+      cur.session = parseInt(b.getAttribute('data-s'), 10);
+      renderSessionTabs(); renderAcupGrid();
+    });
   });
+}
+
+function imgHtml(p) {
+  return '<img src="' + APP.photoURL(p.slug) + '" alt="' + p.zh + '" data-slug="' + p.slug + '" loading="lazy" onerror="APP.imgFallback(this)">';
 }
 
 function renderAcupGrid() {
@@ -129,10 +142,8 @@ function renderAcupGrid() {
   var h = '';
   POINTS.forEach(function (p, i) {
     var on = cur.acup[idx].indexOf(i) >= 0;
-    var url = APP.photoURL(p.slug);
     h += '<div class="point-card' + (on ? ' on' : '') + '" data-p="' + i + '">'
-      + '<div class="pc-img"><img src="' + url + '" alt="' + p.zh + '" loading="lazy" onerror="this.outerHTML=\'' + SVG[p.slug] + '\'">'
-      + '<span class="pc-tick">' + (on ? '✓' : '') + '</span></div>'
+      + '<div class="pc-img">' + imgHtml(p) + '<span class="pc-tick">' + (on ? '✓' : '') + '</span></div>'
       + '<div class="pc-name">' + p.zh + '<small>' + p.en + '</small></div></div>';
   });
   document.getElementById('acupGrid').innerHTML = h;
@@ -143,12 +154,15 @@ function renderAcupGrid() {
       var a = cur.acup[idx];
       var pos = a.indexOf(i);
       if (pos >= 0) a.splice(pos, 1); else a.push(i);
-      renderAcupGrid();
+      // no full re-render -> no page blink
+      el.classList.toggle('on', a.indexOf(i) >= 0);
+      el.querySelector('.pc-tick').textContent = a.indexOf(i) >= 0 ? '✓' : '';
     });
   });
 }
 
 function renderPSS() {
+  var OPTS = APP.t('pssOpts');
   var el = document.getElementById('pssBox');
   var h = '';
   PSS.forEach(function (item, i) {
@@ -174,6 +188,14 @@ function renderMood() {
   });
 }
 
+function renderAdverse() {
+  document.querySelectorAll('#adverseMC .ci-opt').forEach(function (el2) {
+    el2.classList.toggle('sel', (el2.getAttribute('data-v') === 'yes') === (cur.adverseYes === true));
+  });
+  document.getElementById('adverseBox').style.display = cur.adverseYes === true ? 'block' : 'none';
+  document.getElementById('adverseBox').value = cur.adverse;
+}
+
 function lockBlock(id, msg) {
   var el = document.getElementById(id);
   el.classList.add('locked');
@@ -189,14 +211,14 @@ function applyLock() {
     el.classList.remove('locked');
     var old = el.querySelector('.lock-msg'); if (old) old.remove();
   });
-  if (cur.savedAcup[0] && cur.savedAcup[1]) lockBlock('acupBlock', APP.t('doneAcup'));
-  if (cur.nightSaved) lockBlock('nightBlock', APP.t('doneToday'));
+  if (cur.savedAcup[0] && cur.savedAcup[1]) lockBlock('acupBlock', '✓ ' + APP.t('doneAcup'));
+  if (cur.nightSaved) lockBlock('nightBlock', '✓ ' + APP.t('doneToday'));
 }
 
 function afterSave() {
   renderSessionTabs(); renderAcupGrid(); applyLock();
   APP.syncRecords().then(function (ok) {
-    showSaved(ok ? APP.t('syncOk') : APP.t('savedMsg'));
+    showSaved(ok === null ? APP.t('savedMsg') : ok ? APP.t('syncOk') : APP.t('syncFail'));
   });
 }
 
@@ -205,6 +227,11 @@ function saveAcup() {
   APP.setToday({ acup: cur.acup });
   cur.savedAcup[cur.session] = true;
   afterSave();
+  // auto-jump to the second session when the first is done
+  if (cur.session === 0 && !cur.savedAcup[1]) {
+    cur.session = 1;
+    renderSessionTabs(); renderAcupGrid();
+  }
 }
 
 function saveNight() {
@@ -212,7 +239,8 @@ function saveNight() {
   if (Object.keys(cur.pss).length < PSS.length) { alert(APP.t('fillAll')); return; }
   var total = 0;
   PSS.forEach(function (item, i) { total += item.rev ? (4 - cur.pss[i]) : cur.pss[i]; });
-  APP.setToday({ mood: cur.mood, pss: cur.pss, slider: parseInt(document.getElementById('stressSlider').value, 10), score: total, adverse: document.getElementById('adverseBox').value.trim() });
+  var adverseTxt = cur.adverseYes === true ? document.getElementById('adverseBox').value.trim() : '';
+  APP.setToday({ mood: cur.mood, pss: cur.pss, slider: parseInt(document.getElementById('stressSlider').value, 10), score: total, adverseYes: cur.adverseYes, adverse: adverseTxt });
   cur.nightSaved = true;
   afterSave();
 }
@@ -225,13 +253,11 @@ function showSaved(msg) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  OPTS = APP.t('pssOpts');
   renderHero();
   load();
-  renderSessionTabs(); renderAcupGrid(); renderPSS(); renderMood(); applyLock();
+  renderSessionTabs(); renderAcupGrid(); renderPSS(); renderMood(); renderAdverse(); applyLock();
   document.getElementById('stressSlider').value = cur.slider;
   document.getElementById('sliderVal').textContent = cur.slider;
-  document.getElementById('adverseBox').value = cur.adverse;
   document.getElementById('stressSlider').addEventListener('input', function () {
     cur.slider = this.value;
     document.getElementById('sliderVal').textContent = this.value;
@@ -239,10 +265,16 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.mood-btn').forEach(function (b) {
     b.addEventListener('click', function () { cur.mood = b.getAttribute('data-mood'); renderMood(); });
   });
+  document.querySelectorAll('#adverseMC .ci-opt').forEach(function (el2) {
+    el2.addEventListener('click', function () {
+      cur.adverseYes = el2.getAttribute('data-v') === 'yes';
+      renderAdverse();
+    });
+  });
   document.getElementById('saveAcupBtn').addEventListener('click', saveAcup);
   document.getElementById('saveNightBtn').addEventListener('click', saveNight);
   APP.fetchContent().then(function () { renderHero(); renderAcupGrid(); });
-  window.pageI18n = function () { OPTS = APP.t('pssOpts'); renderHero(); renderSessionTabs(); renderAcupGrid(); renderPSS(); applyLock(); };
+  window.pageI18n = function () { renderHero(); renderSessionTabs(); renderAcupGrid(); renderPSS(); renderAdverse(); applyLock(); };
 });
 </script>
 </body>
