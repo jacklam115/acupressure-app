@@ -502,6 +502,19 @@
     if (svg) { var d = document.createElement('div'); d.innerHTML = svg; el.parentNode.replaceChild(d.firstChild, el); }
   }
 
+  // watchdog: re-issue any image still not loaded after 6s (once)
+  function imgWatchdog() {
+    setTimeout(function () {
+      document.querySelectorAll('img[data-part], img[data-slug]').forEach(function (img) {
+        if (!img.complete && !img.getAttribute('data-r')) {
+          img.setAttribute('data-r', '1');
+          var s = img.getAttribute('src');
+          if (s) img.setAttribute('src', s.split('?')[0] + '?r=' + Date.now());
+        }
+      });
+    }, 6000);
+  }
+
   function syncRecords() {
     var s = session();
     var records = loadRecords();
@@ -549,7 +562,7 @@
     getToday: getToday, setToday: setToday,
     setLang: setLang, applyI18n: applyI18n,
     login: login, logout: logout, fetchContent: fetchContent,
-    pickMsg: pickMsg, photoURL: photoURL, imgFallback: imgFallback, syncRecords: syncRecords,
+    pickMsg: pickMsg, photoURL: photoURL, imgFallback: imgFallback, imgWatchdog: imgWatchdog, syncRecords: syncRecords,
     session: session
   };
 })();

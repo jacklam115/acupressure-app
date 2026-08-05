@@ -275,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('saveNightBtn').addEventListener('click', saveNight);
   APP.fetchContent().then(function () { renderHero(); renderAcupGrid(); });
   window.pageI18n = function () { renderHero(); renderSessionTabs(); renderAcupGrid(); renderPSS(); renderAdverse(); applyLock(); };
+  APP.imgWatchdog();
 });
 </script>
 </body>

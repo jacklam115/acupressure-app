@@ -312,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('videoClose').addEventListener('click', function () { document.getElementById('videoModal').classList.remove('on'); });
   document.getElementById('videoModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   window.pageI18n = function () { renderSteps(); };
+  APP.imgWatchdog();
 });
 </script>
 </body>
