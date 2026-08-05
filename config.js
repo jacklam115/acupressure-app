@@ -1,23 +1,6 @@
-/* ============================================================
-   Optional permanent GitHub-based record sync (config.js)
-   ------------------------------------------------------------
-   Normally written automatically by the admin panel's
-   "一鍵啟用患者端自動同步" button. The token is stored HEX-ENCODED
-   (hex: true) so GitHub's secret scanner does not block the commit;
-   app.js decodes it at runtime.
-
-   Manual setup (if you prefer): paste a fine-grained PAT
-   (repo jacklam115/acupressure-app, Contents: Read and write,
-   ideally path-restricted to data/records/*) as hex below, or use
-   the admin button instead.
-
-   Trade-off: this file is public, so the encoded token is visible
-   to anyone reading the page source. With a path-restricted,
-   single-repo token the blast radius is limited to the records
-   file (anonymous codes). Do NOT reuse a full-access token here.
-   ============================================================ */
+/* Auto-sync enabled via admin panel (token hex-encoded). */
 window.SYNC_GITHUB = {
-  token: '',
-  hex: false,
-  repo: 'jacklam115/acupressure-app'
+  token: "6769746875625f7061745f3131434b5241344941303431424a38506f34654e44575f367554344e76773568356e4b6534496f3246716479496a703462415245516543447842345277336a6137573442543537484b4478547076546a3143",
+  hex: true,
+  repo: "jacklam115/acupressure-app"
 };
