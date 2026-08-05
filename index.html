@@ -4,17 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body data-page="home">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.5</span>
+    <span class="pill" data-i18n="version">v0.6</span>
   </header>
 
   <main class="page" style="padding-top:4px;">
+
+    <div class="hero home-hero">
+      <div class="cta-row" style="margin-top:0;">
+        <a class="btn btn-primary btn-lg" href="tutorial.html?v=7#start" style="width:100%;">▶ <span data-i18n="startBtn">開始計時練習</span></a>
+      </div>
+    </div>
 
     <div class="cal-wrap">
       <div class="cal-head">
@@ -33,6 +39,7 @@
         <span id="wpLabel"></span>
       </div>
       <div class="wp-bar" id="wpBar"></div>
+      <div class="wp-dates" id="wpDates"></div>
       <div class="wp-stats" id="wpStats"></div>
     </div>
 
@@ -46,22 +53,38 @@
     </div>
   </div>
 
+  <!-- full-screen login gate -->
+  <div class="login-gate" id="loginGate">
+    <div class="lg-box">
+      <div class="lg-logo">🌸</div>
+      <div class="lg-title" data-i18n="appTitle">照顧者自我穴位按壓計劃</div>
+      <div class="lg-sub" data-i18n="loginHint">請輸入研究團隊提供的帳號登入，以同步你的記錄。</div>
+      <input class="in-field" id="lgUser" type="text" placeholder="" data-i18n-ph="username">
+      <input class="in-field" id="lgPass" type="password" placeholder="" data-i18n-ph="password">
+      <div class="login-err" id="lgErr" data-i18n="loginErr">用戶名稱或密碼不正確</div>
+      <button class="btn btn-primary" id="lgBtn" style="width:100%;"><span data-i18n="loginBtn">登入</span></button>
+      <div class="lg-divider"><span></span><b data-i18n="lgOr">或</b><span></span></div>
+      <button class="btn btn-ghost" id="lgGuest" style="width:100%;"><span data-i18n="lgGuest">以訪客身分進入（記錄不會同步）</span></button>
+    </div>
+  </div>
+
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=6"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=6"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=7"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=7"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="config.js?v=7"></script>
+<script src="app.js?v=7"></script>
 <script>
 var DOW = { zh: ['日','一','二','三','四','五','六'], en: ['Su','Mo','Tu','We','Th','Fr','Sa'] };
 var MONTHS = { zh: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
                en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] };
 var MOODS = { happy: '😄', okay: '😐', sad: '☹️' };
 var viewY, viewM;
+var PROG_START = null;   // program start date (from admin content)
 
 function monthTitle() { return MONTHS[APP.lang === 'en' ? 'en' : 'zh'][viewM] + ' ' + viewY; }
 function moodOf(rec) { return rec && rec.mood ? (MOODS[rec.mood] || null) : null; }
@@ -83,7 +106,7 @@ function renderCalendar() {
     var mood = moodOf(rec);
     var isToday = key === todayKey;
     var sessions = daySessions(rec);
-    var full = !!rec && sessions >= 2 && (rec.mood || rec.score !== undefined);
+    var full = !!rec && sessions >= 2 && (rec.mood || rec.score != null);
     h += '<div class="cal-day' + (isToday ? ' today' : '') + (rec ? ' done' : '') + (isToday && full ? ' full' : '') + '" data-key="' + key + '">'
        + (mood ? '<span class="mood-emoji">' + mood + '</span>' : '<span class="day-num">' + d + '</span>')
        + (mood ? '<span class="day-num">' + d + '</span>' : '') + '</div>';
@@ -99,9 +122,37 @@ function renderWeekProgress(records) {
   var keys = Object.keys(records).sort();
   var bar = document.getElementById('wpBar');
   var stats = document.getElementById('wpStats');
-  var l = APP.lang;
-  // this-week sessions + streak
+  var dates = document.getElementById('wpDates');
   var now = APP.hkNow();
+  var todayKey = APP.hkDayKey(now);
+
+  // program window from admin-set start date (fallback: first record date)
+  var start = null;
+  var c = APP.getContent();
+  if (c && c.program && c.program.startDate) start = c.program.startDate;
+  if (!start && keys.length) start = keys[0];
+  var end = start ? addDays(start, 8 * 7 - 1) : null;
+
+  if (start) {
+    var sdt = new Date(start.slice(0, 4), parseInt(start.slice(5, 7), 10) - 1, parseInt(start.slice(8, 10), 10));
+    var weekIdx = Math.floor((now - sdt) / 86400000 / 7) + 1;   // 1-based, from start date
+    if (weekIdx < 1) weekIdx = 1;
+    if (weekIdx > 8) weekIdx = 8;
+    bar.innerHTML = '';
+    for (var i = 0; i < 8; i++) {
+      bar.innerHTML += '<div class="wp-seg' + (i < weekIdx ? ' filled' : '') + (i === weekIdx - 1 ? ' cur' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
+    }
+    document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weekOf'), { n: weekIdx });
+    dates.innerHTML = '<div class="wp-date">📅 ' + APP.t('programStart') + ' ' + start + '</div>'
+      + '<div class="wp-date">🏁 ' + APP.t('programEnd') + ' ' + end + '</div>';
+  } else {
+    bar.innerHTML = '';
+    for (var i = 0; i < 8; i++) bar.innerHTML += '<div class="wp-seg"><i></i></div>';
+    document.getElementById('wpLabel').textContent = APP.t('noStartDate');
+    dates.innerHTML = '';
+  }
+
+  // stats: this-week sessions + streak
   var wkStart = new Date(now); wkStart.setDate(now.getDate() - now.getDay());
   var wkSessions = 0, streak = 0;
   keys.forEach(function (k) {
@@ -111,40 +162,25 @@ function renderWeekProgress(records) {
     var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
     if (dt >= wkStart && dt <= now) wkSessions += n;
   });
-  var d = new Date(now);
+  var d2 = new Date(now);
   while (true) {
-    var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    var key = d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0') + '-' + String(d2.getDate()).padStart(2, '0');
     var rec = records[key];
     if (rec && (rec.mood || (rec.acup && rec.acup.some(function (s) { return s && s.length; })))) streak++;
     else if (streak > 0) break;
-    else if (d.getTime() < now.getTime() - 10 * 86400000) break;
-    d.setDate(d.getDate() - 1);
-  }
-  if (!keys.length) {
-    bar.innerHTML = '';
-    for (var i = 0; i < 8; i++) bar.innerHTML += '<div class="wp-seg"><i></i></div>';
-    document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: 0 });
-  } else {
-    var base = new Date(keys[0].slice(0, 4), parseInt(keys[0].slice(5, 7), 10) - 1, parseInt(keys[0].slice(8, 10), 10));
-    var weekDone = [0, 0, 0, 0, 0, 0, 0, 0];
-    keys.forEach(function (k) {
-      var rec = records[k];
-      if (!rec || !rec.acup || !rec.acup.some(function (s) { return s && s.length; })) return;
-      var dt = new Date(k.slice(0, 4), parseInt(k.slice(5, 7), 10) - 1, parseInt(k.slice(8, 10), 10));
-      var w = Math.floor((dt - base) / 86400000 / 7);
-      if (w >= 0 && w < 8) weekDone[w] = 1;
-    });
-    var filled = weekDone.reduce(function (a, b) { return a + b; }, 0);
-    bar.innerHTML = '';
-    for (var i = 0; i < 8; i++) {
-      bar.innerHTML += '<div class="wp-seg' + (weekDone[i] ? ' filled' : '') + '"><i></i><span class="w">' + (i + 1) + '</span></div>';
-    }
-    document.getElementById('wpLabel').textContent = APP.fmt(APP.t('weeksDone'), { n: filled });
+    else if (d2.getTime() < now.getTime() - 10 * 86400000) break;
+    d2.setDate(d2.getDate() - 1);
   }
   stats.innerHTML =
     '<div class="wp-stat"><div class="v">' + wkSessions + '</div><div class="l">' + APP.t('thisWeekSessions') + '</div></div>' +
     '<div class="wp-stat"><div class="v">' + streak + '</div><div class="l">' + APP.t('streakDays') + ' ' + APP.t('daysUnit') + '</div></div>' +
     '<div class="wp-stat"><div class="v">9</div><div class="l">' + APP.t('statPoints') + '</div></div>';
+}
+
+function addDays(iso, days) {
+  var d = new Date(iso.slice(0, 4), parseInt(iso.slice(5, 7), 10) - 1, parseInt(iso.slice(8, 10), 10));
+  d.setDate(d.getDate() + days);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 function openDay(key) {
@@ -158,27 +194,49 @@ function openDay(key) {
     var sessions = daySessions(rec);
     var pts = 0;
     if (rec.acup) rec.acup.forEach(function (s) { if (s) pts += s.length; });
-    var stressTxt = rec.score !== null && rec.score !== undefined ? rec.score + ' / 16' : (rec.slider !== null && rec.slider !== undefined ? rec.slider + ' / 10' : '—');
+    var stressTxt = rec.score != null ? rec.score + ' / 16' : (rec.slider != null ? rec.slider + ' / 10' : '—');
     body.innerHTML =
       '<div class="m-row"><span class="k">' + APP.t('moodLabel') + '</span><span class="v">' + (moodOf(rec) || '—') + '</span></div>' +
       '<div class="m-row"><span class="k">' + APP.t('stressLabel') + '</span><span class="v">' + stressTxt + '</span></div>' +
-      '<div class="m-row"><span class="k">' + APP.t('acupointLabel') + '</span><span class="v">' + pts + ' / 9</span></div>' +
+      '<div class="m-row"><span class="k">' + APP.t('acupointLabel') + '</span><span class="v">' + pts + ' / 18</span></div>' +
       '<div class="m-row"><span class="k">' + APP.t('complianceLabel') + '</span><span class="v">' + sessions + ' ' + APP.t('complianceUnit') + '</span></div>' +
       (rec.adverse ? '<div class="m-note">⚠️ ' + rec.adverse + '</div>' : '');
   }
   document.getElementById('dayModal').classList.add('on');
 }
 
+/* ---------- full-screen login gate ---------- */
+function renderGate() {
+  var s = APP.session();
+  var gate = document.getElementById('loginGate');
+  if (s.token) { gate.style.display = 'none'; return; }
+  gate.style.display = 'flex';
+}
+document.getElementById('lgBtn').addEventListener('click', function () {
+  var u = document.getElementById('lgUser').value.trim();
+  var p = document.getElementById('lgPass').value;
+  if (!u || !p) { document.getElementById('lgErr').style.display = 'block'; return; }
+  APP.login(u, p).then(function () {
+    document.getElementById('lgErr').style.display = 'none';
+    renderGate();
+    APP.syncRecords();
+  }).catch(function () { document.getElementById('lgErr').style.display = 'block'; });
+});
+document.getElementById('lgGuest').addEventListener('click', function () {
+  APP.guestLogin().then(renderGate);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
   var now = APP.hkNow();
   viewY = now.getFullYear(); viewM = now.getMonth();
   renderCalendar();
-  APP.fetchContent();
+  APP.fetchContent().then(function () { renderCalendar(); });
+  renderGate();
   document.getElementById('prevMonth').addEventListener('click', function () { viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCalendar(); });
   document.getElementById('nextMonth').addEventListener('click', function () { viewM++; if (viewM > 11) { viewM = 0; viewY++; } renderCalendar(); });
   document.getElementById('modalClose').addEventListener('click', function () { document.getElementById('dayModal').classList.remove('on'); });
   document.getElementById('dayModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
-  window.pageI18n = function () { renderCalendar(); };
+  window.pageI18n = function () { renderCalendar(); renderGate(); };
 });
 </script>
 </body>

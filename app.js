@@ -79,6 +79,7 @@
     doneToday: '今日已完成，明日 04:00 後可再記錄',
     doneAcup: '今日兩次按壓已完成',
     resetToday: '（如非今日所填，點此重設今日記錄）',
+    resetConfirm: '再按一次確認重設',
     saveAcupBtn: '儲存按壓記錄',
     saveNightBtn: '儲存睡前記錄',
     // research
@@ -105,6 +106,10 @@
     aimText: '本計劃旨在開發一款自我穴位按壓應用程式，讓家庭照顧者可以在家中自行練習，以紓緩照顧壓力，並測試應用程式的可用性與接受度。',
     aimTextEn: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
     loginTitle: '登入',
+    accountTitle: '帳號',
+    guestLabel: '訪客',
+    guestNoSync: '記錄不會同步',
+    notLoggedIn: '尚未登入',
     username: '用戶名稱',
     password: '密碼',
     loginBtn: '登入',
@@ -151,7 +156,13 @@
     slider10: '壓力最大',
     tabTutorial: '教學',
     tabCheckin: '記錄',
-    version: 'v0.5',
+    version: 'v0.6',
+    weekOf: '第 {n} 週 / 共 8 週',
+    programStart: '開始',
+    programEnd: '結束',
+    noStartDate: '開始日期待設定',
+    lgOr: '或',
+    lgGuest: '以訪客身分進入（記錄不會同步）',
     syncOk: '記錄已同步',
     syncFail: '目前離線，記錄已儲存在本機'
   };
@@ -229,6 +240,7 @@
     doneToday: 'Completed today. You can record again after 04:00 am.',
     doneAcup: 'Both sessions done today',
     resetToday: '(Not filled by you today? Tap to reset today\'s record)',
+    resetConfirm: 'Tap again to confirm reset',
     saveAcupBtn: 'Save practice record',
     saveNightBtn: 'Save evening record',
     // research
@@ -255,6 +267,10 @@
     aimText: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
     aimTextEn: 'This project develops a self-administered acupressure app so family caregivers can practice at home to relieve caregiving stress, and tests the app for usability and acceptance.',
     loginTitle: 'Log in',
+    accountTitle: 'Account',
+    guestLabel: 'Guest',
+    guestNoSync: 'records will not sync',
+    notLoggedIn: 'Not logged in',
     username: 'Username',
     password: 'Password',
     loginBtn: 'Log in',
@@ -301,7 +317,13 @@
     slider10: 'Most stressed',
     tabTutorial: 'Guide',
     tabCheckin: 'Log',
-    version: 'v0.5',
+    version: 'v0.6',
+    weekOf: 'Week {n} of 8',
+    programStart: 'Start',
+    programEnd: 'End',
+    noStartDate: 'Start date not set',
+    lgOr: 'or',
+    lgGuest: 'Continue as guest (records will not sync)',
     syncOk: 'Records synced',
     syncFail: 'Offline now, records saved on this device'
   };
@@ -451,7 +473,15 @@
 
   function session() {
     var p = getProfile();
-    return { token: p.token || null, name: p.name || null };
+    return { token: p.token || null, name: p.name || null, user: p.user || null, guest: !!p.guest };
+  }
+
+  function guestLogin() {
+    var p = getProfile();
+    p.token = 'guest'; p.name = p.name || '訪客'; p.user = null; p.guest = true;
+    saveProfile(p);
+    localStorage.setItem('acup_session', JSON.stringify({ token: 'guest', name: '訪客' }));
+    return Promise.resolve({ token: 'guest', name: '訪客' });
   }
 
   function login(username, password) {
@@ -485,7 +515,7 @@
 
   function logout() {
     var p = getProfile();
-    delete p.token; delete p.name;
+    delete p.token; delete p.name; delete p.user; delete p.guest;
     saveProfile(p);
     localStorage.removeItem('acup_session');
   }
@@ -548,6 +578,7 @@
 
   function syncRecords() {
     var s = session();
+    if (s.guest) return Promise.resolve(null);   // guest mode: local only, no backend sync
     var records = loadRecords();
     // permanent GitHub path (if token configured in config.js)
     var g = (typeof window.SYNC_GITHUB === 'object') ? window.SYNC_GITHUB : null;
@@ -606,8 +637,8 @@
     loadRecords: loadRecords, saveRecords: saveRecords,
     getToday: getToday, setToday: setToday,
     setLang: setLang, applyI18n: applyI18n,
-    login: login, logout: logout, fetchContent: fetchContent,
+    login: login, logout: logout, guestLogin: guestLogin, fetchContent: fetchContent,
     pickMsg: pickMsg, photoURL: photoURL, imgFallback: imgFallback, imgWatchdog: imgWatchdog, syncRecords: syncRecords,
-    session: session
+    session: session, getContent: function () { return contentCache; }
   };
 })();

@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>資料・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body data-page="research">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.5</span>
+    <span class="pill" data-i18n="version">v0.6</span>
   </header>
 
   <main class="page">
@@ -21,20 +21,11 @@
       <h1 data-i18n="aimText">本計劃旨在開發一款自我穴位按壓應用程式，讓家庭照顧者可以在家中自行練習，以紓緩照顧壓力，並測試應用程式的可用性與接受度。</h1>
     </div>
 
-    <!-- login -->
+    <!-- account -->
     <div class="login-card">
-      <h3 data-i18n="loginTitle">登入</h3>
-      <p class="sub" style="margin-bottom:10px;" data-i18n="loginHint">請輸入研究團隊提供的帳號登入，以同步你的記錄。</p>
-      <div id="loginForm">
-        <input class="in-field" id="loginUser" type="text" placeholder="" data-i18n-ph="username">
-        <input class="in-field" id="loginPass" type="password" placeholder="" data-i18n-ph="password">
-        <div class="login-err" id="loginErr" data-i18n="loginErr">用戶名稱或密碼不正確</div>
-        <button class="btn btn-primary" id="loginBtn" style="width:100%;"><span data-i18n="loginBtn">登入</span></button>
-      </div>
-      <div id="loginState" style="display:none;">
-        <div class="login-state" id="welcomeTxt"></div>
-        <button class="btn btn-ghost" id="logoutBtn" style="width:100%;"><span data-i18n="logoutBtn">登出</span></button>
-      </div>
+      <h3 data-i18n="accountTitle">帳號</h3>
+      <div class="login-state" id="acctState"></div>
+      <button class="btn btn-ghost" id="logoutBtn" style="width:100%;"><span data-i18n="logoutBtn">登出</span></button>
     </div>
 
     <!-- research info -->
@@ -66,27 +57,25 @@
   </main>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=6"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=6"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=7"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=7"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=7"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="config.js?v=7"></script>
+<script src="app.js?v=7"></script>
 <script>
-function renderLogin() {
+function renderAccount() {
   var s = APP.session();
-  var form = document.getElementById('loginForm');
-  var state = document.getElementById('loginState');
-  if (s.token) {
-    form.style.display = 'none';
-    state.style.display = 'block';
-    document.getElementById('welcomeTxt').textContent = APP.fmt(APP.t('welcomeBack'), { name: s.name });
+  var el = document.getElementById('acctState');
+  if (s.guest) {
+    el.textContent = '👤 ' + APP.t('guestLabel') + '（' + APP.t('guestNoSync') + '）';
+  } else if (s.token) {
+    el.textContent = '👤 ' + s.name;
   } else {
-    form.style.display = 'block';
-    state.style.display = 'none';
+    el.textContent = APP.t('notLoggedIn');
   }
 }
 
@@ -110,27 +99,17 @@ function renderResearchFromContent() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  renderLogin();
+  renderAccount();
   APP.fetchContent().then(function (c) {
     window.__contentCache = c;
     renderResearchFromContent();
   });
-  document.getElementById('loginBtn').addEventListener('click', function () {
-    var u = document.getElementById('loginUser').value.trim();
-    var p = document.getElementById('loginPass').value;
-    if (!u || !p) { showErr(); return; }
-    APP.login(u, p).then(function () {
-      document.getElementById('loginErr').style.display = 'none';
-      renderLogin();
-      APP.syncRecords();
-    }).catch(function () { showErr(); });
-  });
   document.getElementById('logoutBtn').addEventListener('click', function () {
     APP.logout();
-    renderLogin();
+    renderAccount();
+    window.location.href = 'index.html?v=7';   // back to the login gate
   });
-  function showErr() { document.getElementById('loginErr').style.display = 'block'; }
-  window.pageI18n = function () { renderLogin(); renderResearchFromContent(); };
+  window.pageI18n = function () { renderAccount(); renderResearchFromContent(); };
 });
 </script>
 </body>

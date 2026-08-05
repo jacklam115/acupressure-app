@@ -100,6 +100,12 @@ th{color:#909096;font-size:11px}
         <textarea id="tNoticeEn"></textarea>
       </div>
     </div>
+    <div class="row">
+      <div>
+        <label>📅 計劃開始日期（患者首頁顯示，進度由此起計）</label>
+        <input type="date" id="progStart">
+      </div>
+    </div>
     <div id="uploadList"></div>
     <button id="saveDraft">📥 儲存草稿（不影響患者端）</button>
     <button id="pubBtn">💾 發佈（同步到患者端 + 記入版本）</button>
@@ -267,6 +273,7 @@ function loadLive(){
     }
     fillList('tResZh','research','zh'); fillList('tResEn','research','en');
     fillList('tNoticeZh','notice','zh'); fillList('tNoticeEn','notice','en');
+    $('progStart').value = (live.program && live.program.startDate) || '';
     buildUploads();
   });
 }
@@ -279,6 +286,7 @@ function currentLive(){
     },
     research: { zh: lines('tResZh'), en: lines('tResEn') },
     notice: { zh: lines('tNoticeZh'), en: lines('tNoticeEn') },
+    program: { startDate: $('progStart').value || null },
     photos: (live&&live.photos)||{},
     videos: (live&&live.videos)||{}
   };
@@ -418,7 +426,7 @@ $('loadRecords').onclick = function(){
       var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
       var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||d.mood : '';
       var score = d.score!==undefined && d.score!==null ? d.score+'/16' : '';
-      h += '<tr><td>'+r.user+'</td><td>'+r.day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/9</td><td>'+(d.adverse||'')+'</td></tr>';
+      h += '<tr><td>'+r.user+'</td><td>'+r.day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/18</td><td>'+(d.adverse||'')+'</td></tr>';
     });
     $('recTable').innerHTML = h;
     // graphic summary (all users)
@@ -442,7 +450,7 @@ function stripCells(rec, days){
     var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||'' : '';
     cells += '<div class="day-cell"><div class="dm">'+day.slice(5)+'</div><div class="em">'+mood+'</div>'
       + '<div class="sc">'+(d.score!==undefined&&d.score!==null?d.score+'/16':'—')+'</div>'
-      + '<div class="ap"><i style="width:'+(pts/9*100)+'%"></i></div></div>';
+      + '<div class="ap"><i style="width:'+(pts/18*100)+'%"></i></div></div>';
   });
   return cells;
 }
