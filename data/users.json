@@ -6,5 +6,14 @@
   "salt": "1e1giaa0882msff31ee",
   "hash": "4235d593bf0532133473c48b0e09fc8d5578a982e5f11cbbc9ba766f3407b4e4",
   "created": "2026-08-05T01:37:24.195Z"
+ },
+ {
+  "id": 1785930153260,
+  "username": "test2",
+  "name": "test2",
+  "password": "test2",
+  "salt": "atk9wqa1dgnmsg0p9nu",
+  "hash": "22ad35fdf2df2506d380b3deb06670bbe58b287637b59fa6d154b322fe983bf7",
+  "created": "2026-08-05T11:42:33.260Z"
  }
 ]
