@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>資料・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-page="research">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.3</span>
+    <span class="pill" data-i18n="version">v0.4</span>
   </header>
 
   <main class="page">
@@ -40,22 +40,27 @@
     <!-- research info -->
     <div class="card">
       <h3 data-i18n="researchInfo">研究資訊</h3>
-      <div class="step"><div class="num">1</div><div><span data-i18n="devBy">本應用程式僅供研究用途，由香港大學護理學院研究團隊開發。</span></div></div>
-      <div class="step"><div class="num">2</div><div><span data-i18n="piLine">研究負責人：林俊賢 Lam Chun Yin（u3618332@connect.hku.hk）</span></div></div>
-      <div class="step"><div class="num">3</div><div><span data-i18n="supLine">督導教授：謝淑君教授（香港大學護理學院助理教授）</span></div></div>
-      <div class="step"><div class="num">4</div><div><span data-i18n="dataUse">所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。</span></div></div>
-      <div class="step"><div class="num">5</div><div><span data-i18n="funding">本研究並無接受任何資助。</span></div></div>
-      <div class="step"><div class="num">6</div><div><span data-i18n="ethics">倫理審批編號：（待定）</span></div></div>
-      <div class="step"><div class="num">7</div><div><span data-i18n="withdraw">參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。</span></div></div>
-      <div class="step"><div class="num">8</div><div><span data-i18n="contactInfo">如有任何疑問，歡迎聯絡研究團隊。</span></div></div>
+      <ul class="plist">
+        <li><span data-i18n="devBy">本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。</span></li>
+        <li><span data-i18n="piLine">研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk）</span></li>
+        <li><span data-i18n="supLine">指導教授：張淑婷 Denise Cheung</span></li>
+        <li><span data-i18n="affLine">香港大學李嘉誠醫學院護理學院 School of Nursing, LKS Faculty of Medicine, The University of Hong Kong</span></li>
+        <li><span data-i18n="dataUse">所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。</span></li>
+        <li><span data-i18n="funding">本研究並無接受任何資助。</span></li>
+        <li><span data-i18n="ethics">倫理審批編號：（待定）</span></li>
+        <li><span data-i18n="withdraw">參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。</span></li>
+        <li><span data-i18n="contactInfo">如有任何疑問，歡迎聯絡研究團隊。</span></li>
+      </ul>
     </div>
 
     <!-- declaration -->
     <div class="card notice">
-      <p data-i18n="declPreg">孕婦或計劃懷孕人士不建議進行穴位按壓。</p>
-      <p data-i18n="declAdverse">如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。</p>
-      <p data-i18n="declService">本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。</p>
-      <p data-i18n="disclaimer">此為研究項目之概念試版，內容會按研究方案及督導意見調整。</p>
+      <ul class="plist strong">
+        <li data-i18n="declPreg">孕婦或計劃懷孕人士不建議進行穴位按壓。</li>
+        <li data-i18n="declAdverse">如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。</li>
+        <li data-i18n="declService">本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。</li>
+        <li data-i18n="disclaimer">此為研究項目之概念試版，內容會按研究方案及督導意見調整。</li>
+      </ul>
     </div>
 
   </main>
@@ -68,8 +73,8 @@
   </nav>
 
 </div>
-<script src="config.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="config.js?v=5"></script>
+<script src="app.js?v=5"></script>
 <script>
 function renderLogin() {
   var s = APP.session();
@@ -85,8 +90,31 @@ function renderLogin() {
   }
 }
 
+function renderResearchFromContent() {
+  // rebuild plists from published content (admin-editable), keep i18n as default
+  var c = (typeof APP !== 'undefined' && window.__contentCache) ? window.__contentCache : null;
+  if (!c) return;
+  var l = APP.lang === 'en' ? 'en' : 'zh';
+  var res = (c.research && c.research[l]);
+  if (res && res.length) {
+    document.querySelector('.card ul.plist').innerHTML = res.map(function (x) {
+      return '<li>' + x.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</li>';
+    }).join('');
+  }
+  var not = (c.notice && c.notice[l]);
+  if (not && not.length) {
+    document.querySelector('.card.notice ul.plist').innerHTML = not.map(function (x) {
+      return '<li>' + x.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</li>';
+    }).join('');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   renderLogin();
+  APP.fetchContent().then(function (c) {
+    window.__contentCache = c;
+    renderResearchFromContent();
+  });
   document.getElementById('loginBtn').addEventListener('click', function () {
     var u = document.getElementById('loginUser').value.trim();
     var p = document.getElementById('loginPass').value;
@@ -102,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderLogin();
   });
   function showErr() { document.getElementById('loginErr').style.display = 'block'; }
-  window.pageI18n = function () { renderLogin(); };
+  window.pageI18n = function () { renderLogin(); renderResearchFromContent(); };
 });
 </script>
 </body>

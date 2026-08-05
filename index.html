@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-page="home">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.3</span>
+    <span class="pill" data-i18n="version">v0.4</span>
   </header>
 
   <main class="page" style="padding-top:4px;">
@@ -54,8 +54,8 @@
   </nav>
 
 </div>
-<script src="config.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="config.js?v=5"></script>
+<script src="app.js?v=5"></script>
 <script>
 var DOW = { zh: ['日','一','二','三','四','五','六'], en: ['Su','Mo','Tu','We','Th','Fr','Sa'] };
 var MONTHS = { zh: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
@@ -82,7 +82,9 @@ function renderCalendar() {
     var rec = records[key];
     var mood = moodOf(rec);
     var isToday = key === todayKey;
-    h += '<div class="cal-day' + (isToday ? ' today' : '') + (rec ? ' done' : '') + '" data-key="' + key + '">'
+    var sessions = daySessions(rec);
+    var full = !!rec && sessions >= 2 && (rec.mood || rec.score !== undefined);
+    h += '<div class="cal-day' + (isToday ? ' today' : '') + (rec ? ' done' : '') + (isToday && full ? ' full' : '') + '" data-key="' + key + '">'
        + (mood ? '<span class="mood-emoji">' + mood + '</span>' : '<span class="day-num">' + d + '</span>')
        + (mood ? '<span class="day-num">' + d + '</span>' : '') + '</div>';
   }

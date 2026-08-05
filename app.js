@@ -119,9 +119,10 @@
     adversePlaceholder: '請簡單描述不適或反應',
     noAdverse: '沒有不適',
     researchInfo: '研究資訊',
-    devBy: '本應用程式僅供研究用途，由香港大學護理學院研究團隊開發。',
-    piLine: '研究負責人：林俊賢 Lam Chun Yin（u3618332@connect.hku.hk）',
-    supLine: '督導教授：謝淑君教授（香港大學護理學院助理教授）',
+    devBy: '本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。',
+    piLine: '研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk）',
+    supLine: '指導教授：張淑婷 Denise Cheung',
+    affLine: '香港大學李嘉誠醫學院護理學院 School of Nursing, LKS Faculty of Medicine, The University of Hong Kong',
     dataUse: '所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。',
     funding: '本研究並無接受任何資助。',
     ethics: '倫理審批編號：（待定）',
@@ -130,6 +131,7 @@
     declPreg: '孕婦或計劃懷孕人士不建議進行穴位按壓。',
     declAdverse: '如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。',
     declService: '本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。',
+    resetTime: '每日 04:00（香港時間）重置',
     thisWeekSessions: '本週按壓',
     streakDays: '連續記錄',
     daysUnit: '天',
@@ -254,9 +256,10 @@
     adversePlaceholder: 'Briefly describe the discomfort or reaction',
     noAdverse: 'No discomfort',
     researchInfo: 'Research information',
-    devBy: 'This app is for research purposes only, developed by the research team of the School of Nursing, The University of Hong Kong (HKU).',
-    piLine: 'Principal investigator: Lam Chun Yin (u3618332@connect.hku.hk)',
-    supLine: 'Supervisor: Prof. Denise Cheung, Assistant Professor, School of Nursing, HKU',
+    devBy: 'This app is for research purposes only, developed by the research team of the School of Nursing, LKS Faculty of Medicine, The University of Hong Kong (HKU).',
+    piLine: 'Principal investigator: Lam Chun Yin (林進彥, u3618332@connect.hku.hk)',
+    supLine: 'Supervisor: Denise Cheung (張淑婷), Assistant Professor',
+    affLine: 'School of Nursing, LKS Faculty of Medicine, The University of Hong Kong',
     dataUse: 'All data will be used for research analysis only, and will be deleted within 36 months after the project is completed.',
     funding: 'This project receives no funding.',
     ethics: 'Ethics approval reference: (TBC)',
@@ -265,6 +268,7 @@
     declPreg: 'Pregnant women or women planning pregnancy are not advised to do acupressure.',
     declAdverse: 'If any adverse reaction occurs, stop self-administered acupressure immediately and seek professional medical advice.',
     declService: 'This app is not a medical service and cannot replace professional diagnosis, treatment, or advice.',
+    resetTime: 'Resets daily at 4:00 am (Hong Kong time)',
     thisWeekSessions: 'This week',
     streakDays: 'Streak',
     daysUnit: 'days',
@@ -434,9 +438,9 @@
           var h = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
           if (h !== u.hash) throw new Error('bad');
           var p = getProfile();
-          p.token = 'github'; p.name = u.name || u.username;
+          p.token = 'github'; p.name = u.name || u.username; p.user = u.username;
           saveProfile(p);
-          localStorage.setItem('acup_session', JSON.stringify({ token: 'github', name: p.name }));
+          localStorage.setItem('acup_session', JSON.stringify({ token: 'github', name: p.name, user: u.username }));
           return { token: 'github', name: p.name };
         });
       })
@@ -444,9 +448,9 @@
         return api('/api/login', { method: 'POST', body: { username: username, password: password } })
           .then(function (d) {
             var p = getProfile();
-            p.token = d.token; p.name = d.name;
+            p.token = d.token; p.name = d.name; p.user = username;
             saveProfile(p);
-            localStorage.setItem('acup_session', JSON.stringify({ token: d.token, name: d.name }));
+            localStorage.setItem('acup_session', JSON.stringify({ token: d.token, name: d.name, user: username }));
             return d;
           });
       });
@@ -524,21 +528,35 @@
       var path = 'data/records.json';
       var url = 'https://api.github.com/repos/' + g.repo + '/contents/' + path;
       var headers = { 'Authorization': 'Bearer ' + g.token, 'Accept': 'application/vnd.github+json' };
-      return fetch(url, { headers: headers, notFound: true }).then(function (r) {
+      return fetch(url, { headers: headers }).then(function (r) {
         return r.status === 404 ? null : r.json();
       }).then(function (existing) {
-        var merged = {};
-        try { if (existing) merged = JSON.parse(decodeURIComponent(escape(atob(existing.content)))); } catch (e) {}
-        Object.keys(records).forEach(function (k) {
-          if (!merged[k]) merged[k] = {};
-          Object.assign(merged[k], records[k]);
+        var server = {};
+        try { if (existing) server = JSON.parse(decodeURIComponent(escape(atob(existing.content)))); } catch (e) {}
+        // tombstone: admin cleared this user -> clear local records and remove tombstone
+        var me = s.user || null;
+        if (me && server.__clearedUsers && server.__clearedUsers[me]) {
+          localStorage.removeItem('acup_records');
+          records = {};
+          delete server.__clearedUsers[me];
+        }
+        // merge: server wins for days it already has, local wins otherwise
+        Object.keys(server).forEach(function (k) {
+          if (k === '__clearedUsers') return;
+          if (!records[k]) records[k] = {};
+          Object.assign(records[k], server[k]);
         });
+        Object.keys(records).forEach(function (k) {
+          if (!server[k]) server[k] = {};
+          Object.assign(server[k], records[k]);
+        });
+        saveRecords(records);
         return fetch(url, {
           method: 'PUT',
           headers: headers,
           body: JSON.stringify({
             message: 'sync records',
-            content: btoa(unescape(encodeURIComponent(JSON.stringify(merged)))),
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(server)))),
             sha: existing ? existing.sha : undefined
           })
         }).then(function () { return true; });

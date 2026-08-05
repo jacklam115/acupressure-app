@@ -71,7 +71,7 @@ th{color:#909096;font-size:11px}
 
   <div class="card">
     <h2 style="margin-top:0">內容與媒體</h2>
-    <p style="font-size:12px;color:#909096;margin-bottom:6px">隨機句子（每行一句）、穴位實拍相片、示範影片。所有改動按一次「發佈目前內容」即同步到患者端 App，並自動存入版本歷史。</p>
+    <p style="font-size:12px;color:#909096;margin-bottom:6px">隨機句子、研究資訊、注意事項（每行一句）、穴位相片、示範影片。按「發佈目前內容」即同步到患者端 App，並自動存入版本歷史。</p>
     <div class="row">
       <div>
         <label>練習完成鼓勵句 praise（中文）</label>
@@ -86,6 +86,20 @@ th{color:#909096;font-size:11px}
         <textarea id="tHeroEn"></textarea>
       </div>
     </div>
+    <div class="row">
+      <div>
+        <label>研究資訊（中文，每行一句）</label>
+        <textarea id="tResZh"></textarea>
+        <label>研究資訊（English）</label>
+        <textarea id="tResEn"></textarea>
+      </div>
+      <div>
+        <label>注意事項／黃色框（中文，每行一句）</label>
+        <textarea id="tNoticeZh"></textarea>
+        <label>注意事項／黃色框（English）</label>
+        <textarea id="tNoticeEn"></textarea>
+      </div>
+    </div>
     <div id="uploadList"></div>
     <label>示範影片（教學頁「先看影片」）</label>
     <div class="upload-item"><b>tutorial 影片</b><input type="file" id="fVideo" accept="video/*"><span class="st" id="stVideo"></span></div>
@@ -93,6 +107,14 @@ th{color:#909096;font-size:11px}
     <button id="pubBtn">💾 發佈目前內容</button>
     <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
     <span class="err" id="mErr">發佈失敗</span>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">患者端自動同步</h2>
+    <p style="font-size:12px;color:#909096;margin-bottom:6px">一按把目前瀏覽器內的 GitHub Token 寫入 config.js，患者記錄便會自動同步到 data/records.json（每次儲存與開啟記錄頁時同步）。Token 會以明文存在公開的 config.js 內，只建議在原型階段使用。</p>
+    <button id="enableSync">⚡ 一鍵啟用患者端自動同步</button>
+    <span class="msg" id="sMsg">已啟用！患者下次儲存記錄即自動上載</span>
+    <span class="err" id="sErr">未找到 GitHub Token，請先在「連接 GitHub」填入</span>
   </div>
 
   <div class="card">
@@ -110,9 +132,15 @@ th{color:#909096;font-size:11px}
   <div class="card">
     <h2 style="margin-top:0">照顧者記錄</h2>
     <button id="loadRecords" class="ghost">載入 data/records.json</button>
+    <div id="userList" style="margin-top:10px"></div>
+    <div id="userDetail" style="display:none;margin-top:10px;border-top:2px dashed #EFE7EA;padding-top:10px">
+      <p style="font-size:14px;font-weight:800;color:#C94F6B" id="userDetailTitle"></p>
+      <div class="strip" id="graphStrip"></div>
+      <table id="detailTable"></table>
+    </div>
     <div id="graphWrap" style="display:none">
       <p style="font-size:12.5px;font-weight:800;margin-top:10px" id="graphTitle"></p>
-      <div class="strip" id="graphStrip"></div>
+      <div class="strip" id="allGraphStrip"></div>
     </div>
     <table id="recTable"></table>
   </div>
@@ -214,6 +242,15 @@ $('patBtn').onclick = function(){
 
 function loadAll(){ loadLive(); loadUsers(); loadVersions(); }
 
+var DEF_RESEARCH = {
+  zh: ['本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。','研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk）','指導教授：張淑婷 Denise Cheung','香港大學李嘉誠醫學院護理學院 School of Nursing, LKS Faculty of Medicine, The University of Hong Kong','所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。','本研究並無接受任何資助。','倫理審批編號：（待定）','參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。','如有任何疑問，歡迎聯絡研究團隊。'],
+  en: ['This app is for research purposes only, developed by the research team of the School of Nursing, LKS Faculty of Medicine, The University of Hong Kong (HKU).','Principal investigator: Lam Chun Yin (林進彥, u3618332@connect.hku.hk)','Supervisor: Denise Cheung (張淑婷), Assistant Professor','School of Nursing, LKS Faculty of Medicine, The University of Hong Kong','All data will be used for research analysis only, and will be deleted within 36 months after the project is completed.','This project receives no funding.','Ethics approval reference: (TBC)','Participants may leave this project at any time, without giving a reason and without affecting their existing rights.','For any questions, please contact the research team.']
+};
+var DEF_NOTICE = {
+  zh: ['孕婦或計劃懷孕人士不建議進行穴位按壓。','如出現任何不良反應，請立即停止自我穴位按壓，並尋求專業醫療意見。','本應用程式並非醫療服務，不能取代正規醫療診斷、治療或意見。','此為研究項目之概念試版，內容會按研究方案及督導意見調整。'],
+  en: ['Pregnant women or women planning pregnancy are not advised to do acupressure.','If any adverse reaction occurs, stop self-administered acupressure immediately and seek professional medical advice.','This app is not a medical service and cannot replace professional diagnosis, treatment, or advice.','This is a concept version for a research project; content will be adjusted with the study protocol and supervisor input.']
+};
+
 function loadLive(){
   readJSON('data/content/live.json').then(function(c){
     live = c || {messages:{praise:{zh:[],en:[]},heroCheckin:{zh:[],en:[]}},photos:{},videos:{}};
@@ -223,6 +260,13 @@ function loadLive(){
     }
     fill('tPraiseZh','praise','zh'); fill('tPraiseEn','praise','en');
     fill('tHeroZh','heroCheckin','zh'); fill('tHeroEn','heroCheckin','en');
+    function fillList(id, key, lang){
+      var m = (live[key]||{})[lang] || DEF_RESEARCH[lang] || [];
+      if (key === 'notice' && !(live.notice||{})) m = DEF_NOTICE[lang];
+      $(id).value = m.join('\n');
+    }
+    fillList('tResZh','research','zh'); fillList('tResEn','research','en');
+    fillList('tNoticeZh','notice','zh'); fillList('tNoticeEn','notice','en');
     buildUploads();
   });
 }
@@ -233,6 +277,8 @@ function currentLive(){
       praise: { zh: lines('tPraiseZh'), en: lines('tPraiseEn') },
       heroCheckin: { zh: lines('tHeroZh'), en: lines('tHeroEn') }
     },
+    research: { zh: lines('tResZh'), en: lines('tResEn') },
+    notice: { zh: lines('tNoticeZh'), en: lines('tNoticeEn') },
     photos: (live&&live.photos)||{},
     videos: (live&&live.videos)||{}
   };
@@ -298,8 +344,8 @@ function loadUsers(){
     us = us || [];
     var h = '<tr><th>用戶</th><th>密碼</th><th>名稱</th><th>操作</th></tr>';
     us.forEach(function(u){
-      h += '<tr><td>'+u.username+'</td><td style="color:#C94F6B;font-weight:800">'+(u.password||'')+'</td><td>'+u.name+'</td>'
-        + '<td><button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
+      h += '<tr><td><b>'+u.username+'</b></td><td style="color:#C94F6B;font-weight:800">'+(u.password||'—')+'</td><td>'+u.name+'</td>'
+        + '<td><button class="mini" onclick="resetPw('+u.id+')">重設密碼</button> <button class="mini" onclick="viewUser(\''+u.username+'\')">查看記錄</button> <button class="mini danger" onclick="clearUserData(\''+u.username+'\')">清除記錄</button> <button class="mini danger" onclick="delUser('+u.id+')">刪除</button></td></tr>';
     });
     $('userTable').innerHTML = h;
   });
@@ -336,15 +382,24 @@ function resetPw(id){
 }
 
 /* ---- records + graphic summary ---- */
+var RECORDS_CACHE = {};
+var ACUP_NAMES = ['百會','風池','合谷','腎俞','中脘','氣海','關元','足三里','涌泉'];
+
 $('loadRecords').onclick = function(){
   readJSON('data/records.json').then(function(rec){
-    rec = rec || {};
-    var users = Object.keys(rec);
+    RECORDS_CACHE = rec || {};
+    var users = Object.keys(RECORDS_CACHE).filter(function(u){ return u !== '__clearedUsers'; });
+    // user list buttons
+    var ul = '';
+    users.forEach(function(user){
+      var days = Object.keys(RECORDS_CACHE[user]||{});
+      ul += '<button class="mini" style="margin:3px" onclick="viewUser(\''+user+'\')">'+user+'（'+days.length+' 天）</button>';
+    });
+    $('userList').innerHTML = ul ? ul : '<span style="font-size:12px;color:#909096">未有記錄</span>';
+    // all-users table
     var rows = [];
     users.forEach(function(user){
-      Object.keys(rec[user]).forEach(function(day){
-        rows.push({ user: user, day: day, d: rec[user][day] || {} });
-      });
+      Object.keys(RECORDS_CACHE[user]).forEach(function(day){ rows.push({user:user, day:day, d:RECORDS_CACHE[user][day]||{}}); });
     });
     rows.sort(function(a,b){ return a.user.localeCompare(b.user) || a.day.localeCompare(b.day); });
     var h = '<tr><th>用戶</th><th>日期</th><th>心情</th><th>壓力</th><th>穴位</th><th>不適</th></tr>';
@@ -356,31 +411,62 @@ $('loadRecords').onclick = function(){
       h += '<tr><td>'+r.user+'</td><td>'+r.day+'</td><td>'+mood+'</td><td>'+score+'</td><td>'+pts+'/9</td><td>'+(d.adverse||'')+'</td></tr>';
     });
     $('recTable').innerHTML = h;
-    // graphic summary: last 14 days per user
+    // graphic summary (all users)
     if (users.length) {
-      var wrap = $('graphWrap');
-      wrap.style.display = 'block';
+      var wrap = $('graphWrap'); wrap.style.display = 'block';
       var out = '';
       users.forEach(function(user){
-        var days = Object.keys(rec[user]).sort().slice(-14);
-        var cells = '';
-        days.forEach(function(day){
-          var d = rec[user][day] || {};
-          var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
-          var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||'' : '';
-          cells += '<div class="day-cell"><div class="dm">'+day.slice(5)+'</div><div class="em">'+mood+'</div>'
-            + '<div class="sc">'+(d.score!==undefined&&d.score!==null?d.score+'/16':'—')+'</div>'
-            + '<div class="ap"><i style="width:'+(pts/9*100)+'%"></i></div></div>';
-        });
-        out += '<p style="font-size:13px;font-weight:800;color:#C94F6B;margin-top:12px">'+user+'</p><div class="strip">'+cells+'</div>';
+        var days = Object.keys(RECORDS_CACHE[user]).sort().slice(-14);
+        out += '<p style="font-size:13px;font-weight:800;color:#C94F6B;margin-top:12px">'+user+'</p><div class="strip">'+stripCells(RECORDS_CACHE[user], days)+'</div>';
       });
       $('graphTitle').textContent = '最近 14 天圖表（心情・壓力・穴位完成度）';
-      $('graphStrip').innerHTML = out;
-    } else {
-      $('graphWrap').style.display = 'none';
-    }
+      $('allGraphStrip').innerHTML = out;
+    } else { $('graphWrap').style.display = 'none'; }
   });
 };
+function stripCells(rec, days){
+  var cells = '';
+  days.forEach(function(day){
+    var d = rec[day] || {};
+    var pts = 0; (d.acup||[]).forEach(function(s){ if(s) pts+=s.length; });
+    var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||'' : '';
+    cells += '<div class="day-cell"><div class="dm">'+day.slice(5)+'</div><div class="em">'+mood+'</div>'
+      + '<div class="sc">'+(d.score!==undefined&&d.score!==null?d.score+'/16':'—')+'</div>'
+      + '<div class="ap"><i style="width:'+(pts/9*100)+'%"></i></div></div>';
+  });
+  return cells;
+}
+function viewUser(user){
+  var rec = RECORDS_CACHE[user] || {};
+  var days = Object.keys(rec).sort();
+  $('userDetailTitle').textContent = '👤 ' + user + '（' + days.length + ' 天）';
+  $('graphStrip').innerHTML = stripCells(rec, days.slice(-14));
+  var h = '<tr><th>日期</th><th>心情</th><th>PSS 4 題答案(0-4)</th><th>PSS 分數</th><th>整體壓力</th><th>穴位（第1次/第2次）</th><th>不適</th></tr>';
+  days.forEach(function(day){
+    var d = rec[day] || {};
+    var pss = d.pss || {};
+    var pssTxt = [0,1,2,3].map(function(q){ return pss[q]!==undefined ? pss[q] : '—'; }).join(',');
+    var s1 = (d.acup&&d.acup[0])||[], s2 = (d.acup&&d.acup[1])||[];
+    var n1 = s1.map(function(i){ return ACUP_NAMES[i]||i; }).join(' ') || '—';
+    var n2 = s2.map(function(i){ return ACUP_NAMES[i]||i; }).join(' ') || '—';
+    var mood = d.mood ? ({happy:'😄',okay:'😐',sad:'☹️'})[d.mood]||d.mood : '—';
+    h += '<tr><td>'+day+'</td><td>'+mood+'</td><td>'+pssTxt+'</td><td>'+(d.score!==undefined?d.score:'—')+'</td><td>'+(d.slider!==undefined?d.slider:'—')+'</td>'
+      + '<td>'+n1+'<br>'+n2+'</td><td>'+(d.adverse||'—')+'</td></tr>';
+  });
+  $('detailTable').innerHTML = h;
+  $('userDetail').style.display = 'block';
+  $('userDetail').scrollIntoView({behavior:'smooth'});
+}
+function clearUserData(user){
+  if(!confirm('清除「'+user+'」的全部記錄？患者下次開啟記錄頁時，其裝置上的記錄亦會一併清除。')) return;
+  readJSON('data/records.json').then(function(rec){
+    rec = rec || {};
+    delete rec[user];
+    rec.__clearedUsers = rec.__clearedUsers || {};
+    rec.__clearedUsers[user] = new Date().toISOString();
+    return writeJSON('data/records.json', rec, 'clear data for ' + user);
+  }).then(function(){ $('loadRecords').click(); });
+}
 
 function loadVersions(){
   readJSON('data/content/versions.json').then(function(vs){
@@ -400,6 +486,21 @@ function publishVersion(id){
     return writeJSON('data/content/live.json', v.content, 'restore version ' + id);
   }).then(function(){ $('mMsg').textContent='已推送指定版本，App 約 1 分鐘後更新'; $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadLive(); });
 }
+
+/* ---- one-click auto-sync: write PAT into config.js ---- */
+$('enableSync').onclick = function(){
+  var pat = localStorage.getItem('acup_pat');
+  if (!pat) { $('sErr').style.display='block'; return; }
+  var cfg = '/* Auto-sync enabled via admin panel. See config.js header for security notes. */\nwindow.SYNC_GITHUB = {\n  token: ' + JSON.stringify(pat) + ',\n  repo: ' + JSON.stringify(REPO) + '\n};\n';
+  gh('/repos/' + REPO + '/contents/config.js', {notFound:true}).then(function(existing){
+    return gh('/repos/' + REPO + '/contents/config.js', {
+      method:'PUT', body:{ message:'enable auto-sync from admin', content: b64(cfg), sha: existing ? existing.sha : undefined }
+    });
+  }).then(function(){
+    $('sMsg').style.display='block'; $('sErr').style.display='none';
+    setTimeout(function(){ $('sMsg').style.display='none'; }, 4000);
+  }).catch(function(){ $('sErr').textContent='寫入失敗：' + (arguments[0]&&arguments[0].message||''); $('sErr').style.display='block'; });
+};
 </script>
 </body>
 </html>

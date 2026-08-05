@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>記錄・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-page="checkin">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.3</span>
+    <span class="pill" data-i18n="version">v0.4</span>
   </header>
 
   <main class="page">
@@ -25,6 +25,7 @@
     <div class="ci-block" id="acupBlock">
       <h3 data-i18n="acupressureRecord">今日按壓記錄</h3>
       <p class="sub" data-i18n="acupressureRecordSub">每日可按壓兩次，完成後點擊穴位圖即可標記</p>
+      <p class="sub" style="color:var(--accent-deep);font-weight:700;" data-i18n="resetTime">每日 04:00（香港時間）重置</p>
       <div class="session-tick" id="sessionTabs"></div>
       <div class="point-grid" id="acupGrid"></div>
       <div style="margin-top:10px;">
@@ -75,8 +76,8 @@
   </nav>
 
 </div>
-<script src="config.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="config.js?v=5"></script>
+<script src="app.js?v=5"></script>
 <script>
 var POINTS = [
   { slug:'baihui', zh:'百會', en:'GV20' }, { slug:'fengchi', zh:'風池', en:'GB20' }, { slug:'hegu', zh:'合谷', en:'LI4' },
@@ -274,6 +275,9 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('saveAcupBtn').addEventListener('click', saveAcup);
   document.getElementById('saveNightBtn').addEventListener('click', saveNight);
   APP.fetchContent().then(function () { renderHero(); renderAcupGrid(); });
+  // auto-sync to admin when logged in (silent; on load + after saves)
+  var s0 = APP.session();
+  if (s0 && s0.token) APP.syncRecords();
   window.pageI18n = function () { renderHero(); renderSessionTabs(); renderAcupGrid(); renderPSS(); renderAdverse(); applyLock(); };
   APP.imgWatchdog();
 });
