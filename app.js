@@ -460,8 +460,9 @@
   }
 
   function fetchContent() {
-    // permanent GitHub live.json first, then tunnel backend, then built-in
-    return fetch('https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/content/live.json')
+    // permanent GitHub live.json first (cache-busted), then tunnel backend, then built-in
+    var LIVE = 'https://raw.githubusercontent.com/jacklam115/acupressure-app/main/data/content/live.json';
+    return fetch(LIVE + '?v=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (d) { contentCache = d; return d; }
