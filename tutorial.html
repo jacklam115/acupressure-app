@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>教學・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body data-page="tutorial">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.9</span>
+    <span class="pill" data-i18n="version">v0.10</span>
   </header>
 
   <main class="page">
@@ -117,15 +117,15 @@
   </div>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=10"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=10"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=10"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=10"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=11"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=11"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=11"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=11"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=10"></script>
-<script src="app.js?v=10"></script>
+<script src="config.js?v=11"></script>
+<script src="app.js?v=11"></script>
 <script>
 /* ============ 9-step protocol (Cheung 2020: 9 acupoints) ============ */
 var STEPS = [
@@ -190,13 +190,40 @@ function renderSteps() {
 }
 
 /* ============ guided session ============ */
-var audio = null;
+var audio = null, actx = null, gain = null;
 var sess = { on: false, idx: 0, phase: 'prep', left: 10, timer: null, paused: false, totalSec: 0, doneCount: 0 };
 var RING_C = 276.5;
 var PREP_SEC = 10;
 
 function fmtTime(t) { var m = Math.floor(t / 60), s = t % 60; return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s; }
 function totalSeconds() { return STEPS.reduce(function (a, x) { return a + x.sec; }, 0); }
+
+function setVolume(v) {
+  // Web Audio gain node works on iOS/Android (element.volume is ignored there)
+  if (gain) { try { gain.gain.value = v; } catch (e) {} }
+  if (audio) { try { audio.volume = v; } catch (e) {} }
+}
+
+function startMusic() {
+  if (!audio) {
+    audio = new Audio('audio/mindfulness.wav');
+    audio.loop = true;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        actx = new AC();
+        var src = actx.createMediaElementSource(audio);
+        gain = actx.createGain();
+        gain.gain.value = 0.7;
+        src.connect(gain);
+        gain.connect(actx.destination);
+      }
+    } catch (e) { actx = null; gain = null; }
+  }
+  if (actx && actx.state === 'suspended') { actx.resume().catch(function () {}); }
+  if (gain) audio.volume = 1;   // element volume fixed; gain node does the work
+  audio.play().catch(function () {});
+}
 
 function setPhoto(i) {
   var x = STEPS[i];
@@ -271,11 +298,6 @@ function next() {
   }
 }
 
-function startMusic() {
-  if (!audio) { audio = new Audio('audio/mindfulness.wav'); audio.loop = true; audio.volume = 0.7; }
-  audio.play().catch(function () {});
-}
-
 function startSession() {
   sess.on = true; sess.idx = 0; sess.doneCount = 0; sess.paused = false;
   document.getElementById('sessionOverlay').classList.add('on');
@@ -325,8 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
     next();
   });
   document.getElementById('volSlider').addEventListener('input', function () {
-    var v = this.value / 100;
-    if (audio) audio.volume = v;
+    setVolume(this.value / 100);
     document.getElementById('volVal').textContent = this.value + '%';
   });
   document.getElementById('videoBtn').addEventListener('click', function (e) {
@@ -335,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.getElementById('videoClose').addEventListener('click', function () { document.getElementById('videoModal').classList.remove('on'); });
   document.getElementById('videoModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
-  // direct start from home: tutorial.html?v=10#start
+  // direct start from home: tutorial.html?v=11#start
   if (location.hash === '#start') setTimeout(startSession, 400);
   window.pageI18n = function () { renderSteps(); };
 });

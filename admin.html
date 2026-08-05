@@ -13,6 +13,18 @@ h2{font-size:16px;margin:20px 0 10px;padding-left:8px;border-left:4px solid #E87
 label{font-size:12.5px;font-weight:700;display:block;margin:8px 0 4px}
 input[type=text],input[type=password],textarea{width:100%;border:1.5px solid #EFE7EA;border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit}
 textarea{min-height:76px;resize:vertical}
+/* Apple-like edit groups */
+.edit-group{ padding:14px 0; border-bottom:1px solid #F0EAEE; }
+.eg-title{ font-size:14px; font-weight:800; color:#C94F6B; margin-bottom:2px; }
+.eg-sub{ font-size:11.5px; color:#909096; margin-bottom:10px; line-height:1.5; }
+.eg-item{ margin-bottom:12px; }
+.eg-label{ font-size:12.5px; font-weight:700; margin:10px 0 6px; color:#2A2A2E; }
+.eg-label code{ background:#FCE9ED; color:#C94F6B; border-radius:6px; padding:1px 7px; font-size:11px; }
+.eg-grid{ display:flex; gap:10px; }
+.eg-col{ flex:1; min-width:0; }
+.eg-colh{ font-size:10.5px; font-weight:800; letter-spacing:.6px; color:#B9AEB2; margin-bottom:4px; padding-left:2px; }
+.eg-actions{ margin-top:14px; }
+.eg-actions button{ margin-top:4px; }
 button{background:#E8728A;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;margin:6px 6px 0 0}
 button.ghost{background:#fff;color:#C94F6B;border:1.5px solid #F3CDD6}
 button.mini{background:#FCE9ED;color:#C94F6B;padding:5px 10px;font-size:11.5px}
@@ -71,40 +83,60 @@ th{color:#909096;font-size:11px}
 
   <div class="card">
     <h2 style="margin-top:0">內容與媒體</h2>
-    <p style="font-size:12px;color:#909096;margin-bottom:6px">隨機句子、研究資訊、注意事項（每行一句）、穴位相片、示範影片。按「發佈目前內容」即同步到患者端 App，並自動存入版本歷史。</p>
-    <div class="row">
-      <div>
-        <label>練習完成鼓勵句 praise（中文）</label>
-        <textarea id="tPraiseZh"></textarea>
-        <label>練習完成鼓勵句 praise（English）</label>
-        <textarea id="tPraiseEn"></textarea>
+
+    <div class="edit-group">
+      <div class="eg-title">隨機句子</div>
+      <div class="eg-sub">完成計時練習後，以及記錄頁頂部顯示的鼓勵句。每行一句。</div>
+
+      <div class="eg-item">
+        <div class="eg-label">練習完成鼓勵句 <code>praise</code></div>
+        <div class="eg-grid">
+          <div class="eg-col"><div class="eg-colh">中文</div><textarea id="tPraiseZh"></textarea></div>
+          <div class="eg-col"><div class="eg-colh">English</div><textarea id="tPraiseEn"></textarea></div>
+        </div>
       </div>
-      <div>
-        <label>記錄頁鼓勵句 heroCheckin（中文）</label>
-        <textarea id="tHeroZh"></textarea>
-        <label>記錄頁鼓勵句 heroCheckin（English）</label>
-        <textarea id="tHeroEn"></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label>📝 研究資訊（中文）— 顯示於患者「資料」頁</label>
-        <textarea id="tResZh"></textarea>
-        <label>📝 研究資訊（English）</label>
-        <textarea id="tResEn"></textarea>
-      </div>
-      <div>
-        <label>⚠️ 注意事項／黃色框（中文）— 「Pregnant women… Adverse effect…」等</label>
-        <textarea id="tNoticeZh"></textarea>
-        <label>⚠️ 注意事項／黃色框（English）</label>
-        <textarea id="tNoticeEn"></textarea>
+
+      <div class="eg-item">
+        <div class="eg-label">記錄頁鼓勵句 <code>heroCheckin</code></div>
+        <div class="eg-grid">
+          <div class="eg-col"><div class="eg-colh">中文</div><textarea id="tHeroZh"></textarea></div>
+          <div class="eg-col"><div class="eg-colh">English</div><textarea id="tHeroEn"></textarea></div>
+        </div>
       </div>
     </div>
-    <div id="uploadList"></div>
-    <button id="saveDraft">📥 儲存草稿（不影響患者端）</button>
-    <button id="pubBtn">💾 發佈（同步到患者端 + 記入版本）</button>
-    <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
-    <span class="err" id="mErr">發佈失敗</span>
+
+    <div class="edit-group">
+      <div class="eg-title">研究資訊</div>
+      <div class="eg-sub">顯示於患者 App「資料」頁。每行一句。</div>
+      <div class="eg-grid">
+        <div class="eg-col"><div class="eg-colh">中文</div><textarea id="tResZh"></textarea></div>
+        <div class="eg-col"><div class="eg-colh">English</div><textarea id="tResEn"></textarea></div>
+      </div>
+    </div>
+
+    <div class="edit-group">
+      <div class="eg-title">注意事項（黃色框）</div>
+      <div class="eg-sub">顯示於患者 App「資料」頁的黃色提示框。內容包括「Pregnant women… Adverse effect…」等。</div>
+      <div class="eg-grid">
+        <div class="eg-col"><div class="eg-colh">中文</div><textarea id="tNoticeZh"></textarea></div>
+        <div class="eg-col"><div class="eg-colh">English</div><textarea id="tNoticeEn"></textarea></div>
+      </div>
+    </div>
+
+    <div class="edit-group" style="border-bottom:none;">
+      <div class="eg-title">相片與影片</div>
+      <div class="eg-sub">穴位實拍相片（9 個穴位）與示範影片。上載後按「發佈」即同步到患者端。</div>
+      <div id="uploadList"></div>
+      <div class="upload-item"><b>示範影片 tutorial</b><input type="file" id="fVideo" accept="video/*"><span class="st" id="stVideo"></span></div>
+      <button id="upVideo" class="ghost">上載影片（尚未發佈）</button>
+    </div>
+
+    <div class="eg-actions">
+      <button id="saveDraft">📥 儲存草稿（不影響患者端）</button>
+      <button id="pubBtn">💾 發佈（同步到患者端 + 記入版本）</button>
+      <span class="msg" id="mMsg">已發佈，App 約 1 分鐘後更新</span>
+      <span class="err" id="mErr">發佈失敗</span>
+    </div>
   </div>
 
   <div class="card">
@@ -313,28 +345,34 @@ function buildUploads(){
   });
 }
 function uploadFile(slug, file){
-  if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(){
-    var content = reader.result.split(',')[1];
-    var ext = file.name.split('.').pop().toLowerCase();
-    if(!['jpg','jpeg','png','webp','mp4','mov'].includes(ext)) { alert('格式不支援'); return; }
-    var path = 'data/uploads/' + slug + '.' + ext;
-    gh('/repos/' + REPO + '/contents/' + path, {notFound:true}).then(function(existing){
-      return gh('/repos/' + REPO + '/contents/' + path, {
-        method:'PUT', body:{ message:'upload ' + slug, content: content, sha: existing?existing.sha:undefined }
-      });
-    }).then(function(){
-      var url = 'https://cdn.jsdelivr.net/gh/' + REPO + '@main/' + path;
-      if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = url;
-      else live.videos[slug] = url;
-      buildUploads();
-      $('vMsg') && ($('vMsg').style.display='block');
-    }).catch(function(){ alert('上載失敗'); });
-  };
-  reader.readAsDataURL(file);
+  if(!file) return Promise.resolve(false);
+  return new Promise(function(resolve){
+    var reader = new FileReader();
+    reader.onload = function(){
+      var content = reader.result.split(',')[1];
+      var ext = file.name.split('.').pop().toLowerCase();
+      if(!['jpg','jpeg','png','webp','mp4','mov','m4a','wav'].includes(ext)) { alert('格式不支援'); resolve(false); return; }
+      var path = 'data/uploads/' + slug + '.' + ext;
+      gh('/repos/' + REPO + '/contents/' + path, {notFound:true}).then(function(existing){
+        return gh('/repos/' + REPO + '/contents/' + path, {
+          method:'PUT', body:{ message:'upload ' + slug, content: content, sha: existing?existing.sha:undefined }
+        });
+      }).then(function(){
+        var url = 'https://cdn.jsdelivr.net/gh/' + REPO + '@main/' + path;
+        if(['jpg','jpeg','png','webp'].includes(ext)) live.photos[slug] = url;
+        else live.videos[slug] = url;
+        buildUploads();
+        resolve(true);
+      }).catch(function(){ alert('上載失敗'); resolve(false); });
+    };
+    reader.readAsDataURL(file);
+  });
 }
-// (video upload removed in v0.5)
+$('upVideo').onclick = function(){
+  var f = $('fVideo').files[0];
+  if (!f) { alert('請選擇影片檔案'); return; }
+  uploadFile('tutorial', f).then(function(){ $('stVideo').textContent = '已上載（按「發佈」同步）'; });
+};
 
 function publish(){
   var c = currentLive();
