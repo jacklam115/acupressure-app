@@ -24,6 +24,7 @@
   "password": "test3",
   "salt": "fx6hmevdv1msg1qq0e",
   "hash": "456482e910d32c0e7ba4ef3e9c36dbd4d80b5e5cf9a57ed03384a33100dfa12f",
-  "created": "2026-08-05T12:11:40.718Z"
+  "created": "2026-08-05T12:11:40.718Z",
+  "startDate": "2026-08-06"
  }
 ]
