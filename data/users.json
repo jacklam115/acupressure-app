@@ -14,7 +14,8 @@
   "password": "test2",
   "salt": "atk9wqa1dgnmsg0p9nu",
   "hash": "22ad35fdf2df2506d380b3deb06670bbe58b287637b59fa6d154b322fe983bf7",
-  "created": "2026-08-05T11:42:33.260Z"
+  "created": "2026-08-05T11:42:33.260Z",
+  "startDate": "2026-08-05"
  },
  {
   "id": 1785931900718,
