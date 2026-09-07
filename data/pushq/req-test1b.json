@@ -1,7 +1,0 @@
-{
-  "targets": ["test1"],
-  "title": "🔔 第二輪測試通知 Push test #2",
-  "body": "如果收到這則通知，代表推送功能已完全打通！If you see this, push notifications are fully working 🎉",
-  "url": "index.html?v=15",
-  "created": "2026-09-08T01:00:00.000Z"
-}
