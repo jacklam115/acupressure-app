@@ -1,0 +1,13 @@
+{
+ "targets": [
+  "test1"
+ ],
+ "title": "🎉 測試通知 Test notification",
+ "body": "按壓減壓提醒：今日練習做得很好，繼續加油！(This is a live push test from the research team.)",
+ "url": "index.html?v=14",
+ "created": "2026-09-08T00:30:00.000Z",
+ "result": {
+  "test1.json": "error-?"
+ },
+ "delivered": "2026-09-07T19:36:13.016Z"
+}
