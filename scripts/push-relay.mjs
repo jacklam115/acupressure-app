@@ -62,7 +62,7 @@ async function main() {
     const req = JSON.parse(Buffer.from(raw.content, 'base64').toString('utf8'));
     const title = req.title || '';
     const body = req.body || '';
-    const url = req.url || './index.html?v=13';
+    const url = req.url || './index.html?v=14';
     const targets = req.targets === 'all' ? null : req.targets;
 
     const subDir = await ghGet('data/pushsubs');

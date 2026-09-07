@@ -674,7 +674,7 @@ $('pushSend').onclick = function(){
   if (!targets.length) { $('pErr').textContent = '請選擇至少一位接收對象（或「全部用戶」）'; $('pErr').style.display='block'; return; }
   var req = {
     targets: targets.length === pushUsers.length && pushUsers.length > 0 ? 'all' : targets,
-    title: title, body: body, url: 'index.html?v=13',
+    title: title, body: body, url: 'index.html?v=14',
     created: new Date().toISOString()
   };
   $('pErr').style.display = 'none';

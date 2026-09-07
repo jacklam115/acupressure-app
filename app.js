@@ -175,7 +175,7 @@
     slider10: '壓力最大',
     tabTutorial: '教學',
     tabCheckin: '記錄',
-    version: 'v0.12',
+    version: 'v0.13',
     weekOf: '第 {n} 週 / 共 2 週',
     programStart: '開始',
     programEnd: '結束',
@@ -355,7 +355,7 @@
     slider10: 'Most stressed',
     tabTutorial: 'Guide',
     tabCheckin: 'Log',
-    version: 'v0.12',
+    version: 'v0.13',
     weekOf: 'Week {n} of 2',
     programStart: 'Start',
     programEnd: 'End',
@@ -690,7 +690,7 @@
   };
 })();
 
-/* ================= PWA: full-screen install + web push (v0.12) ================= */
+/* ================= PWA: full-screen install + web push + fixes (v0.13) ================= */
 (function () {
   var VAPID_PUBLIC = (typeof window.APP_VAPID_PUBLIC === 'string') ? window.APP_VAPID_PUBLIC : '';
 
@@ -720,13 +720,13 @@
   function registerSW() {
     if (!('serviceWorker' in navigator)) return Promise.resolve(false);
     if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return Promise.resolve(false);
-    return navigator.serviceWorker.register('service-worker.js?v=13').then(function () { return true; }).catch(function () { return false; });
+    return navigator.serviceWorker.register('service-worker.js?v=14').then(function () { return true; }).catch(function () { return false; });
   }
 
   // status: 'unsupported' | 'uninstalled' | 'no-login' | 'denied' | 'granted' | 'idle'
   function pushStatus() {
     if (!('Notification' in window) || !('PushManager' in window) || !('serviceWorker' in navigator)) return 'unsupported';
-    var s = session();
+    var s = window.APP.session();
     if (s.guest || !s.user) return 'no-login';
     if (!isStandalone() && /iphone|ipad|ipod/i.test(navigator.userAgent)) return 'uninstalled';
     if (Notification.permission === 'granted') return 'granted';
@@ -752,7 +752,7 @@
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC)
       });
     }).then(function (sub) {
-      var me = session().user;
+      var me = window.APP.session().user;
       var path = 'data/pushsubs/' + encodeURIComponent(me) + '.json';
       var body = {
         endpoint: sub.endpoint,
