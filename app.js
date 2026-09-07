@@ -38,6 +38,24 @@
     kpBreath: '呼吸', kpBreathTxt: '全程緩慢深呼吸，放鬆肩膀',
     kpMind: '心態', kpMindTxt: '專注當下，不著急、不勉強',
     startBtn: '開始計時練習',
+    installTitle: '📲 安裝到主畫面（全螢幕使用）',
+    installSub: '安裝後，應用程式會以全螢幕獨立開啟，不再顯示瀏覽器工具列。',
+    installIos: 'iOS（iPhone/iPad）：點擊下方 Safari 的「分享」按鈕（□↑），再選擇「加入主畫面」→「加入」。',
+    installAndroid: 'Android（Chrome）：點擊右上角「⋮」選單，再選擇「加到主畫面」或「安裝應用程式」。',
+    installDone: '✓ 已安裝並以全螢幕執行中',
+    installOpen: '每次開啟請使用主畫面的圖示，而非 Safari。',
+    pushTitle: '🔔 推送通知',
+    pushSub: '安裝到主畫面並登入後，研究團隊可向您傳送溫馨提示（例如練習提醒）。',
+    pushAllow: '允許通知',
+    pushGranted: '✓ 通知已開啟',
+    pushDenied: '通知被拒絕 — 請到瀏覽器／系統設定中允許通知。',
+    pushUnsupported: '此瀏覽器不支援推送通知。',
+    pushNeedLogin: '請先登入帳號，才能接收個人化通知。',
+    pushNeedInstall: '請先「加入主畫面」安裝應用程式，iOS 16.4 起必須安裝後才能開啟通知。',
+    pushRegistering: '正在開啟通知…',
+    pushSaved: '✓ 通知設定已儲存',
+    pushErr: '通知開啟失敗，請稍後再試。',
+    pushState: '通知狀態：',
     watchBtn: '先看影片',
     stepsTitle: '9 個步驟（由頭到腳）',
     practiceTips: '練習提示',
@@ -157,7 +175,7 @@
     slider10: '壓力最大',
     tabTutorial: '教學',
     tabCheckin: '記錄',
-    version: 'v0.11',
+    version: 'v0.12',
     weekOf: '第 {n} 週 / 共 2 週',
     programStart: '開始',
     programEnd: '結束',
@@ -200,6 +218,24 @@
     kpBreath: 'Breath', kpBreathTxt: 'Breathe slowly and deeply, relax your shoulders',
     kpMind: 'Mind', kpMindTxt: 'Stay with the present moment; no rush, no force',
     startBtn: 'Start guided session',
+    installTitle: '📲 Add to Home Screen (full-screen use)',
+    installSub: 'After installing, the app opens full-screen on its own, without the browser toolbar.',
+    installIos: 'iOS (iPhone/iPad): tap the Safari Share button (□↑) below, then choose "Add to Home Screen" → "Add".',
+    installAndroid: 'Android (Chrome): tap the "⋮" menu at the top right, then choose "Add to Home screen" or "Install app".',
+    installDone: '✓ Installed — running in full screen',
+    installOpen: 'Always open the app from the home-screen icon, not from Safari.',
+    pushTitle: '🔔 Push notifications',
+    pushSub: 'After adding to your home screen and logging in, the research team can send you gentle reminders (e.g., practice reminders).',
+    pushAllow: 'Enable notifications',
+    pushGranted: '✓ Notifications enabled',
+    pushDenied: 'Notifications blocked — please allow them in your browser/system settings.',
+    pushUnsupported: 'This browser does not support push notifications.',
+    pushNeedLogin: 'Please log in first to receive personalised notifications.',
+    pushNeedInstall: 'Please install the app first ("Add to Home Screen"). Since iOS 16.4, notifications can only be enabled after installation.',
+    pushRegistering: 'Enabling notifications…',
+    pushSaved: '✓ Notification settings saved',
+    pushErr: 'Failed to enable notifications. Please try again later.',
+    pushState: 'Notification status: ',
     watchBtn: 'Watch video',
     stepsTitle: '9 steps (head to toe)',
     practiceTips: 'Practice tips',
@@ -319,7 +355,7 @@
     slider10: 'Most stressed',
     tabTutorial: 'Guide',
     tabCheckin: 'Log',
-    version: 'v0.11',
+    version: 'v0.12',
     weekOf: 'Week {n} of 2',
     programStart: 'Start',
     programEnd: 'End',
@@ -651,5 +687,109 @@
     login: login, logout: logout, guestLogin: guestLogin, fetchContent: fetchContent,
     pickMsg: pickMsg, photoURL: photoURL, imgFallback: imgFallback, imgWatchdog: imgWatchdog, syncRecords: syncRecords,
     session: session, getContent: function () { return contentCache; }
+  };
+})();
+
+/* ================= PWA: full-screen install + web push (v0.12) ================= */
+(function () {
+  var VAPID_PUBLIC = (typeof window.APP_VAPID_PUBLIC === 'string') ? window.APP_VAPID_PUBLIC : '';
+
+  function urlBase64ToUint8Array(b64) {
+    var pad = b64.replace(/=+$/, '');
+    var raw = atob(pad.replace(/-/g, '+').replace(/_/g, '/'));
+    var arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+
+  function ghAuth() {
+    var g = (typeof window.SYNC_GITHUB === 'object') ? window.SYNC_GITHUB : null;
+    if (!g || !g.token || !g.repo) return null;
+    var tok = g.token;
+    if (g.hex) {
+      var bytes = tok.match(/.{1,2}/g) || [];
+      tok = bytes.map(function (b) { return String.fromCharCode(parseInt(b, 16)); }).join('');
+    }
+    return { tok: tok, repo: g.repo };
+  }
+
+  function isStandalone() {
+    return window.matchMedia && matchMedia('(display-mode: standalone)').matches;
+  }
+
+  function registerSW() {
+    if (!('serviceWorker' in navigator)) return Promise.resolve(false);
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return Promise.resolve(false);
+    return navigator.serviceWorker.register('service-worker.js?v=13').then(function () { return true; }).catch(function () { return false; });
+  }
+
+  // status: 'unsupported' | 'uninstalled' | 'no-login' | 'denied' | 'granted' | 'idle'
+  function pushStatus() {
+    if (!('Notification' in window) || !('PushManager' in window) || !('serviceWorker' in navigator)) return 'unsupported';
+    var s = session();
+    if (s.guest || !s.user) return 'no-login';
+    if (!isStandalone() && /iphone|ipad|ipod/i.test(navigator.userAgent)) return 'uninstalled';
+    if (Notification.permission === 'granted') return 'granted';
+    if (Notification.permission === 'denied') return 'denied';
+    return 'idle';
+  }
+
+  function pushEnable() {
+    var st = pushStatus();
+    if (st === 'no-login' || st === 'unsupported' || st === 'uninstalled' || st === 'denied') {
+      return Promise.reject(new Error(st));
+    }
+    return registerSW().then(function (ok) {
+      if (!ok && !navigator.serviceWorker) throw new Error('unsupported');
+      return Notification.requestPermission();
+    }).then(function (perm) {
+      if (perm !== 'granted') throw new Error('denied');
+      return navigator.serviceWorker.ready;
+    }).then(function (reg) {
+      if (!VAPID_PUBLIC) throw new Error('no-vapid');
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC)
+      });
+    }).then(function (sub) {
+      var me = session().user;
+      var path = 'data/pushsubs/' + encodeURIComponent(me) + '.json';
+      var body = {
+        endpoint: sub.endpoint,
+        keys: { p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(sub.getKey('p256dh')))), auth: btoa(String.fromCharCode.apply(null, new Uint8Array(sub.getKey('auth')))) },
+        updated: new Date().toISOString()
+      };
+      return readThenWrite(path, body);
+    });
+  }
+
+  function readThenWrite(path, data) {
+    var a = ghAuth();
+    if (!a) return Promise.reject(new Error('no-token'));
+    var url = 'https://api.github.com/repos/' + a.repo + '/contents/' + path;
+    var headers = { 'Authorization': 'Bearer ' + a.tok, 'Accept': 'application/vnd.github+json' };
+    return fetch(url, { headers: headers }).then(function (r) {
+      return r.status === 404 ? null : r.json();
+    }).then(function (existing) {
+      var cur = null;
+      try { if (existing) cur = JSON.parse(decodeURIComponent(escape(atob(existing.content)))); } catch (e) {}
+      if (cur && cur.endpoint === data.endpoint) return true;   // unchanged
+      return fetch(url, {
+        method: 'PUT', headers: headers,
+        body: JSON.stringify({
+          message: 'push subscription ' + path.split('/')[2],
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(data)))),
+          sha: existing ? existing.sha : undefined
+        })
+      }).then(function () { return true; });
+    });
+  }
+
+  // page glue: expose helpers used by research.html
+  window.APP.registerSW = registerSW;
+  window.APP.pushStatus = pushStatus;
+  window.APP.pushEnable = pushEnable;
+  window.APP._push = {
+    status: pushStatus, enable: pushEnable, standalone: isStandalone
   };
 })();

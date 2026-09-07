@@ -1,0 +1,17 @@
+{
+  "name": "照顧者自我穴位按壓計劃 (Press & De-stress)",
+  "short_name": "按壓減壓",
+  "description": "自我穴位按壓應用程式，紓緩照顧壓力。Self-administered acupressure for caregiver stress relief.",
+  "lang": "zh-Hant",
+  "start_url": "./index.html?v=13",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF7F9",
+  "theme_color": "#E8728A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

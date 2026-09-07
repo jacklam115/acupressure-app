@@ -180,6 +180,22 @@ th{color:#909096;font-size:11px}
   </div>
 
   <div class="card">
+    <h2 style="margin-top:0">🔔 推送通知（Web Push）</h2>
+    <p style="font-size:12px;color:#909096;margin-bottom:6px">向已登入並開啟通知的照顧者傳送提示（如練習提醒）。可選個別用戶或全部。iOS 用戶須先「加入主畫面」並允許通知。訊息經 GitHub Actions 自動轉送，一般 1 分鐘內送達。目前支援單一語言文字（可填中文或英文）。</p>
+    <label>通知標題</label>
+    <input type="text" id="pTitle" placeholder="例如：今日練習提醒">
+    <label>通知內容</label>
+    <textarea id="pBody" placeholder="例如：記得做 15 分鐘穴位按壓，好好照顧自己 ☺"></textarea>
+    <label>接收對象</label>
+    <div id="pushTargets" style="margin-bottom:6px;font-size:13px"></div>
+    <button id="pushAllBtn" class="ghost mini">全部用戶</button>
+    <button id="pushSend">📨 傳送通知</button>
+    <span class="msg" id="pMsg">已排隊傳送</span>
+    <span class="err" id="pErr">傳送失敗</span>
+    <p style="font-size:12px;color:#909096;margin-top:8px" id="pushInfo">訂閱狀態載入中…</p>
+  </div>
+
+  <div class="card">
     <h2 style="margin-top:0">版本歷史</h2>
     <p style="font-size:12px;color:#909096">每次發佈自動記錄。點「發佈此版本」即可把指定版本直接推送給患者。</p>
     <table id="verTable"></table>
@@ -286,7 +302,7 @@ $('patBtn').onclick = function(){
   }).catch(function(){ $('patErr').style.display='block'; });
 };
 
-function loadAll(){ loadLive(); loadUsers(); loadVersions(); checkSyncStatus(); }
+function loadAll(){ loadLive(); loadUsers(); loadVersions(); checkSyncStatus(); loadPushInfo(); }
 
 var DEF_RESEARCH = {
   zh: ['本應用程式僅供研究用途，由香港大學李嘉誠醫學院護理學院研究團隊開發。','研究負責人：林進彥 Lam Chun Yin（u3618332@connect.hku.hk）','指導教授：張淑婷 Denise Cheung','香港大學李嘉誠醫學院護理學院 School of Nursing, LKS Faculty of Medicine, The University of Hong Kong','所有資料僅作研究分析之用，並將於研究完成後 36 個月內刪除。','本研究並無接受任何資助。','倫理審批編號：（待定）','參加者可以隨時退出本研究，無須給予理由，且不會影響原有權利。','如有任何疑問，歡迎聯絡研究團隊。'],
@@ -620,6 +636,57 @@ function publishVersion(id){
   }).then(function(){ $('mMsg').textContent='已推送指定版本，App 約 1 分鐘後更新'; $('mMsg').style.display='block'; setTimeout(function(){$('mMsg').style.display='none';},3000); loadLive(); });
 }
 
+/* ---- push notifications composer (v0.12): queue file -> GitHub Actions relay ---- */
+var pushUsers = [];
+function loadPushInfo(){
+  var info = [];
+  gh('/repos/' + REPO + '/contents/data/pushsubs', {notFound:true}).then(function(list){
+    var n = (list && Array.isArray(list)) ? list.length : 0;
+    info.push('已訂閱用戶：' + n + ' 人');
+    return gh('/repos/' + REPO + '/contents/data/pushq', {notFound:true});
+  }).catch(function(){ return null; }).then(function(q){
+    var qn = (q && Array.isArray(q)) ? q.length : 0;
+    if (qn > 0) info.push('待傳送：' + qn + ' 則');
+    $('pushInfo').textContent = info.join('　·　');
+  });
+  readJSON('data/users.json').then(function(us){
+    us = (us || []).filter(function(x){ return x.username; });
+    pushUsers = us;
+    var h = '';
+    us.forEach(function(u){
+      h += '<label style="font-weight:400;display:inline-flex;align-items:center;gap:6px;margin:3px 14px 3px 0">'
+        + '<input type="checkbox" class="pushtgt" value="' + u.username + '"> '
+        + (u.name || u.username) + '（' + u.username + '）</label>';
+    });
+    $('pushTargets').innerHTML = h || '<span style="color:#909096">暫無用戶帳號</span>';
+  });
+}
+$('pushAllBtn').onclick = function(){
+  var boxes = document.querySelectorAll('.pushtgt');
+  var allOn = Array.prototype.every.call(boxes, function(b){ return b.checked; });
+  Array.prototype.forEach.call(boxes, function(b){ b.checked = !allOn; });
+};
+$('pushSend').onclick = function(){
+  var title = $('pTitle').value.trim(), body = $('pBody').value.trim();
+  if (!title && !body) { $('pErr').textContent = '請填寫通知內容'; $('pErr').style.display='block'; return; }
+  var targets = Array.prototype.filter.call(document.querySelectorAll('.pushtgt'), function(b){ return b.checked; })
+    .map(function(b){ return b.value; });
+  if (!targets.length) { $('pErr').textContent = '請選擇至少一位接收對象（或「全部用戶」）'; $('pErr').style.display='block'; return; }
+  var req = {
+    targets: targets.length === pushUsers.length && pushUsers.length > 0 ? 'all' : targets,
+    title: title, body: body, url: 'index.html?v=13',
+    created: new Date().toISOString()
+  };
+  $('pErr').style.display = 'none';
+  writeJSON('data/pushq/req-' + Date.now() + '.json', req, 'push request: ' + (title || '(no title)'))
+    .then(function(){
+      $('pMsg').style.display='block';
+      setTimeout(function(){ $('pMsg').style.display='none'; }, 4000);
+      loadPushInfo();
+    })
+    .catch(function(e){ $('pErr').textContent = '排隊失敗：' + (e && e.message || ''); $('pErr').style.display='block'; });
+};
+
 /* ---- one-click auto-sync: write PAT into config.js (hex-encoded so GitHub's
        secret scanner does not block the commit; decoded at runtime in app.js) ---- */
 function hexEncode(s){
@@ -630,7 +697,7 @@ function hexEncode(s){
 $('enableSync').onclick = function(){
   var pat = localStorage.getItem('acup_pat');
   if (!pat) { $('sErr').style.display='block'; return; }
-  var cfg = '/* Auto-sync enabled via admin panel (token hex-encoded). */\nwindow.SYNC_GITHUB = {\n  token: ' + JSON.stringify(hexEncode(pat)) + ',\n  hex: true,\n  repo: ' + JSON.stringify(REPO) + '\n};\n';
+  var cfg = '/* Auto-sync enabled via admin panel (token hex-encoded). */\nwindow.SYNC_GITHUB = {\n  token: ' + JSON.stringify(hexEncode(pat)) + ',\n  hex: true,\n  repo: ' + JSON.stringify(REPO) + '\n};\n/* Web-Push VAPID public key (client side). Private key = Actions secret VAPID_PRIVATE_KEY. */\nwindow.APP_VAPID_PUBLIC = "BOg0VS-1N2rxb33mYdDEhc__4f7rNuz8hqC9hoWomBRKz63bEgnXm-suj2Ea5ty2n-qMpPayG7GdWq-TmejiY_c";\n';
   gh('/repos/' + REPO + '/contents/config.js', {notFound:true}).then(function(existing){
     return gh('/repos/' + REPO + '/contents/config.js', {
       method:'PUT', body:{ message:'enable auto-sync from admin', content: b64(cfg), sha: existing ? existing.sha : undefined }

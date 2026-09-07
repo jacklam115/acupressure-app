@@ -4,14 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>資料・照顧者自我穴位按壓計劃</title>
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="manifest" href="manifest.json?v=13">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="按壓減壓">
+<meta name="theme-color" content="#E8728A">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body data-page="research">
 <div class="app">
 
   <header class="topbar">
     <div class="brand"><span class="logo">🌸</span><span data-i18n="appTitle">照顧者自我穴位按壓計劃</span></div>
-    <span class="pill" data-i18n="version">v0.11</span>
+    <span class="pill" data-i18n="version">v0.12</span>
   </header>
 
   <main class="page">
@@ -26,6 +34,25 @@
       <h3 data-i18n="accountTitle">帳號</h3>
       <div class="login-state" id="acctState"></div>
       <button class="btn btn-ghost" id="logoutBtn" style="width:100%;"><span data-i18n="logoutBtn">登出</span></button>
+    </div>
+
+    <!-- install to home screen (PWA) -->
+    <div class="card">
+      <h3><span data-i18n="installTitle">📲 安裝到主畫面（全螢幕使用）</span></h3>
+      <p class="sub"><span data-i18n="installSub">安裝後，應用程式會以全螢幕獨立開啟，不再顯示瀏覽器工具列。</span></p>
+      <div id="installBody">
+        <p style="font-size:13px;line-height:1.65;"><span data-i18n="installIos">iOS（iPhone/iPad）：點擊 Safari 的「分享」按鈕（□↑），再選擇「加入主畫面」→「加入」。</span></p>
+        <p style="font-size:13px;line-height:1.65;"><span data-i18n="installAndroid">Android（Chrome）：點擊右上角「⋮」選單，再選擇「加到主畫面」或「安裝應用程式」。</span></p>
+        <p style="font-size:12.5px;color:#8A6A2F;background:#FFF8EC;border-radius:10px;padding:8px 10px;" data-i18n="installOpen">每次開啟請使用主畫面的圖示，而非 Safari。</p>
+      </div>
+    </div>
+
+    <!-- push notifications -->
+    <div class="card">
+      <h3><span data-i18n="pushTitle">🔔 推送通知</span></h3>
+      <p class="sub"><span data-i18n="pushSub">安裝到主畫面並登入後，研究團隊可向您傳送溫馨提示（例如練習提醒）。</span></p>
+      <div id="pushState" style="font-size:13px;color:#5A5A60;margin:4px 0 10px;"></div>
+      <button class="btn btn-primary" id="pushBtn" style="width:100%;display:none;"><span data-i18n="pushAllow">允許通知</span></button>
     </div>
 
     <!-- research info -->
@@ -57,15 +84,15 @@
   </main>
 
   <nav class="tabbar">
-    <a class="tab" data-tab="home" href="index.html?v=12"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
-    <a class="tab" data-tab="tutorial" href="tutorial.html?v=12"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
-    <a class="tab" data-tab="checkin" href="checkin.html?v=12"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
-    <a class="tab" data-tab="research" href="research.html?v=12"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
+    <a class="tab" data-tab="home" href="index.html?v=13"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i18n="tabHome">首頁</span></a>
+    <a class="tab" data-tab="tutorial" href="tutorial.html?v=13"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg><span data-i18n="tabTutorial">教學</span></a>
+    <a class="tab" data-tab="checkin" href="checkin.html?v=13"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><span data-i18n="tabCheckin">記錄</span></a>
+    <a class="tab" data-tab="research" href="research.html?v=13"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1"/></svg><span data-i18n="tabResearch">資料</span></a>
   </nav>
 
 </div>
-<script src="config.js?v=12"></script>
-<script src="app.js?v=12"></script>
+<script src="config.js?v=13"></script>
+<script src="app.js?v=13"></script>
 <script>
 function renderAccount() {
   var s = APP.session();
@@ -107,10 +134,54 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('logoutBtn').addEventListener('click', function () {
     APP.logout();
     renderAccount();
-    window.location.href = 'index.html?v=7';   // back to the login gate
+    window.location.href = 'index.html?v=13';   // back to the login gate
   });
-  window.pageI18n = function () { renderAccount(); renderResearchFromContent(); };
+  window.pageI18n = function () { renderAccount(); renderResearchFromContent(); updateInstallPush(); };
+
+  function updateInstallPush() {
+    var standalone = APP._push.standalone();
+    var st = APP.pushStatus();
+    var installEl = document.getElementById('installBody');
+    if (standalone) {
+      installEl.innerHTML = '<p style="font-size:13.5px;font-weight:800;color:#2E7D32;">' + APP.t('installDone') + '</p>';
+    }
+    var stateEl = document.getElementById('pushState');
+    var btn = document.getElementById('pushBtn');
+    var map = {
+      unsupported: ['❌ ' + APP.t('pushUnsupported'), false],
+      'no-login': ['⚠️ ' + APP.t('pushNeedLogin'), false],
+      uninstalled: ['⚠️ ' + APP.t('pushNeedInstall'), false],
+      denied: ['❌ ' + APP.t('pushDenied'), false],
+      granted: ['✅ ' + APP.t('pushGranted'), false],
+      idle: [APP.t('pushState') + '…', true]
+    };
+    var m = map[st] || map.idle;
+    stateEl.textContent = m[0];
+    btn.style.display = m[1] ? 'block' : 'none';
+  }
+
+  document.getElementById('pushBtn').addEventListener('click', function () {
+    var b = document.getElementById('pushBtn');
+    b.disabled = true; b.textContent = APP.t('pushRegistering');
+    APP._push.enable().then(function () {
+      b.disabled = false;
+      document.getElementById('pushState').textContent = '✅ ' + APP.t('pushSaved');
+      b.style.display = 'none';
+    }).catch(function (e) {
+      b.disabled = false;
+      b.textContent = APP.t('pushAllow');
+      var st = (e && e.message) || '';
+      document.getElementById('pushState').textContent =
+        (st === 'denied' ? '❌ ' + APP.t('pushDenied')
+         : st === 'uninstalled' ? '⚠️ ' + APP.t('pushNeedInstall')
+         : st === 'no-login' ? '⚠️ ' + APP.t('pushNeedLogin')
+         : '❌ ' + APP.t('pushErr'));
+    });
+  });
+
+  updateInstallPush();
 });
+
 </script>
 </body>
 </html>

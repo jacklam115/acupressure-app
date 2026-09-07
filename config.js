@@ -4,3 +4,6 @@ window.SYNC_GITHUB = {
   hex: true,
   repo: "jacklam115/acupressure-app"
 };
+/* Web-Push VAPID public key (client side). The matching PRIVATE key is stored
+   only as a GitHub Actions secret (VAPID_PRIVATE_KEY) used by .github/workflows/push-relay.yml. */
+window.APP_VAPID_PUBLIC = "BOg0VS-1N2rxb33mYdDEhc__4f7rNuz8hqC9hoWomBRKz63bEgnXm-suj2Ea5ty2n-qMpPayG7GdWq-TmejiY_c";
