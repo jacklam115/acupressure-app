@@ -62,7 +62,7 @@ async function main() {
     const req = JSON.parse(Buffer.from(raw.content, 'base64').toString('utf8'));
     const title = req.title || '';
     const body = req.body || '';
-    const url = req.url || './index.html?v=14';
+    const url = req.url || './index.html?v=15';
     const targets = req.targets === 'all' ? null : req.targets;
 
     const subDir = await ghGet('data/pushsubs');
@@ -79,7 +79,9 @@ async function main() {
       try {
         await webpush.sendNotification({
           endpoint: sub.endpoint,
-          keys: { p256dh: b64ToBuf(sub.keys.p256dh), auth: b64ToBuf(sub.keys.auth) }
+          // web-push accepts the base64url key strings directly (decodes internally);
+          // passing Uint8Array throws TypeError -> use raw strings.
+          keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth }
         }, JSON.stringify({ title, body, url }));
         result[subName] = 'sent';
         console.log('sent ->', subName);
@@ -88,7 +90,7 @@ async function main() {
           await ghDelete('data/pushsubs/' + subName, '[skip ci] drop dead push subscription');
           result[subName] = 'dropped-410';
         } else {
-          result[subName] = 'error-' + (err.statusCode || '?');
+          result[subName] = 'error-' + (err.statusCode || err.message || '?');
         }
       }
       await new Promise((r) => setTimeout(r, 300)); // polite pacing

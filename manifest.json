@@ -3,7 +3,7 @@
   "short_name": "按壓減壓",
   "description": "自我穴位按壓應用程式，紓緩照顧壓力。Self-administered acupressure for caregiver stress relief.",
   "lang": "zh-Hant",
-  "start_url": "./index.html?v=14",
+  "start_url": "./index.html?v=15",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

@@ -19,7 +19,7 @@ self.addEventListener('push', function (e) {
     body: body,
     icon: './icons/icon-192.png',
     badge: './icons/icon-192.png',
-    data: { url: data.url || './index.html?v=14' },
+    data: { url: data.url || './index.html?v=15' },
     vibrate: [120, 60, 120],
     tag: data.tag || 'acup-push'
   };
@@ -28,7 +28,7 @@ self.addEventListener('push', function (e) {
 
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
-  var url = (e.notification.data && e.notification.data.url) || './index.html?v=14';
+  var url = (e.notification.data && e.notification.data.url) || './index.html?v=15';
   e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (list) {
     for (var i = 0; i < list.length; i++) {
       if (list[i].url.indexOf(self.location.origin) === 0) {

@@ -175,7 +175,7 @@
     slider10: '壓力最大',
     tabTutorial: '教學',
     tabCheckin: '記錄',
-    version: 'v0.13',
+    version: 'v0.14',
     weekOf: '第 {n} 週 / 共 2 週',
     programStart: '開始',
     programEnd: '結束',
@@ -355,7 +355,7 @@
     slider10: 'Most stressed',
     tabTutorial: 'Guide',
     tabCheckin: 'Log',
-    version: 'v0.13',
+    version: 'v0.14',
     weekOf: 'Week {n} of 2',
     programStart: 'Start',
     programEnd: 'End',
@@ -720,7 +720,7 @@
   function registerSW() {
     if (!('serviceWorker' in navigator)) return Promise.resolve(false);
     if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return Promise.resolve(false);
-    return navigator.serviceWorker.register('service-worker.js?v=14').then(function () { return true; }).catch(function () { return false; });
+    return navigator.serviceWorker.register('service-worker.js?v=15').then(function () { return true; }).catch(function () { return false; });
   }
 
   // status: 'unsupported' | 'uninstalled' | 'no-login' | 'denied' | 'granted' | 'idle'
