@@ -1,0 +1,13 @@
+{
+ "targets": [
+  "test1"
+ ],
+ "title": "Relay test",
+ "body": "This is a plumbing test — no real push expected (test1 has no device subscription yet).",
+ "url": "index.html?v=13",
+ "created": "2026-09-08T00:00:00.000Z",
+ "result": {
+  "test1.json": "no-subscription"
+ },
+ "delivered": "2026-09-07T19:23:17.332Z"
+}
